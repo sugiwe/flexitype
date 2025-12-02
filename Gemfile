@@ -46,10 +46,8 @@ gem "tailwindcss-rails"
 # Use Slim template engine [https://github.com/slim-template/slim-rails]
 gem "slim-rails"
 
-# OmniAuth for Google OAuth2 authentication
-gem "omniauth"
-gem "omniauth-google-oauth2"
-gem "omniauth-rails_csrf_protection"
+# Google Identity Services for authentication
+gem "google-id-token"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

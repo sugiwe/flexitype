@@ -38,5 +38,8 @@ module Flexitype
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Allowed emails for authentication (whitelist)
+    config.allowed_emails = ENV.fetch("ALLOWED_EMAILS", "").split(",").map(&:strip)
   end
 end

@@ -3,4 +3,12 @@
   p.text-lg.text-gray-600 分割型キーボードのためのタイピング練習アプリ
 
   .mt-8
+    - if logged_in?
+      p.mb-4.text-gray-700 ようこそ、#{current_user.name}さん
+      = button_to "ログアウト", logout_path, method: :delete, class: "px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+    - else
+      #g_id_onload data-client_id="YOUR_GOOGLE_CLIENT_ID" data-login_uri="/auth/google" data-auto_prompt="false"
+      .g_id_signin data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left"
+
+  .mt-8
     p.text-gray-500 開発中...
