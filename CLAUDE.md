@@ -26,14 +26,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### バックエンド
 
-- Ruby: 3.4.1
-- Rails: 8.x (最新)
+- Ruby: 3.4.4
+- Rails: 8.1.1
 - データベース: PostgreSQL
-- 認証: OmniAuth + Google OAuth2 (Devise は使わない)
+- 認証: Google Identity Services + google-id-token gem (Devise/OmniAuth は使わない)
 
 ### フロントエンド
 
-- 基本: HTML + CSS (固定レイアウト、横 1200px 想定)
+- 基本: Slim テンプレートエンジン
+- スタイリング: Tailwind CSS (固定レイアウト、横 1200px 想定)
 - インタラクション: Hotwire (Turbo + Stimulus)
 - レスポンシブ: 不要 (デスクトップ専用)
 
@@ -57,19 +58,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### 1. ユーザー認証
 
 - Google ログインのみ
-- OmniAuth + `omniauth-google-oauth2` + `omniauth-rails_csrf_protection`
+- Google Identity Services + `google-id-token` gem
 - セッション管理でログイン状態を保持
+- メール許可リスト制（環境変数 `ALLOWED_EMAILS` で管理）
 
 User モデル:
 
-ruby
-
 ```ruby
 # 必須カラム
-- google_uid (string, unique)
-- email (string)
+- google_uid (string, unique, not null)
+- email (string, unique, not null)
 - name (string)
 ```
+
+認証フロー:
+1. フロントエンドでGoogle Identity Servicesを使用してIDトークンを取得
+2. IDトークンをRailsサーバーに送信（POST `/auth/google`）
+3. サーバー側でIDトークンを検証
+4. メール許可リストをチェック
+5. ユーザーを作成またはログイン処理
 
 ---
 
@@ -182,38 +189,38 @@ intermediate:
 
 ## 📅 開発スケジュール (25 日間)
 
-### Phase 1: 基盤構築 (Day 1-2)
+### Phase 1: 基盤構築 (Day 1-3)
 
-- Rails 新規作成、Git 初期化
-- Google ログイン実装 (OmniAuth)
-- User モデル作成
+- Day 1: 構想・仕様策定
+- Day 2: Rails 新規作成、Git 初期化、Tailwind CSS・Slim導入、Google認証基本実装（完了）
+- Day 3: Google Cloud Console設定完了、認証動作確認
 
-### Phase 2: コア機能実装 (Day 3-10)
+### Phase 2: コア機能実装 (Day 4-11)
 
-- Day 3-5: 単語表示、タイピング判定ロジック、BackSpace 対応
-- Day 6-8: キーボード描画 (CSS Grid)、リアルタイムハイライト
-- Day 9-10: キーマップ登録・保存機能 (レイヤー対応)
+- Day 4-6: 単語表示、タイピング判定ロジック、BackSpace 対応
+- Day 7-9: キーボード描画 (CSS Grid)、リアルタイムハイライト
+- Day 10-11: キーマップ登録・保存機能 (レイヤー対応)
 
-### Phase 3: UX 向上 (Day 11-13)
+### Phase 3: UX 向上 (Day 12-14)
 
 - ヒント表示 ON/OFF 機能 (Stimulus)
 - セッション完了画面
 - レイヤー自動判定・2 箇所ハイライト
 
-### Phase 4: 履歴機能 (Day 14-16)
+### Phase 4: 履歴機能 (Day 15-17)
 
 - 練習履歴の DB 保存
 - 履歴一覧ページ
 - 簡易統計表示
 
-### Phase 5: デプロイ (Day 17-20)
+### Phase 5: デプロイ (Day 18-21)
 
 - Kamal セットアップ
 - さくら VPS への初回デプロイ
 - PostgreSQL セットアップ (VPS 内)
 - 独自ドメイン取得・設定
 
-### Phase 6: ブラッシュアップ (Day 21-25)
+### Phase 6: ブラッシュアップ (Day 22-25)
 
 - バグ修正
 - UI/UX 改善
@@ -294,9 +301,10 @@ ruby
 
 ## 🔒 セキュリティ・認証
 
-- CSRF 対策: `omniauth-rails_csrf_protection`
-- 環境変数管理: `credentials.yml.enc` または dotenv
-- Google OAuth Client ID/Secret は環境変数で管理
+- CSRF 対策: Rails標準のCSRF保護
+- 環境変数管理: `credentials.yml.enc`（Google Client ID/Secret）
+- メール許可リスト: 環境変数 `ALLOWED_EMAILS`（カンマ区切り）
+- IDトークン検証: `google-id-token` gem
 
 ---
 
