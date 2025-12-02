@@ -40,6 +40,17 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 
+# Use Tailwind CSS for styling [https://github.com/rails/tailwindcss-rails]
+gem "tailwindcss-rails"
+
+# Use Slim template engine [https://github.com/slim-template/slim-rails]
+gem "slim-rails"
+
+# OmniAuth for Google OAuth2 authentication
+gem "omniauth"
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
