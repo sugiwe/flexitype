@@ -27,6 +27,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 毎日の作業終了時に `docs/daily_reports/YYYY-MM-DD.md` を作成
 - テンプレート: `docs/daily_reports/template.md`
 
+#### 日報における情報管理ポリシー
+
+日報は公開される前提で作成する。以下の情報は**絶対に記載しない**:
+
+**秘匿情報（絶対に記載禁止）**:
+- パスワード、APIキー、シークレットキー
+- データベース接続文字列
+- 本番環境の設定情報
+
+**個人・サービス識別情報（可能な限り記載しない）**:
+- メールアドレス
+- Google Client ID、その他のサービスID
+- ユーザー名（GitHub以外）
+- IPアドレス、ドメイン名（開発中のもの）
+
+「知られても致命的ではないが、不必要に公開する必要もない」情報は、抽象化または省略して記載する。
+例: 「Google Cloud ConsoleでクライアントIDを作成」（IDの値は記載しない）
+
 ---
 
 ## 🎯 プロジェクト概要
