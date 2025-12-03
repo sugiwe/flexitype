@@ -4,6 +4,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # タイピング練習アプリ 開発仕様書
 
+## 📋 開発ルール
+
+### Git ブランチ運用
+
+- **必ずブランチを切って作業する**（mainブランチへの直接コミット禁止）
+- ブランチ命名規則:
+  - 機能追加: `feature/機能名` (例: `feature/google-authentication-setup`)
+  - バグ修正: `bugfix/バグ内容` (例: `bugfix/login-button-display`)
+  - リファクタリング: `refactor/対象` (例: `refactor/sessions-controller`)
+- 作業完了後は、mainブランチにマージしてからブランチを削除
+- コミットメッセージは日本語で、変更内容を明確に記述
+
+### コミット運用
+
+- 意味のある単位でコミットを分ける
+- コミットメッセージの最後に Claude Code の署名を含める
+- 例: 「Google認証機能の実装を完了」
+
+### 日報管理
+
+- 毎日の作業終了時に `docs/daily_reports/YYYY-MM-DD.md` を作成
+- テンプレート: `docs/daily_reports/template.md`
+
+---
+
 ## 🎯 プロジェクト概要
 
 ### 目的
