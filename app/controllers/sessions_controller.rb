@@ -1,4 +1,6 @@
 class SessionsController < ApplicationController
+  protect_from_forgery except: :create
+
   def create
     validator = GoogleIDToken::Validator.new
     client_id = Rails.application.credentials.dig(:google, :client_id)
@@ -24,6 +26,6 @@ class SessionsController < ApplicationController
 
   def destroy
     session[:user_id] = nil
-    redirect_to root_path, notice: "ログアウトしました"
+    redirect_to root_path, notice: "ログアウトしました", allow_other_host: false
   end
 end

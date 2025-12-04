@@ -5,10 +5,33 @@
   .mt-8
     - if logged_in?
       p.mb-4.text-gray-700 ようこそ、#{current_user.name}さん
-      = button_to "ログアウト", logout_path, method: :delete, class: "px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+      = button_to "ログアウト", logout_path, method: :delete, class: "px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700", data: { turbo: false }
     - else
-      #g_id_onload data-client_id="YOUR_GOOGLE_CLIENT_ID" data-login_uri="/auth/google" data-auto_prompt="false"
+      #g_id_onload data-client_id=Rails.application.credentials.dig(:google, :client_id) data-callback="handleCredentialResponse" data-auto_prompt="false"
       .g_id_signin data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left"
+
+      javascript:
+        function handleCredentialResponse(response) {
+          fetch('/auth/google', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ credential: response.credential })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              window.location.href = data.redirect_url;
+            } else {
+              alert('ログインに失敗しました: ' + (data.error || '不明なエラー'));
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('ログインエラーが発生しました');
+          });
+        }
 
   .mt-8
     p.text-gray-500 開発中...
