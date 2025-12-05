@@ -3,26 +3,28 @@
     / ヘッダー
     .flex.justify-between.items-center.mb-8
       h1.text-3xl.font-bold.text-gray-800 タイピング練習
-      .flex.gap-4
-        button.px-4.py-2.bg-blue-600.text-white.rounded.hover:bg-blue-700 練習開始
-        a.px-4.py-2.bg-gray-600.text-white.rounded.hover:bg-gray-700 href="/" トップに戻る
+      .flex.gap-3.items-center
+        - if logged_in?
+          span.text-sm.text-gray-600 #{current_user.name}
+        a.px-4.py-2.bg-gray-200.text-gray-700.rounded.hover:bg-gray-300.transition href="/" ホーム
 
     / メインエリア
-    .bg-white.rounded-lg.shadow-lg.p-8
+    .bg-white.rounded-lg.shadow-lg.p-8 data-controller="typing" data-typing-words-value=@words.to_json
       / 単語表示エリア
       .mb-8
-        .text-center.mb-4
-          .text-sm.text-gray-500 問題 1 / 20
-        .text-center.mb-6
-          .text-5xl.font-mono.tracking-wider.text-gray-800
-            span.text-green-600 hel
-            span.text-blue-600.border-b-4.border-blue-600 l
+        .text-center.mb-3
+          .inline-block.px-3.py-1.bg-gray-100.rounded-full.text-sm.text-gray-600 data-typing-target="progress"
+            | 問題 1 / 20
+        .text-center.mb-6.py-6.bg-gray-50.rounded-lg
+          .text-5xl.font-mono.tracking-wider data-typing-target="display"
+            span.text-green-600.font-semibold hel
+            span.text-blue-600.border-b-4.border-blue-600.font-semibold l
             span.text-gray-400 o
 
       / 入力エリア
       .mb-8
         .max-w-2xl.mx-auto
-          input.w-full.px-4.py-3.text-2xl.font-mono.border-2.border-gray-300.rounded.focus:border-blue-500.focus:outline-none type="text" placeholder="ここに入力してください" autocomplete="off"
+          input.w-full.px-4.py-3.text-2xl.font-mono.border-2.border-gray-300.rounded.focus:border-blue-500.focus:outline-none type="text" placeholder="ここに入力してください" autocomplete="off" data-typing-target="input" data-action="input->typing#handleInput"
           .mt-2.text-sm.text-gray-500.text-center
             | BackSpaceキーで修正できます
 
@@ -35,51 +37,84 @@
 
       / キーボード表示エリア
       .mt-8
-        h2.text-xl.font-bold.text-gray-700.mb-4.text-center Cornix キーボード配列
+        h2.text-xl.font-bold.text-gray-700.mb-6.text-center Cornix キーボード配列（Layer 0）
 
         / 左右分割キーボード
-        .flex.justify-center.gap-16
+        .flex.justify-center.gap-12
           / 左手側
           .keyboard-half
-            h3.text-sm.font-semibold.text-gray-600.mb-2.text-center 左手
-            .grid.gap-1 style="grid-template-columns: repeat(6, 3.5rem);"
+            h3.text-sm.font-semibold.text-gray-500.mb-3.text-center 左手
+            .grid.gap-1.5 style="grid-template-columns: repeat(6, 3.5rem);"
               / 1行目
               - ["Tab", "Q", "W", "E", "R", "T"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition
+                .key.bg-white.border-2.border-gray-300.hover:border-blue-400.hover:bg-blue-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm
                   = key
               / 2行目
               - ["Caps", "A", "S", "D", "F", "G"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition
+                .key.bg-white.border-2.border-gray-300.hover:border-blue-400.hover:bg-blue-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm
                   = key
               / 3行目
               - ["Shift", "Z", "X", "C", "V", "B"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition
+                .key.bg-white.border-2.border-gray-300.hover:border-blue-400.hover:bg-blue-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm
                   = key
               / 4行目（最下段）
               - ["Ctrl", "Alt", "Cmd", "Lyr1", "Lower", "Spc"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition class=(["Lyr1", "Lower"].include?(key) ? "bg-blue-300 hover:bg-blue-400" : "")
+                .key.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm class=(["Lyr1", "Lower"].include?(key) ? "bg-blue-100 border-2 border-blue-400 hover:bg-blue-200 font-semibold" : "bg-white border-2 border-gray-300 hover:border-blue-400 hover:bg-blue-50")
                   = key
 
           / 右手側
           .keyboard-half
-            h3.text-sm.font-semibold.text-gray-600.mb-2.text-center 右手
-            .grid.gap-1 style="grid-template-columns: repeat(6, 3.5rem);"
+            h3.text-sm.font-semibold.text-gray-500.mb-3.text-center 右手
+            .grid.gap-1.5 style="grid-template-columns: repeat(6, 3.5rem);"
               / 1行目
               - ["Y", "U", "I", "O", "P", "BS"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition
+                .key.bg-white.border-2.border-gray-300.hover:border-blue-400.hover:bg-blue-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm
                   = key
               / 2行目
               - ["H", "J", "K", "L", "-", "Ent"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition
+                .key.bg-white.border-2.border-gray-300.hover:border-blue-400.hover:bg-blue-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm
                   = key
               / 3行目
               - ["N", "M", ",", ".", "Up", "/"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition
+                .key.bg-white.border-2.border-gray-300.hover:border-blue-400.hover:bg-blue-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm
                   = key
               / 4行目（最下段）
               - ["Spc", "Raise", "Lyr2", "Left", "Down", "Right"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition class=(["Raise", "Lyr2"].include?(key) ? "bg-blue-300 hover:bg-blue-400" : "")
+                .key.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm class=(["Raise", "Lyr2"].include?(key) ? "bg-blue-100 border-2 border-blue-400 hover:bg-blue-200 font-semibold" : "bg-white border-2 border-gray-300 hover:border-blue-400 hover:bg-blue-50")
                   = key
+
+        / 指ガイド
+        .mt-8
+          h3.text-sm.font-semibold.text-gray-600.mb-3.text-center 使う指のガイド
+          .flex.justify-center.gap-12
+            / 左手ガイド
+            .flex.flex-col.items-center
+              .text-xs.text-gray-500.mb-2 左手
+              .flex.gap-1
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-red-100.transition data-finger="left-pinky"
+                  .text-xs.font-semibold 小
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-yellow-100.transition data-finger="left-ring"
+                  .text-xs.font-semibold 薬
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-blue-100.transition data-finger="left-middle"
+                  .text-xs.font-semibold 中
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-green-100.transition data-finger="left-index"
+                  .text-xs.font-semibold 人
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-gray-100.transition data-finger="left-thumb"
+                  .text-xs.font-semibold 親
+            / 右手ガイド
+            .flex.flex-col.items-center
+              .text-xs.text-gray-500.mb-2 右手
+              .flex.gap-1
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-gray-100.transition data-finger="right-thumb"
+                  .text-xs.font-semibold 親
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-green-100.transition data-finger="right-index"
+                  .text-xs.font-semibold 人
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-blue-100.transition data-finger="right-middle"
+                  .text-xs.font-semibold 中
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-yellow-100.transition data-finger="right-ring"
+                  .text-xs.font-semibold 薬
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-red-100.transition data-finger="right-pinky"
+                  .text-xs.font-semibold 小
 
       / ヒント表示切り替え
       .mt-6.text-center
@@ -89,13 +124,13 @@
 
       / 統計情報（ダミー）
       .mt-8.pt-6.border-t.border-gray-200
-        .grid.grid-cols-3.gap-4.text-center
-          div
-            .text-2xl.font-bold.text-gray-800 85%
-            .text-sm.text-gray-500 正答率
-          div
-            .text-2xl.font-bold.text-gray-800 45
-            .text-sm.text-gray-500 WPM
-          div
-            .text-2xl.font-bold.text-gray-800 5
-            .text-sm.text-gray-500 ミス
+        .grid.grid-cols-3.gap-6.text-center
+          .bg-green-50.rounded-lg.p-4
+            .text-3xl.font-bold.text-green-700 85%
+            .text-sm.text-gray-600.mt-1 正答率
+          .bg-blue-50.rounded-lg.p-4
+            .text-3xl.font-bold.text-blue-700 45
+            .text-sm.text-gray-600.mt-1 WPM
+          .bg-red-50.rounded-lg.p-4
+            .text-3xl.font-bold.text-red-700 5
+            .text-sm.text-gray-600.mt-1 ミス

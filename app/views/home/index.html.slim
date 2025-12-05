@@ -5,6 +5,10 @@
   .mt-8
     - if logged_in?
       p.mb-4.text-gray-700 ようこそ、#{current_user.name}さん
+
+      .my-6
+        = link_to "タイピング練習を始める", practice_path, class: "inline-block px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded hover:bg-blue-700 transition"
+
       = button_to "ログアウト", logout_path, method: :delete, class: "px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700", data: { turbo: false }
     - else
       #g_id_onload data-client_id=Rails.application.credentials.dig(:google, :client_id) data-callback="handleCredentialResponse" data-auto_prompt="false"
