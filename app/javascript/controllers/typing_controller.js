@@ -20,27 +20,27 @@ export default class extends Controller {
   // 指ごとのキーマッピング
   fingerMapping = {
     // 左手
-    'left-pinky': ['Q', 'A', 'Z'],
+    'left-pinky': ['Q', 'A', 'Z', 'Tab', 'Caps', 'Shift'],
     'left-ring': ['W', 'S', 'X'],
     'left-middle': ['E', 'D', 'C'],
     'left-index': ['R', 'F', 'V', 'T', 'G', 'B'],
     // 右手
     'right-index': ['Y', 'H', 'N', 'U', 'J', 'M'],
-    'right-middle': ['I', 'K'],
-    'right-ring': ['O', 'L'],
-    'right-pinky': ['P']
+    'right-middle': ['I', 'K', ','],
+    'right-ring': ['O', 'L', '.'],
+    'right-pinky': ['P', '-', 'Up', 'BS', 'Ent', '/']
   }
 
   // 指ごとの色（薄い背景色と濃いハイライト色）
   fingerColors = {
-    'left-pinky': { light: 'bg-pink-100', dark: 'bg-pink-300' },
-    'left-ring': { light: 'bg-purple-100', dark: 'bg-purple-300' },
+    'left-pinky': { light: 'bg-red-100', dark: 'bg-red-300' },
+    'left-ring': { light: 'bg-yellow-100', dark: 'bg-yellow-300' },
     'left-middle': { light: 'bg-blue-100', dark: 'bg-blue-300' },
     'left-index': { light: 'bg-green-100', dark: 'bg-green-300' },
     'right-index': { light: 'bg-green-100', dark: 'bg-green-300' },
     'right-middle': { light: 'bg-blue-100', dark: 'bg-blue-300' },
-    'right-ring': { light: 'bg-purple-100', dark: 'bg-purple-300' },
-    'right-pinky': { light: 'bg-pink-100', dark: 'bg-pink-300' }
+    'right-ring': { light: 'bg-yellow-100', dark: 'bg-yellow-300' },
+    'right-pinky': { light: 'bg-red-100', dark: 'bg-red-300' }
   }
 
   connect() {
