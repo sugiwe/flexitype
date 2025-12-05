@@ -1,0 +1,25 @@
+# タイピング練習用の単語データ
+# 難易度: beginner（初級者向け）
+# 1セッション = 20単語
+
+beginner:
+  - apple
+  - hello
+  - world
+  - type
+  - keyboard
+  - code
+  - ruby
+  - rails
+  - web
+  - app
+  - home
+  - user
+  - data
+  - file
+  - test
+  - view
+  - model
+  - form
+  - link
+  - save

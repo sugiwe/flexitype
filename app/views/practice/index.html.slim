@@ -9,13 +9,14 @@
         a.px-4.py-2.bg-gray-200.text-gray-700.rounded.hover:bg-gray-300.transition href="/" ホーム
 
     / メインエリア
-    .bg-white.rounded-lg.shadow-lg.p-8
+    .bg-white.rounded-lg.shadow-lg.p-8 data-controller="typing" data-typing-words-value=@words.to_json
       / 単語表示エリア
       .mb-8
         .text-center.mb-3
-          .inline-block.px-3.py-1.bg-gray-100.rounded-full.text-sm.text-gray-600 問題 1 / 20
+          .inline-block.px-3.py-1.bg-gray-100.rounded-full.text-sm.text-gray-600 data-typing-target="progress"
+            | 問題 1 / 20
         .text-center.mb-6.py-6.bg-gray-50.rounded-lg
-          .text-5xl.font-mono.tracking-wider
+          .text-5xl.font-mono.tracking-wider data-typing-target="display"
             span.text-green-600.font-semibold hel
             span.text-blue-600.border-b-4.border-blue-600.font-semibold l
             span.text-gray-400 o
@@ -23,7 +24,7 @@
       / 入力エリア
       .mb-8
         .max-w-2xl.mx-auto
-          input.w-full.px-4.py-3.text-2xl.font-mono.border-2.border-gray-300.rounded.focus:border-blue-500.focus:outline-none type="text" placeholder="ここに入力してください" autocomplete="off"
+          input.w-full.px-4.py-3.text-2xl.font-mono.border-2.border-gray-300.rounded.focus:border-blue-500.focus:outline-none type="text" placeholder="ここに入力してください" autocomplete="off" data-typing-target="input" data-action="input->typing#handleInput"
           .mt-2.text-sm.text-gray-500.text-center
             | BackSpaceキーで修正できます
 
