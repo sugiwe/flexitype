@@ -3,20 +3,21 @@
     / ヘッダー
     .flex.justify-between.items-center.mb-8
       h1.text-3xl.font-bold.text-gray-800 タイピング練習
-      .flex.gap-4
-        button.px-4.py-2.bg-blue-600.text-white.rounded.hover:bg-blue-700 練習開始
-        a.px-4.py-2.bg-gray-600.text-white.rounded.hover:bg-gray-700 href="/" トップに戻る
+      .flex.gap-3.items-center
+        - if logged_in?
+          span.text-sm.text-gray-600 #{current_user.name}
+        a.px-4.py-2.bg-gray-200.text-gray-700.rounded.hover:bg-gray-300.transition href="/" ホーム
 
     / メインエリア
     .bg-white.rounded-lg.shadow-lg.p-8
       / 単語表示エリア
       .mb-8
-        .text-center.mb-4
-          .text-sm.text-gray-500 問題 1 / 20
-        .text-center.mb-6
-          .text-5xl.font-mono.tracking-wider.text-gray-800
-            span.text-green-600 hel
-            span.text-blue-600.border-b-4.border-blue-600 l
+        .text-center.mb-3
+          .inline-block.px-3.py-1.bg-gray-100.rounded-full.text-sm.text-gray-600 問題 1 / 20
+        .text-center.mb-6.py-6.bg-gray-50.rounded-lg
+          .text-5xl.font-mono.tracking-wider
+            span.text-green-600.font-semibold hel
+            span.text-blue-600.border-b-4.border-blue-600.font-semibold l
             span.text-gray-400 o
 
       / 入力エリア
@@ -35,50 +36,50 @@
 
       / キーボード表示エリア
       .mt-8
-        h2.text-xl.font-bold.text-gray-700.mb-4.text-center Cornix キーボード配列
+        h2.text-xl.font-bold.text-gray-700.mb-6.text-center Cornix キーボード配列（Layer 0）
 
         / 左右分割キーボード
-        .flex.justify-center.gap-16
+        .flex.justify-center.gap-12
           / 左手側
           .keyboard-half
-            h3.text-sm.font-semibold.text-gray-600.mb-2.text-center 左手
-            .grid.gap-1 style="grid-template-columns: repeat(6, 3.5rem);"
+            h3.text-sm.font-semibold.text-gray-500.mb-3.text-center 左手
+            .grid.gap-1.5 style="grid-template-columns: repeat(6, 3.5rem);"
               / 1行目
               - ["Tab", "Q", "W", "E", "R", "T"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition
+                .key.bg-white.border-2.border-gray-300.hover:border-blue-400.hover:bg-blue-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm
                   = key
               / 2行目
               - ["Caps", "A", "S", "D", "F", "G"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition
+                .key.bg-white.border-2.border-gray-300.hover:border-blue-400.hover:bg-blue-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm
                   = key
               / 3行目
               - ["Shift", "Z", "X", "C", "V", "B"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition
+                .key.bg-white.border-2.border-gray-300.hover:border-blue-400.hover:bg-blue-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm
                   = key
               / 4行目（最下段）
               - ["Ctrl", "Alt", "Cmd", "Lyr1", "Lower", "Spc"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition class=(["Lyr1", "Lower"].include?(key) ? "bg-blue-300 hover:bg-blue-400" : "")
+                .key.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm class=(["Lyr1", "Lower"].include?(key) ? "bg-blue-100 border-2 border-blue-400 hover:bg-blue-200 font-semibold" : "bg-white border-2 border-gray-300 hover:border-blue-400 hover:bg-blue-50")
                   = key
 
           / 右手側
           .keyboard-half
-            h3.text-sm.font-semibold.text-gray-600.mb-2.text-center 右手
-            .grid.gap-1 style="grid-template-columns: repeat(6, 3.5rem);"
+            h3.text-sm.font-semibold.text-gray-500.mb-3.text-center 右手
+            .grid.gap-1.5 style="grid-template-columns: repeat(6, 3.5rem);"
               / 1行目
               - ["Y", "U", "I", "O", "P", "BS"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition
+                .key.bg-white.border-2.border-gray-300.hover:border-blue-400.hover:bg-blue-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm
                   = key
               / 2行目
               - ["H", "J", "K", "L", "-", "Ent"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition
+                .key.bg-white.border-2.border-gray-300.hover:border-blue-400.hover:bg-blue-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm
                   = key
               / 3行目
               - ["N", "M", ",", ".", "Up", "/"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition
+                .key.bg-white.border-2.border-gray-300.hover:border-blue-400.hover:bg-blue-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm
                   = key
               / 4行目（最下段）
               - ["Spc", "Raise", "Lyr2", "Left", "Down", "Right"].each do |key|
-                .key.bg-gray-200.hover:bg-blue-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition class=(["Raise", "Lyr2"].include?(key) ? "bg-blue-300 hover:bg-blue-400" : "")
+                .key.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm class=(["Raise", "Lyr2"].include?(key) ? "bg-blue-100 border-2 border-blue-400 hover:bg-blue-200 font-semibold" : "bg-white border-2 border-gray-300 hover:border-blue-400 hover:bg-blue-50")
                   = key
 
       / ヒント表示切り替え
@@ -89,13 +90,13 @@
 
       / 統計情報（ダミー）
       .mt-8.pt-6.border-t.border-gray-200
-        .grid.grid-cols-3.gap-4.text-center
-          div
-            .text-2xl.font-bold.text-gray-800 85%
-            .text-sm.text-gray-500 正答率
-          div
-            .text-2xl.font-bold.text-gray-800 45
-            .text-sm.text-gray-500 WPM
-          div
-            .text-2xl.font-bold.text-gray-800 5
-            .text-sm.text-gray-500 ミス
+        .grid.grid-cols-3.gap-6.text-center
+          .bg-green-50.rounded-lg.p-4
+            .text-3xl.font-bold.text-green-700 85%
+            .text-sm.text-gray-600.mt-1 正答率
+          .bg-blue-50.rounded-lg.p-4
+            .text-3xl.font-bold.text-blue-700 45
+            .text-sm.text-gray-600.mt-1 WPM
+          .bg-red-50.rounded-lg.p-4
+            .text-3xl.font-bold.text-red-700 5
+            .text-sm.text-gray-600.mt-1 ミス
