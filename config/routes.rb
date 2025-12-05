@@ -13,6 +13,9 @@ Rails.application.routes.draw do
   post "/auth/google", to: "sessions#create"
   delete "/logout", to: "sessions#destroy"
 
+  # Typing practice
+  get "practice", to: "practice#index"
+
   # Defines the root path route ("/")
   root "home#index"
 end
