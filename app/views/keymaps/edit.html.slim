@@ -13,7 +13,9 @@
       / 説明文
       .mb-6.p-4.bg-blue-50.border-l-4.border-blue-500.rounded
         p.text-gray-700
-          | キーボード上のキーをクリックして、割り当てたい文字を入力してください。
+          | 1. 上のキーボードから設定したいキーをクリック
+        p.text-gray-700
+          | 2. 下の候補から割り当てたい文字をクリック
         p.text-gray-600.text-sm.mt-2
           | レイヤーごとに設定できます。設定が完了したら「保存」ボタンを押してください。
 
@@ -86,18 +88,69 @@
                     .text-xs.text-gray-400.mb-1 = ["Spc", "Raise", "Lyr2", "Left", "Down", "Right"][i]
                     .text-base.font-semibold.text-gray-700 data-keymap-editor-target="keyChar" -
 
-      / 入力モーダル（選択されたキーの設定）
-      .mt-8.p-6.bg-gray-50.rounded-lg.border-2.border-dashed.border-gray-300 data-keymap-editor-target="inputArea" style="display: none;"
-        .text-center.mb-4
-          .text-lg.font-semibold.text-gray-700
-            | キーの設定:
-            span.ml-2 data-keymap-editor-target="selectedKeyLabel" -
-        .max-w-md.mx-auto
-          label.block.text-sm.font-medium.text-gray-700.mb-2 割り当てる文字
-          input.w-full.px-4.py-3.text-2xl.font-mono.text-center.border-2.border-gray-300.rounded.focus:border-blue-500.focus:outline-none type="text" placeholder="文字を入力" data-keymap-editor-target="charInput" data-action="input->keymap-editor#updateChar"
-          .mt-4.flex.gap-3.justify-center
-            button.px-6.py-2.bg-green-600.text-white.rounded.hover:bg-green-700.transition type="button" data-action="click->keymap-editor#saveChar" 設定
-            button.px-6.py-2.bg-gray-400.text-white.rounded.hover:bg-gray-500.transition type="button" data-action="click->keymap-editor#cancelEdit" キャンセル
+      / 選択状態の表示
+      .mt-8.text-center
+        .inline-block.px-6.py-3.bg-gradient-to-r.from-green-500.to-green-600.text-white.rounded-lg.shadow data-keymap-editor-target="selectedDisplay"
+          | キーを選択してください
+
+      / 入力候補エリア
+      .mt-8
+        h2.text-xl.font-bold.text-gray-700.mb-4.text-center 割り当てる文字を選択
+
+        / タブ切り替え
+        .mb-6.text-center
+          .inline-flex.gap-2.p-2.bg-gray-100.rounded-lg
+            button.px-6.py-2.rounded.bg-blue-600.text-white data-action="click->keymap-editor#switchTab" data-tab="letters" 文字・数字
+            button.px-6.py-2.rounded.bg-white.text-gray-700.hover:bg-gray-200 data-action="click->keymap-editor#switchTab" data-tab="symbols" 記号・特殊キー
+
+        / 候補ボタンエリア
+        .candidates-container
+          / 文字・数字タブ
+          .candidate-group data-keymap-editor-target="candidateGroup" data-category="letters"
+            / 小文字アルファベット（2段表示: 大文字/小文字）
+            .mb-6
+              h3.text-sm.font-semibold.text-gray-600.mb-3 アルファベット
+              .grid.gap-1.5 style="grid-template-columns: repeat(13, 3.5rem);"
+                - ('a'..'z').each_with_index do |char, i|
+                  .key.bg-white.border-2.border-gray-300.hover:border-green-400.hover:bg-green-50.rounded.w-14.h-14.flex.flex-col.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char="#{char.upcase}/#{char}"
+                    .text-xs.text-gray-400.mb-1 = char.upcase
+                    .text-base.font-semibold.text-gray-700 = char
+
+            / 数字・記号ペア
+            .mb-6
+              h3.text-sm.font-semibold.text-gray-600.mb-3 数字
+              .grid.gap-1.5 style="grid-template-columns: repeat(10, 3.5rem);"
+                - [['1', '!'], ['2', '@'], ['3', '#'], ['4', '$'], ['5', '%'], ['6', '^'], ['7', '&'], ['8', '*'], ['9', '('], ['0', ')']].each do |pair|
+                  .key.bg-white.border-2.border-gray-300.hover:border-green-400.hover:bg-green-50.rounded.w-14.h-14.flex.flex-col.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char="#{pair[1]}/#{pair[0]}"
+                    .text-xs.text-gray-400.mb-1 = pair[1]
+                    .text-base.font-semibold.text-gray-700 = pair[0]
+
+          / 記号・特殊キータブ
+          .candidate-group data-keymap-editor-target="candidateGroup" data-category="symbols" style="display: none;"
+            / 記号ペア
+            .mb-6
+              h3.text-sm.font-semibold.text-gray-600.mb-3 記号
+              .grid.gap-1.5 style="grid-template-columns: repeat(10, 3.5rem);"
+                - [['-', '_'], ['=', '+'], ['[', '{'], [']', '}'], [';', ':'], ["'", '"'], [',', '<'], ['.', '>'], ['/', '?'], ['\\', '|']].each do |pair|
+                  .key.bg-white.border-2.border-gray-300.hover:border-green-400.hover:bg-green-50.rounded.w-14.h-14.flex.flex-col.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char="#{pair[1]}/#{pair[0]}"
+                    .text-xs.text-gray-400.mb-1 = pair[1]
+                    .text-base.font-semibold.text-gray-700 = pair[0]
+
+            / 特殊キー
+            .mb-6
+              h3.text-sm.font-semibold.text-gray-600.mb-3 特殊キー
+              .grid.gap-1.5 style="grid-template-columns: repeat(8, 3.5rem);"
+                - ['Space', 'Enter', 'Tab', 'Backspace', 'Shift', 'Ctrl', 'Alt', 'Cmd', 'Esc', 'Delete'].each do |key|
+                  .key.bg-white.border-2.border-gray-300.hover:border-green-400.hover:bg-green-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=key
+                    = key
+
+            / 矢印キー
+            .mb-6
+              h3.text-sm.font-semibold.text-gray-600.mb-3 矢印キー
+              .grid.gap-1.5 style="grid-template-columns: repeat(4, 3.5rem);"
+                - ['←', '→', '↑', '↓'].each do |key|
+                  .key.bg-white.border-2.border-gray-300.hover:border-green-400.hover:bg-green-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-lg.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=key
+                    = key
 
       / 保存ボタン
       .mt-8.flex.justify-center.gap-4

@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["currentLayer", "inputArea", "selectedKeyLabel", "charInput", "keyChar", "saveStatus"]
+  static targets = ["currentLayer", "selectedDisplay", "candidateGroup", "keyChar", "saveStatus"]
   static values = { existingKeymaps: Object }
 
   connect() {
@@ -48,42 +48,40 @@ export default class extends Controller {
     // キーボード表示を更新
     this.updateKeyboardDisplay()
 
-    // 入力エリアを非表示
-    this.hideInputArea()
+    // 選択状態をリセット
+    if (this.selectedKeyElement) {
+      this.selectedKeyElement.classList.remove('ring-4', 'ring-green-500', 'ring-offset-2')
+    }
+    this.selectedKey = null
+    this.selectedKeyElement = null
+    this.selectedDisplayTarget.textContent = 'キーを選択してください'
   }
 
-  // キーを選択
+  // キーを選択（登録待ち状態にする）
   selectKey(event) {
+    // 前回選択したキーのハイライトを解除
+    if (this.selectedKeyElement) {
+      this.selectedKeyElement.classList.remove('ring-4', 'ring-green-500', 'ring-offset-2')
+    }
+
+    // 新しく選択したキーをハイライト
     this.selectedKey = event.currentTarget.dataset.position
     this.selectedKeyElement = event.currentTarget
+    this.selectedKeyElement.classList.add('ring-4', 'ring-green-500', 'ring-offset-2')
 
-    // 選択したキーの情報を表示
-    this.selectedKeyLabelTarget.textContent = this.selectedKey
-
-    // 既存の値があれば入力欄に表示
-    const currentChar = this.keymaps[this.currentLayer][this.selectedKey] || ""
-    this.charInputTarget.value = currentChar
-
-    // 入力エリアを表示
-    this.showInputArea()
-
-    // 入力欄にフォーカス
-    this.charInputTarget.focus()
+    // 選択状態を表示
+    const currentChar = this.keymaps[this.currentLayer][this.selectedKey] || "未設定"
+    this.selectedDisplayTarget.textContent = `${this.selectedKey} (現在: ${currentChar}) に割り当てる文字を選択してください`
   }
 
-  // 文字を更新（リアルタイム）
-  updateChar(event) {
-    // 特に何もしない（saveCharで保存）
-  }
-
-  // 文字を設定
-  saveChar() {
-    const char = this.charInputTarget.value.trim()
-
-    if (char === "") {
-      alert("文字を入力してください")
+  // 文字を割り当て
+  assignChar(event) {
+    if (!this.selectedKey) {
+      alert('先にキーを選択してください')
       return
     }
+
+    const char = event.currentTarget.dataset.char
 
     // キーマップデータに保存
     this.keymaps[this.currentLayer][this.selectedKey] = char
@@ -91,15 +89,13 @@ export default class extends Controller {
     // キーボード表示を更新
     this.updateKeyCharacter(this.selectedKeyElement, char)
 
-    // 入力エリアを非表示
-    this.hideInputArea()
+    // 選択状態を解除
+    this.selectedKeyElement.classList.remove('ring-4', 'ring-green-500', 'ring-offset-2')
+    this.selectedKey = null
+    this.selectedKeyElement = null
+    this.selectedDisplayTarget.textContent = 'キーを選択してください'
 
-    console.log("Saved:", "Layer", this.currentLayer, this.selectedKey, "=", char)
-  }
-
-  // 編集をキャンセル
-  cancelEdit() {
-    this.hideInputArea()
+    console.log("Assigned:", "Layer", this.currentLayer, "=", char)
   }
 
   // キーボード全体の表示を更新
@@ -122,16 +118,28 @@ export default class extends Controller {
     }
   }
 
-  // 入力エリアを表示
-  showInputArea() {
-    this.inputAreaTarget.style.display = "block"
-  }
+  // タブ切り替え
+  switchTab(event) {
+    const targetTab = event.currentTarget.dataset.tab
 
-  // 入力エリアを非表示
-  hideInputArea() {
-    this.inputAreaTarget.style.display = "none"
-    this.selectedKey = null
-    this.selectedKeyElement = null
+    // タブボタンの見た目を更新
+    const buttons = event.currentTarget.parentElement.querySelectorAll("button")
+    buttons.forEach(btn => {
+      if (btn.dataset.tab === targetTab) {
+        btn.className = "px-6 py-2 rounded bg-blue-600 text-white"
+      } else {
+        btn.className = "px-6 py-2 rounded bg-white text-gray-700 hover:bg-gray-200"
+      }
+    })
+
+    // 候補グループの表示切り替え
+    this.candidateGroupTargets.forEach(group => {
+      if (group.dataset.category === targetTab) {
+        group.style.display = "block"
+      } else {
+        group.style.display = "none"
+      }
+    })
   }
 
   // キーマップを保存
