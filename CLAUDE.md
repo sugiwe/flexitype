@@ -165,22 +165,39 @@ User モデル:
 - 0〜5 の 6 レイヤーに対応
 - 各レイヤーごとに異なるキーマップを登録可能
 
-#### 登録 UI
+#### 登録 UI（実装済み）
 
-- キーボード画面上で各キーをクリック → 割り当てたい文字を入力
-- レイヤーごとに切り替えて設定
-- 保存は DB (ユーザーに紐づく)
+**2段階選択方式:**
+1. 上側: 物理キーボード配列（登録先を選択）
+2. 下側: 入力候補ボタン（登録元を選択）
 
-Keymap モデル (例):
+**入力候補の整理:**
+- 文字・数字タブ: アルファベット（A/a）、数字・記号ペア（!/1）
+- 記号・特殊キータブ: 記号ペア（_/-）、特殊キー（Space, Enter など）、矢印キー
+- 2段表示でShiftペアを表現
 
-ruby
+**操作フロー:**
+1. 上のキーボードからキーをクリック → 緑枠でハイライト
+2. 下の候補から文字をクリック → 割り当て完了
+3. レイヤーごとに切り替えて設定
+4. 保存ボタンで DB に保存（ユーザーに紐づく）
+
+Keymap モデル:
 
 ```ruby
-# カラム案
-- user_id (references)
-- layer (integer, 0-5)
-- key_position (string, 例: "L0-R0" = 左手0列0行)
-- character (string, 割り当てた文字)
+# 実装済みカラム
+- user_id (references users, not null)
+- layer (integer, 0-5, not null)
+- key_position (string, 例: "L0-R0", not null)
+- character (string, 最大20文字, not null)
+- created_at, updated_at
+
+# ユニークインデックス
+- [user_id, layer, key_position]
+
+# ヘルパーメソッド
+- for_user_layer(user_id, layer): 特定レイヤーのキーマップをハッシュで取得
+- bulk_upsert(user_id, layer, keymap_hash): キーマップの一括更新
 ```
 
 ---
