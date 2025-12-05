@@ -17,11 +17,38 @@ export default class extends Controller {
     'n': 'N', 'm': 'M'
   }
 
+  // 指ごとのキーマッピング
+  fingerMapping = {
+    // 左手
+    'left-pinky': ['Q', 'A', 'Z'],
+    'left-ring': ['W', 'S', 'X'],
+    'left-middle': ['E', 'D', 'C'],
+    'left-index': ['R', 'F', 'V', 'T', 'G', 'B'],
+    // 右手
+    'right-index': ['Y', 'H', 'N', 'U', 'J', 'M'],
+    'right-middle': ['I', 'K'],
+    'right-ring': ['O', 'L'],
+    'right-pinky': ['P']
+  }
+
+  // 指ごとの色（薄い背景色と濃いハイライト色）
+  fingerColors = {
+    'left-pinky': { light: 'bg-pink-100', dark: 'bg-pink-300' },
+    'left-ring': { light: 'bg-purple-100', dark: 'bg-purple-300' },
+    'left-middle': { light: 'bg-blue-100', dark: 'bg-blue-300' },
+    'left-index': { light: 'bg-green-100', dark: 'bg-green-300' },
+    'right-index': { light: 'bg-green-100', dark: 'bg-green-300' },
+    'right-middle': { light: 'bg-blue-100', dark: 'bg-blue-300' },
+    'right-ring': { light: 'bg-purple-100', dark: 'bg-purple-300' },
+    'right-pinky': { light: 'bg-pink-100', dark: 'bg-pink-300' }
+  }
+
   connect() {
     console.log("Typing controller connected")
     this.currentWordValue = 0
     this.currentPosition = 0
     this.hasError = false // ミスタイプのフラグ
+    this.applyFingerColors() // 指ごとの色を適用
     this.updateDisplay()
     this.highlightNextKey()
   }
@@ -32,8 +59,15 @@ export default class extends Controller {
     const currentWord = this.words[this.currentWordValue]
     const previousLength = this.currentPosition
 
+    // エラー状態で、かつBackSpaceではない入力の場合は無視（入力ロック）
+    if (this.hasError && input.length >= previousLength + 1) {
+      // 入力を元に戻す（ミスした文字の次の文字が入力されないようにする）
+      event.target.value = input.slice(0, previousLength + 1)
+      return
+    }
+
     // BackSpaceが押された場合（入力が減った場合）
-    if (input.length < previousLength) {
+    if (input.length < previousLength || (this.hasError && input.length < previousLength + 1)) {
       this.currentPosition = input.length
       this.hasError = false // エラー状態を解除
       this.updateDisplay()
@@ -57,7 +91,7 @@ export default class extends Controller {
         setTimeout(() => this.nextWord(), 300) // 少し間を置いてから次へ
       }
     } else {
-      // 間違った入力
+      // 間違った入力（入力をロック）
       this.hasError = true
       this.updateDisplay()
     }
@@ -104,11 +138,49 @@ export default class extends Controller {
     this.progressTarget.textContent = `問題 ${this.currentWordValue + 1} / ${this.words.length}`
   }
 
+  // キーボードに指ごとの色を適用
+  applyFingerColors() {
+    Object.entries(this.fingerMapping).forEach(([finger, keys]) => {
+      const colors = this.fingerColors[finger]
+      keys.forEach(keyLabel => {
+        document.querySelectorAll('.key').forEach(key => {
+          if (key.textContent.trim() === keyLabel) {
+            // bg-whiteを削除して、指ごとの色（薄い色）を追加
+            key.classList.remove('bg-white')
+            key.classList.add(colors.light)
+            // data属性に指情報を保存
+            key.dataset.finger = finger
+          }
+        })
+      })
+    })
+  }
+
   // 次に打つべきキーをハイライト
   highlightNextKey() {
-    // 以前のハイライトを全て解除
-    document.querySelectorAll('.key').forEach(key => {
-      key.classList.remove('ring-4', 'ring-yellow-400', 'bg-yellow-100')
+    // 以前のハイライトを全て解除（全てのキーを薄い色に戻す）
+    document.querySelectorAll('.key[data-finger]').forEach(key => {
+      const finger = key.dataset.finger
+      const colors = this.fingerColors[finger]
+      if (colors) {
+        // 濃い色を削除して薄い色に戻す
+        key.classList.remove(colors.dark)
+        if (!key.classList.contains(colors.light)) {
+          key.classList.add(colors.light)
+        }
+        // リングも削除
+        key.classList.remove('ring-4', 'ring-offset-2')
+      }
+    })
+
+    // 指ガイドのハイライトも解除
+    document.querySelectorAll('.finger-guide').forEach(guide => {
+      const finger = guide.dataset.finger
+      const colors = this.fingerColors[finger]
+      if (colors) {
+        guide.classList.remove(colors.dark)
+        guide.classList.remove('ring-4', 'ring-offset-2')
+      }
     })
 
     // 次に打つべき文字を取得
@@ -120,12 +192,34 @@ export default class extends Controller {
     // 対応するキーを探してハイライト
     const keyLabel = this.keyMapping[nextChar.toLowerCase()]
     if (keyLabel) {
-      // キーのテキストが一致する要素を探す
-      document.querySelectorAll('.key').forEach(key => {
-        if (key.textContent.trim() === keyLabel) {
-          key.classList.add('ring-4', 'ring-yellow-400', 'bg-yellow-100')
+      // 対応する指を見つける
+      let targetFinger = null
+      Object.entries(this.fingerMapping).forEach(([finger, keys]) => {
+        if (keys.includes(keyLabel)) {
+          targetFinger = finger
         }
       })
+
+      if (targetFinger) {
+        const colors = this.fingerColors[targetFinger]
+
+        // キーを濃い色にする
+        document.querySelectorAll('.key').forEach(key => {
+          if (key.textContent.trim() === keyLabel) {
+            key.classList.remove(colors.light)
+            key.classList.add(colors.dark)
+            key.classList.add('ring-4', 'ring-offset-2')
+          }
+        })
+
+        // 指ガイドも濃い色にする
+        const guideElement = document.querySelector(`.finger-guide[data-finger="${targetFinger}"]`)
+        if (guideElement) {
+          guideElement.classList.remove(colors.light)
+          guideElement.classList.add(colors.dark)
+          guideElement.classList.add('ring-4', 'ring-offset-2')
+        }
+      }
     }
   }
 

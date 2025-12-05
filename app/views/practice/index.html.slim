@@ -83,6 +83,39 @@
                 .key.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm class=(["Raise", "Lyr2"].include?(key) ? "bg-blue-100 border-2 border-blue-400 hover:bg-blue-200 font-semibold" : "bg-white border-2 border-gray-300 hover:border-blue-400 hover:bg-blue-50")
                   = key
 
+        / 指ガイド
+        .mt-8
+          h3.text-sm.font-semibold.text-gray-600.mb-3.text-center 使う指のガイド
+          .flex.justify-center.gap-12
+            / 左手ガイド
+            .flex.flex-col.items-center
+              .text-xs.text-gray-500.mb-2 左手
+              .flex.gap-1
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-pink-100.transition data-finger="left-pinky"
+                  .text-xs.font-semibold 小
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-purple-100.transition data-finger="left-ring"
+                  .text-xs.font-semibold 薬
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-blue-100.transition data-finger="left-middle"
+                  .text-xs.font-semibold 中
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-green-100.transition data-finger="left-index"
+                  .text-xs.font-semibold 人
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-gray-100.transition data-finger="left-thumb"
+                  .text-xs.font-semibold 親
+            / 右手ガイド
+            .flex.flex-col.items-center
+              .text-xs.text-gray-500.mb-2 右手
+              .flex.gap-1
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-gray-100.transition data-finger="right-thumb"
+                  .text-xs.font-semibold 親
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-green-100.transition data-finger="right-index"
+                  .text-xs.font-semibold 人
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-blue-100.transition data-finger="right-middle"
+                  .text-xs.font-semibold 中
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-purple-100.transition data-finger="right-ring"
+                  .text-xs.font-semibold 薬
+                .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.rounded.bg-pink-100.transition data-finger="right-pinky"
+                  .text-xs.font-semibold 小
+
       / ヒント表示切り替え
       .mt-6.text-center
         label.inline-flex.items-center.cursor-pointer
