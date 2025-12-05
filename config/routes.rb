@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   # Keymap management
-  resources :keymaps, only: [:index, :edit, :update]
+  resources :keymaps, only: [ :index, :edit, :update ]
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
