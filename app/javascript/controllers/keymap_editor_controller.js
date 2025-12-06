@@ -178,4 +178,37 @@ export default class extends Controller {
       alert("保存中にエラーが発生しました")
     }
   }
+
+  // デフォルトに戻す
+  async resetToDefault() {
+    // 確認ダイアログを表示
+    const confirmed = confirm("現在のキーマップをデフォルト設定に戻しますか？\nこの操作は取り消せません。")
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      // デフォルトキーマップを取得
+      const response = await fetch("/keymaps/default")
+
+      if (response.ok) {
+        const defaultKeymaps = await response.json()
+        console.log("Default keymaps loaded:", defaultKeymaps)
+
+        // キーマップデータを置き換え
+        this.keymaps = defaultKeymaps
+
+        // 表示を更新
+        this.updateKeyboardDisplay()
+
+        alert("デフォルト設定に戻しました。「すべてのレイヤーを保存」ボタンを押して保存してください。")
+      } else {
+        alert("デフォルト設定の読み込みに失敗しました")
+      }
+    } catch (error) {
+      console.error("Reset error:", error)
+      alert("デフォルト設定の読み込み中にエラーが発生しました")
+    }
+  }
 }

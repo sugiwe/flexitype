@@ -7,10 +7,15 @@ class KeymapsController < ApplicationController
   end
 
   def edit
-    # 編集画面を表示（既存のキーマップがあれば読み込む）
+    # 編集画面を表示（デフォルトキーマップをベースにユーザーのキーマップをマージ）
     @keymaps = {}
     (0..5).each do |layer|
-      @keymaps[layer] = Keymap.for_user_layer(current_user.id, layer)
+      # デフォルトキーマップを取得
+      default_keymap = Keymap.default_keymap[layer] || {}
+      # ユーザーのキーマップを取得
+      user_keymap = Keymap.for_user_layer(current_user.id, layer)
+      # デフォルトにユーザーのキーマップをマージ（ユーザーの設定が優先）
+      @keymaps[layer] = default_keymap.merge(user_keymap)
     end
   end
 
@@ -28,6 +33,11 @@ class KeymapsController < ApplicationController
   rescue StandardError => e
     Rails.logger.error "Keymap save error: #{e.message}"
     render json: { success: false, error: e.message }, status: :unprocessable_entity
+  end
+
+  def default
+    # デフォルトキーマップを返す（JSON形式）
+    render json: Keymap.default_keymap
   end
 
   private

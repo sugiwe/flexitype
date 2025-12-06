@@ -140,9 +140,9 @@
             .mb-6
               h3.text-sm.font-semibold.text-gray-600.mb-3 特殊キー
               .grid.gap-1.5 style="grid-template-columns: repeat(8, 3.5rem);"
-                - ['Space', 'Enter', 'Tab', 'Backspace', 'Shift', 'Ctrl', 'Alt', 'Cmd', 'Esc', 'Delete'].each do |key|
-                  .key.bg-white.border-2.border-gray-300.hover:border-green-400.hover:bg-green-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=key
-                    = key
+                - [['spc', 'Spc'], ['ent', 'Ent'], ['tab', 'Tab'], ['bs', 'BS'], ['shift', 'Shift'], ['ctrl', 'Ctrl'], ['alt', 'Alt'], ['cmd', 'Cmd'], ['esc', 'Esc'], ['del', 'Del'], ['caps', 'Caps']].each do |char, display|
+                  .key.bg-white.border-2.border-gray-300.hover:border-green-400.hover:bg-green-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=char
+                    = display
 
             / 矢印キー
             .mb-6
@@ -156,6 +156,8 @@
       .mt-8.flex.justify-center.gap-4
         button.px-8.py-3.bg-blue-600.text-white.text-lg.font-semibold.rounded-lg.hover:bg-blue-700.transition.shadow-lg type="button" data-action="click->keymap-editor#saveKeymap"
           | すべてのレイヤーを保存
+        button.px-8.py-3.bg-orange-500.text-white.text-lg.font-semibold.rounded-lg.hover:bg-orange-600.transition.shadow-lg type="button" data-action="click->keymap-editor#resetToDefault"
+          | デフォルトに戻す
         a.px-8.py-3.bg-gray-300.text-gray-700.text-lg.font-semibold.rounded-lg.hover:bg-gray-400.transition href="/" キャンセル
 
       / 保存状態の表示
