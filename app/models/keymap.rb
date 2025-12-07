@@ -4,7 +4,7 @@ class Keymap < ApplicationRecord
   validates :layer, presence: true, inclusion: { in: 0..5 }
   validates :key_position, presence: true
   validates :character, presence: true, length: { maximum: 20 }
-  validates :key_position, uniqueness: { scope: [:user_id, :layer] }
+  validates :key_position, uniqueness: { scope: [ :user_id, :layer ] }
 
   # 特定のユーザーとレイヤーのキーマップをハッシュ形式で取得
   # @param user_id [Integer] ユーザーID
