@@ -21,6 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 意味のある単位でコミットを分ける
 - コミットメッセージの最後に Claude Code の署名を含める
 - 例: 「Google認証機能の実装を完了」
+- **リモートプッシュ前に `bundle exec rubocop` を実行し、コード品質チェックを行う**
 
 ### 日報管理
 
