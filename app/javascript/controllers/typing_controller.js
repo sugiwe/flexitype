@@ -54,6 +54,9 @@ export default class extends Controller {
     this.applyFingerColors() // 指ごとの色を適用
     this.updateDisplay()
     this.highlightNextKey()
+
+    // 入力欄に自動フォーカス
+    this.inputTarget.focus()
   }
 
   // キーマップから文字→キー位置の逆引きマップを生成（全レイヤー分）
@@ -222,12 +225,6 @@ export default class extends Controller {
       // 2段表示のHTMLを生成
       keyElement.innerHTML = this.formatKeyDisplay(char)
     })
-
-    // タイトルも更新
-    const titleElement = document.querySelector('h2.text-xl.font-bold.text-gray-700')
-    if (titleElement) {
-      titleElement.textContent = `Cornix キーボード配列（Layer ${layer}）`
-    }
   }
 
   // format_key_displayヘルパーのJavaScript版（2段表示対応）
@@ -289,7 +286,7 @@ export default class extends Controller {
           key.classList.add(colors.light)
         }
         // リングも削除
-        key.classList.remove('ring-4', 'ring-offset-2')
+        key.classList.remove('ring-2')
       }
     })
 
@@ -305,7 +302,7 @@ export default class extends Controller {
           guide.classList.add(colors.light)
         }
         // リングを削除
-        guide.classList.remove('ring-4', 'ring-offset-2')
+        guide.classList.remove('ring-2')
       }
     })
 
@@ -378,14 +375,14 @@ export default class extends Controller {
         // キーを濃い色にする
         keyElement.classList.remove(colors.light)
         keyElement.classList.add(colors.dark)
-        keyElement.classList.add('ring-4', 'ring-offset-2')
+        keyElement.classList.add('ring-2')
 
         // 指ガイドも濃い色にする
         const guideElement = document.querySelector(`.finger-guide[data-finger="${targetFinger}"]`)
         if (guideElement) {
           guideElement.classList.remove(colors.light)
           guideElement.classList.add(colors.dark)
-          guideElement.classList.add('ring-4', 'ring-offset-2')
+          guideElement.classList.add('ring-2')
         }
       }
     }

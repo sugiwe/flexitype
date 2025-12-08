@@ -30,8 +30,6 @@
 
       / キーボード表示エリア
       .mt-8
-        h2.text-xl.font-bold.text-gray-700.mb-6.text-center Cornix キーボード配列（Layer 0）
-
         / 左右分割キーボード
         .flex.justify-center.gap-12
           / 左手側
@@ -60,8 +58,7 @@
               - (0..5).each do |i|
                 - position = "L3-R#{i}"
                 - char = @keymaps[0][position] || "-"
-                - is_layer_key = ["layer1", "layer2", "lower", "raise"].include?(char)
-                .key.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm class=(is_layer_key ? "bg-blue-100 border-2 border-blue-400 hover:bg-blue-200 font-semibold" : "bg-white border-2 border-gray-300 hover:border-blue-400 hover:bg-blue-50") data-position=position
+                .key.bg-white.border-2.border-gray-300.hover:border-blue-400.hover:bg-blue-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-position=position
                   == format_key_display(char)
 
           / 右手側
@@ -90,8 +87,7 @@
               - (0..5).each do |i|
                 - position = "R3-R#{i}"
                 - char = @keymaps[0][position] || "-"
-                - is_layer_key = ["layer1", "layer2", "lower", "raise"].include?(char)
-                .key.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm class=(is_layer_key ? "bg-blue-100 border-2 border-blue-400 hover:bg-blue-200 font-semibold" : "bg-white border-2 border-gray-300 hover:border-blue-400 hover:bg-blue-50") data-position=position
+                .key.bg-white.border-2.border-gray-300.hover:border-blue-400.hover:bg-blue-50.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-position=position
                   == format_key_display(char)
 
         / 指ガイド
