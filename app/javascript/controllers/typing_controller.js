@@ -46,9 +46,9 @@ export default class extends Controller {
     this.currentWordValue = 0
     this.currentPosition = 0
     this.hasError = false // ミスタイプのフラグ
-    this.currentLayer = 0 // 現在のレイヤー
+    this.currentLayer = 0 // 現在表示中のレイヤー
 
-    // キーマップから逆引きマップを生成
+    // キーマップから逆引きマップを生成（全レイヤー分）
     this.buildKeyMapping()
 
     this.applyFingerColors() // 指ごとの色を適用
@@ -56,30 +56,51 @@ export default class extends Controller {
     this.highlightNextKey()
   }
 
-  // キーマップから文字→キー位置の逆引きマップを生成
+  // キーマップから文字→キー位置の逆引きマップを生成（全レイヤー分）
   buildKeyMapping() {
     console.log("Keymaps received:", this.keymapsValue)
-    const layer0 = this.keymapsValue[0] || this.keymapsValue["0"] || {}
-    console.log("Layer 0 data:", layer0)
 
-    // 文字 → キー位置のマッピングを作成
-    Object.entries(layer0).forEach(([position, char]) => {
-      // "Q/q" のような形式の場合、スラッシュで分割して小文字側を取得
-      let targetChar = char
-      if (char.includes('/')) {
-        const parts = char.split('/')
-        // 後半（小文字側）を取得
-        targetChar = parts[1] || parts[0]
-      }
+    // 各レイヤーごとに文字 → {layer, position} のマッピングを作成
+    // 例: 'a' => [{layer: 0, position: 'L2-R0'}, {layer: 1, position: 'L1-R3'}]
+    this.keyMapping = {}
 
-      // 小文字のアルファベットのみマッピング（特殊キーは除く）
-      const normalized = targetChar.toLowerCase()
-      if (normalized.match(/^[a-z]$/)) {
-        this.keyMapping[normalized] = position
-      }
-    })
+    // 全レイヤー（0-5）を走査
+    for (let layer = 0; layer < 6; layer++) {
+      const layerData = this.keymapsValue[layer] || this.keymapsValue[layer.toString()] || {}
+      console.log(`Layer ${layer} data:`, layerData)
 
-    console.log("Key mapping built:", this.keyMapping)
+      Object.entries(layerData).forEach(([position, char]) => {
+        if (!char) return
+
+        // "Q|q" のような形式の場合、パイプで分割
+        let chars = []
+        if (char.includes('|')) {
+          chars = char.split('|')
+        } else {
+          chars = [char]
+        }
+
+        // 各文字（大文字・小文字両方）をマッピング
+        chars.forEach(targetChar => {
+          if (!targetChar) return
+
+          // アルファベット・数字・記号をマッピング
+          const normalized = targetChar.toLowerCase()
+
+          if (!this.keyMapping[normalized]) {
+            this.keyMapping[normalized] = []
+          }
+
+          this.keyMapping[normalized].push({
+            layer: layer,
+            position: position,
+            displayChar: char // 表示用の元の文字（"Q/q"など）
+          })
+        })
+      })
+    }
+
+    console.log("Key mapping built (all layers):", this.keyMapping)
   }
 
   // 入力イベント
@@ -167,7 +188,7 @@ export default class extends Controller {
     this.progressTarget.textContent = `問題 ${this.currentWordValue + 1} / ${this.words.length}`
   }
 
-  // キーボードに指ごとの色を適用
+  // キーボードに指ごとの色を適用し、全レイヤーのデータを保存
   applyFingerColors() {
     Object.entries(this.fingerPositionMapping).forEach(([finger, positions]) => {
       const colors = this.fingerColors[finger]
@@ -179,12 +200,83 @@ export default class extends Controller {
           keyElement.classList.add(colors.light)
           // data属性に指情報を保存
           keyElement.dataset.finger = finger
+
+          // 全レイヤーの文字データを保存（data-layer-0, data-layer-1, ...）
+          for (let layer = 0; layer < 6; layer++) {
+            const layerData = this.keymapsValue[layer] || this.keymapsValue[layer.toString()] || {}
+            const char = layerData[position] || '-'
+            keyElement.dataset[`layer${layer}`] = char
+          }
         }
       })
     })
   }
 
-  // 次に打つべきキーをハイライト
+  // キーボード表示を指定レイヤーに切り替え
+  switchKeyboardLayer(layer) {
+    this.currentLayer = layer
+
+    // 全てのキーの表示を更新
+    document.querySelectorAll('.key[data-position]').forEach(keyElement => {
+      const char = keyElement.dataset[`layer${layer}`] || '-'
+      // 2段表示のHTMLを生成
+      keyElement.innerHTML = this.formatKeyDisplay(char)
+    })
+
+    // タイトルも更新
+    const titleElement = document.querySelector('h2.text-xl.font-bold.text-gray-700')
+    if (titleElement) {
+      titleElement.textContent = `Cornix キーボード配列（Layer ${layer}）`
+    }
+  }
+
+  // format_key_displayヘルパーのJavaScript版（2段表示対応）
+  formatKeyDisplay(char) {
+    if (!char) return '<div class="text-xs">-</div>'
+
+    // 特殊キーの表示名マッピング（1段表示）
+    const specialKeys = {
+      'spc': 'Spc', 'space': 'Spc',
+      'bs': 'BS', 'backspace': 'BS',
+      'ent': 'Ent', 'enter': 'Ent',
+      'tab': 'Tab',
+      'esc': 'Esc',
+      'del': 'Del',
+      'layer1': 'Lyr1', 'lyr1': 'Lyr1',
+      'layer2': 'Lyr2', 'lyr2': 'Lyr2',
+      'lower': 'Lower',
+      'raise': 'Raise',
+      'shift': 'Shift',
+      'ctrl': 'Ctrl',
+      'alt': 'Alt',
+      'cmd': 'Cmd',
+      'caps': 'Caps'
+    }
+
+    const lowerChar = char.toLowerCase()
+    if (specialKeys[lowerChar]) {
+      return `<div class="text-xs">${specialKeys[lowerChar]}</div>`
+    }
+
+    // "Q|q" や "!|1" 形式の場合は2段表示
+    if (char.includes('|')) {
+      const parts = char.split('|')
+      const upper = parts[0] || ''
+      const lower = parts[1] || ''
+
+      return `
+        <div class="flex flex-col items-center justify-center h-full">
+          <div class="text-xs leading-none">${upper}</div>
+          <div class="text-xs leading-none mt-0.5">${lower}</div>
+        </div>
+      `
+    }
+
+    // 単一文字の場合
+    return `<div class="text-xs">${char}</div>`
+  }
+
+  // 次に打つべきキーをハイライト（レイヤー自動判定付き）
   highlightNextKey() {
     // 以前のハイライトを全て解除（全てのキーを薄い色に戻す）
     document.querySelectorAll('.key[data-finger]').forEach(key => {
@@ -223,28 +315,77 @@ export default class extends Controller {
 
     if (!nextChar) return // 単語の終わりに達した場合
 
-    // キーマップから対応するキー位置を取得
-    const keyPosition = this.keyMapping[nextChar.toLowerCase()]
-    if (keyPosition) {
-      // data-position属性でキーを検索
-      const keyElement = document.querySelector(`.key[data-position="${keyPosition}"]`)
-      if (keyElement) {
-        const targetFinger = keyElement.dataset.finger
-        if (targetFinger) {
-          const colors = this.fingerColors[targetFinger]
+    // キーマップから対応するキー位置を取得（全レイヤーから検索）
+    const keyMappings = this.keyMapping[nextChar.toLowerCase()]
 
-          // キーを濃い色にする
-          keyElement.classList.remove(colors.light)
-          keyElement.classList.add(colors.dark)
-          keyElement.classList.add('ring-4', 'ring-offset-2')
+    if (!keyMappings || keyMappings.length === 0) {
+      console.warn(`Character "${nextChar}" not found in any layer`)
+      return
+    }
 
-          // 指ガイドも濃い色にする
-          const guideElement = document.querySelector(`.finger-guide[data-finger="${targetFinger}"]`)
-          if (guideElement) {
-            guideElement.classList.remove(colors.light)
-            guideElement.classList.add(colors.dark)
-            guideElement.classList.add('ring-4', 'ring-offset-2')
-          }
+    // 優先順位: Layer 0 > Layer 1 > ... の順で検索
+    const targetMapping = keyMappings[0]
+    const targetLayer = targetMapping.layer
+    const targetPosition = targetMapping.position
+
+    console.log(`Next char: "${nextChar}", found in Layer ${targetLayer} at ${targetPosition}`)
+
+    // レイヤー切り替えが必要な場合はキーボード表示を更新
+    if (targetLayer !== this.currentLayer) {
+      this.switchKeyboardLayer(targetLayer)
+    }
+
+    // Layer 0以外の場合は、レイヤーボタンもハイライト
+    let layerKeyPosition = null
+    if (targetLayer > 0) {
+      // レイヤーボタンの位置を探す
+      layerKeyPosition = this.findLayerKeyPosition(targetLayer)
+    }
+
+    // 目的の文字キーをハイライト
+    this.highlightKey(targetPosition)
+
+    // レイヤーボタンもハイライト（Layer 0以外の場合）
+    if (layerKeyPosition) {
+      this.highlightKey(layerKeyPosition)
+    }
+  }
+
+  // レイヤーボタンの位置を探す
+  findLayerKeyPosition(layer) {
+    // Layer 1-5 のボタン位置を探す
+    const layerKeys = [`layer${layer}`, `lyr${layer}`, 'lower', 'raise']
+
+    const currentLayerData = this.keymapsValue[0] || this.keymapsValue["0"] || {}
+
+    for (const [position, char] of Object.entries(currentLayerData)) {
+      if (layerKeys.includes(char.toLowerCase())) {
+        return position
+      }
+    }
+
+    return null
+  }
+
+  // 指定されたキーをハイライト
+  highlightKey(position) {
+    const keyElement = document.querySelector(`.key[data-position="${position}"]`)
+    if (keyElement) {
+      const targetFinger = keyElement.dataset.finger
+      if (targetFinger) {
+        const colors = this.fingerColors[targetFinger]
+
+        // キーを濃い色にする
+        keyElement.classList.remove(colors.light)
+        keyElement.classList.add(colors.dark)
+        keyElement.classList.add('ring-4', 'ring-offset-2')
+
+        // 指ガイドも濃い色にする
+        const guideElement = document.querySelector(`.finger-guide[data-finger="${targetFinger}"]`)
+        if (guideElement) {
+          guideElement.classList.remove(colors.light)
+          guideElement.classList.add(colors.dark)
+          guideElement.classList.add('ring-4', 'ring-offset-2')
         }
       }
     }
