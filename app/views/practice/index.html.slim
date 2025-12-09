@@ -11,7 +11,7 @@
       .flex.gap-3.items-center
         - if logged_in?
           span.text-sm.text-gray-600 #{current_user.name}
-        a.px-4.py-2.bg-gray-200.text-gray-700.rounded.hover:bg-gray-300.transition href="/" ホーム
+        a.px-4.py-2.bg-gray-200.text-gray-700.rounded.hover:bg-gray-300.transition href="/" data-turbo="false" ホーム
 
     / メインエリア
     .bg-white.rounded-lg.shadow-lg.p-8 data-controller="typing" data-typing-words-value=@words.to_json data-typing-keymaps-value=@keymaps.to_json
@@ -40,7 +40,7 @@
           .flex.justify-center.gap-4
             button.px-8.py-3.bg-blue-600.text-white.rounded-lg.hover:bg-blue-700.transition.font-semibold data-action="click->typing#restartSession"
               | もう一度練習する
-            a.px-8.py-3.bg-gray-200.text-gray-700.rounded-lg.hover:bg-gray-300.transition.font-semibold href="/"
+            a.px-8.py-3.bg-gray-200.text-gray-700.rounded-lg.hover:bg-gray-300.transition.font-semibold href="/" data-turbo="false"
               | ホームに戻る
 
       / タイピング練習画面（通常時は表示）
