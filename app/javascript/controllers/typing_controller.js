@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "display", "progress", "currentIndex"]
+  static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "practiceScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay"]
   static values = {
     words: Array,
     currentWord: Number,
@@ -48,6 +48,11 @@ export default class extends Controller {
     this.hasError = false // ミスタイプのフラグ
     this.currentLayer = 0 // 現在表示中のレイヤー
 
+    // 統計情報
+    this.mistakeCount = 0 // ミスタイプの総数
+    this.totalKeystrokes = 0 // 総キー入力数
+    this.sessionStartTime = null // セッション開始時刻
+
     // キーマップから逆引きマップを生成（全レイヤー分）
     this.buildKeyMapping()
 
@@ -57,6 +62,9 @@ export default class extends Controller {
 
     // 入力欄に自動フォーカス
     this.inputTarget.focus()
+
+    // セッション開始時刻を記録
+    this.sessionStartTime = new Date()
   }
 
   // キーマップから文字→キー位置の逆引きマップを生成（全レイヤー分）
@@ -146,6 +154,7 @@ export default class extends Controller {
     } else {
       // 間違った入力（入力をロック）
       this.hasError = true
+      this.mistakeCount++ // ミスカウントを増やす
       this.updateDisplay()
     }
   }
@@ -158,13 +167,64 @@ export default class extends Controller {
     this.hasError = false
 
     if (this.currentWordValue >= this.words.length) {
-      // 全単語完了
-      alert("お疲れ様でした！全ての単語を入力しました！")
-      this.currentWordValue = 0
+      // 全単語完了 - セッション完了画面を表示
+      this.showCompletionScreen()
+      return
     }
 
     this.updateDisplay()
     this.highlightNextKey()
+  }
+
+  // セッション完了画面を表示
+  showCompletionScreen() {
+    // 所要時間を計算
+    const endTime = new Date()
+    const elapsedMs = endTime - this.sessionStartTime
+    const elapsedSeconds = Math.floor(elapsedMs / 1000)
+    const minutes = Math.floor(elapsedSeconds / 60)
+    const seconds = elapsedSeconds % 60
+    const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`
+
+    // 総文字数を計算
+    const totalChars = this.words.reduce((sum, word) => sum + word.length, 0)
+
+    // 正答率を計算（総文字数に対するミス数の割合）
+    const accuracy = Math.round(((totalChars - this.mistakeCount) / totalChars) * 100)
+
+    // 統計情報を画面に表示
+    this.accuracyDisplayTarget.textContent = `${accuracy}%`
+    this.timeDisplayTarget.textContent = timeString
+    this.mistakesDisplayTarget.textContent = this.mistakeCount
+
+    // 画面を切り替え
+    this.practiceScreenTarget.classList.add('hidden')
+    this.completionScreenTarget.classList.remove('hidden')
+  }
+
+  // セッションを再開
+  restartSession() {
+    // 統計情報をリセット
+    this.currentWordValue = 0
+    this.currentPosition = 0
+    this.hasError = false
+    this.mistakeCount = 0
+    this.totalKeystrokes = 0
+    this.sessionStartTime = new Date()
+
+    // 入力欄をクリア
+    this.inputTarget.value = ""
+
+    // 画面を切り替え
+    this.completionScreenTarget.classList.add('hidden')
+    this.practiceScreenTarget.classList.remove('hidden')
+
+    // 表示を更新
+    this.updateDisplay()
+    this.highlightNextKey()
+
+    // 入力欄にフォーカス
+    this.inputTarget.focus()
   }
 
   // 表示を更新
