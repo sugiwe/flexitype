@@ -1,8 +1,8 @@
 class PracticeController < ApplicationController
   def index
     # URLパラメータからカテゴリとレッスンIDを取得
-    category_key = params[:category] || 'word_practice'
-    lesson_id = params[:lesson] || 'beginner_words'
+    category_key = params[:category] || "word_practice"
+    lesson_id = params[:lesson] || "beginner_words"
 
     # レッスン情報を取得
     @lesson_info = LessonLoader.get_lesson_info(category_key, lesson_id)
