@@ -2,7 +2,12 @@
   .max-w-7xl.mx-auto.px-4
     / ヘッダー
     .flex.justify-between.items-center.mb-8
-      h1.text-3xl.font-bold.text-gray-800 タイピング練習
+      div
+        h1.text-3xl.font-bold.text-gray-800 = @lesson_info[:lesson_name]
+        p.text-sm.text-gray-600.mt-1
+          = @lesson_info[:category_name]
+          |  •
+          = @lesson_info[:lesson_description]
       .flex.gap-3.items-center
         - if logged_in?
           span.text-sm.text-gray-600 #{current_user.name}

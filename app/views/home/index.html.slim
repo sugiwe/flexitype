@@ -1,42 +1,69 @@
-.max-w-screen-xl.mx-auto.py-8.text-center
-  h1.text-4xl.font-bold.mb-4 FlexiType
-  p.text-lg.text-gray-600 分割型キーボードのためのタイピング練習アプリ
+.min-h-screen.bg-gray-50.py-8
+  .max-w-7xl.mx-auto.px-4
+    / ヘッダー
+    .flex.justify-between.items-center.mb-8
+      div
+        h1.text-4xl.font-bold.text-gray-800 FlexiType
+        p.text-gray-600.mt-1 分割型キーボードのためのタイピング練習
+      .flex.gap-3.items-center
+        - if logged_in?
+          span.text-sm.text-gray-600 #{current_user.name}
+          = link_to "キーマップ設定", edit_keymap_path(id: 'current'), class: "px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+          = button_to "ログアウト", logout_path, method: :delete, class: "px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition", data: { turbo: false }
+        - else
+          #g_id_onload data-client_id=Rails.application.credentials.dig(:google, :client_id) data-callback="handleCredentialResponse" data-auto_prompt="false"
+          .g_id_signin data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left"
 
-  .mt-8
-    - if logged_in?
-      p.mb-4.text-gray-700 ようこそ、#{current_user.name}さん
-
-      .my-6.flex.flex-col.gap-3.items-center
-        = link_to "タイピング練習を始める", practice_path, class: "inline-block px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded hover:bg-blue-700 transition"
-        = link_to "キーマップ設定", edit_keymap_path(id: 'current'), class: "inline-block px-6 py-3 bg-green-600 text-white text-lg font-semibold rounded hover:bg-green-700 transition"
-
-      = button_to "ログアウト", logout_path, method: :delete, class: "px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700", data: { turbo: false }
-    - else
-      #g_id_onload data-client_id=Rails.application.credentials.dig(:google, :client_id) data-callback="handleCredentialResponse" data-auto_prompt="false"
-      .g_id_signin data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left"
-
-      javascript:
-        function handleCredentialResponse(response) {
-          fetch('/auth/google', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ credential: response.credential })
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              window.location.href = data.redirect_url;
-            } else {
-              alert('ログインに失敗しました: ' + (data.error || '不明なエラー'));
+          javascript:
+            function handleCredentialResponse(response) {
+              fetch('/auth/google', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ credential: response.credential })
+              })
+              .then(res => res.json())
+              .then(data => {
+                if (data.success) {
+                  window.location.href = data.redirect_url;
+                } else {
+                  alert('ログインに失敗しました: ' + (data.error || '不明なエラー'));
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                alert('ログインエラーが発生しました');
+              });
             }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            alert('ログインエラーが発生しました');
-          });
-        }
 
-  .mt-8
-    p.text-gray-500 開発中...
+    / レッスン選択エリア
+    .space-y-8
+      - @categories.each do |category_key, category_data|
+        .bg-white.rounded-lg.shadow-md.p-6
+          / カテゴリヘッダー
+          .mb-4
+            h2.text-2xl.font-bold.text-gray-800 = category_data['category']
+            p.text-gray-600.mt-1 = category_data['description']
+
+          / レッスンカード一覧
+          .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.xl:grid-cols-4.gap-4
+            - category_data['lessons'].each do |lesson|
+              = link_to practice_path(category: category_key, lesson: lesson['id']), class: "block bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-5 hover:shadow-lg hover:border-blue-400 transition transform hover:-translate-y-1" do
+                .flex.items-start.justify-between.mb-2
+                  h3.text-lg.font-bold.text-gray-800 = lesson['name']
+                  .px-2.py-1.bg-blue-100.text-blue-700.text-xs.rounded-full.font-semibold
+                    = "#{lesson['count']}問"
+                p.text-sm.text-gray-600.line-clamp-2 = lesson['description']
+                .mt-3.flex.items-center.text-sm.text-blue-600
+                  span 練習を始める →
+
+    / ログインしていない場合のメッセージ
+    - unless logged_in?
+      .mt-8.bg-blue-50.border-l-4.border-blue-500.p-4.rounded
+        .flex.items-start
+          svg.h-6.w-6.text-blue-500.mr-3 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          div
+            p.font-semibold.text-blue-800 ログインすると、さらに多くのレッスンが利用できます！
+            p.text-sm.text-blue-700.mt-1 短文練習、テーマ別単語、プログラミング用語など
