@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_02_123546) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_05_214520) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "keymaps", force: :cascade do |t|
+    t.string "character", null: false
+    t.datetime "created_at", null: false
+    t.string "key_position", null: false
+    t.integer "layer", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "layer", "key_position"], name: "index_keymaps_on_user_id_and_layer_and_key_position", unique: true
+    t.index ["user_id"], name: "index_keymaps_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -23,4 +34,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_02_123546) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["google_uid"], name: "index_users_on_google_uid", unique: true
   end
+
+  add_foreign_key "keymaps", "users"
 end

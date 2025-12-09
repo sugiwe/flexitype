@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  has_many :keymaps, dependent: :destroy
+
   validates :google_uid, presence: true, uniqueness: true
   validates :email, presence: true, uniqueness: true
 

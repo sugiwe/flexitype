@@ -1,4 +1,13 @@
 Rails.application.routes.draw do
+  # Keymap management
+  resources :keymaps, only: [ :index, :edit, :update ] do
+    collection do
+      get :default
+    end
+  end
+  # カスタムルート: キーマップの一括保存用
+  patch "keymaps/current", to: "keymaps#update"
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
