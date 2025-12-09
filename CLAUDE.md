@@ -4,6 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # タイピング練習アプリ 開発仕様書
 
+## 📛 サービス名
+
+- **サービス名**: Typnix（タイプニクス）
+- **開発コードネーム**: Flexitype（リポジトリ名などで使用）
+- アプリ内の表示はすべて「Typnix」を使用
+
 ## 📋 開発ルール
 
 ### Git ブランチ運用
