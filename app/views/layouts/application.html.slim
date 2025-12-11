@@ -65,99 +65,138 @@ html
             p.text-xs.text-gray-400.dark:text-gray-500.font-semibold Ad Space
             p.text-xs.text-gray-400.dark:text-gray-500.mt-1 300 x 250
 
-      / テーマ選択（ユーザー情報の上に配置）
-      .p-4.border-t.border-gray-200.dark:border-gray-700 data-controller="theme"
-        .relative
-          / 現在のテーマ表示ボタン
-          button.w-full.px-4.py-2.bg-gray-100.dark:bg-gray-700.hover:bg-gray-200.dark:hover:bg-gray-600.text-gray-700.dark:text-gray-200.text-sm.rounded-lg.transition.flex.items-center.justify-between type="button" data-action="click->theme#toggle"
-            span.flex.items-center
-              span.mr-2 data-theme-target="currentIcon"
-                svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                  path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-              span data-theme-target="currentName" System
-            svg.w-4.h-4.transition-transform fill="none" stroke="currentColor" viewBox="0 0 24 24" data-theme-target="chevron"
-              path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"
-
-          / ドロップダウンメニュー
-          .absolute.bottom-full.left-0.w-full.mb-2.bg-white.dark:bg-gray-700.rounded-lg.shadow-lg.border.border-gray-200.dark:border-gray-600.hidden data-theme-target="dropdown"
-            ul.py-2
-              li
-                button.w-full.px-4.py-2.text-left.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition.flex.items-center type="button" data-action="click->theme#select" data-theme-id="light"
-                  span.mr-2
-                    svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                      path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                  span Light
-              li
-                button.w-full.px-4.py-2.text-left.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition.flex.items-center type="button" data-action="click->theme#select" data-theme-id="dark"
-                  span.mr-2
-                    svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                      path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                  span Dark
-              li
-                button.w-full.px-4.py-2.text-left.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition.flex.items-center type="button" data-action="click->theme#select" data-theme-id="system"
-                  span.mr-2
-                    svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                      path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  span System
-
       / ユーザー情報・認証エリア（常に下部に固定）
       .p-4.border-t.border-gray-200.dark:border-gray-700
         - if logged_in?
-          .mb-3
-            .flex.items-center.mb-2
-              .w-8.h-8.bg-blue-600.dark:bg-blue-500.rounded-full.flex.items-center.justify-center.text-white.font-semibold.mr-2
-                = current_user.name[0].upcase
-              .flex-1
-                p.text-sm.font-semibold.text-gray-800.dark:text-white = current_user.name
-                p.text-xs.text-gray-500.dark:text-gray-400.truncate = current_user.email
-          = button_to "ログアウト", logout_path, method: :delete, class: "w-full px-4 py-2 bg-gray-600 dark:bg-gray-700 text-white text-sm rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition", data: { turbo: false }
+          / ログイン状態: ユーザーアイコン + テーマアイコン + ヘルプアイコン
+          .flex.items-center.justify-between
+            / ユーザーアイコン（左）
+            .relative data-controller="user-menu"
+              button.w-10.h-10.rounded-full.overflow-hidden.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-500.dark:hover:border-blue-400.transition type="button" data-action="click->user-menu#toggle"
+                - if current_user.icon_url.present?
+                  img src=current_user.icon_url alt=current_user.name class="w-full h-full object-cover"
+                - else
+                  .w-full.h-full.bg-blue-600.dark:bg-blue-500.flex.items-center.justify-center.text-white.font-semibold
+                    = current_user.name[0].upcase
+
+              / ユーザーメニュードロップダウン（上方向）
+              .absolute.bottom-full.left-0.mb-2.w-64.bg-white.dark:bg-gray-700.rounded-lg.shadow-lg.border.border-gray-200.dark:border-gray-600.hidden data-user-menu-target="dropdown"
+                .p-4.border-b.border-gray-200.dark:border-gray-600
+                  p.text-sm.font-semibold.text-gray-800.dark:text-white.truncate = current_user.name
+                  p.text-xs.text-gray-500.dark:text-gray-400.truncate = current_user.email
+                .py-2
+                  / アカウント設定（将来実装）
+                  a.block.px-4.py-2.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition.cursor-not-allowed.opacity-50 href="#"
+                    | アカウント設定
+                  / ログアウト
+                  = button_to logout_path, method: :delete, class: "w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition", data: { turbo: false } do
+                    | ログアウト
+
+            / 右側アイコングループ（テーマ + ヘルプ）
+            .flex.items-center.gap-2
+              / テーマアイコン
+              .relative data-controller="theme"
+                button.w-10.h-10.bg-gray-100.dark:bg-gray-700.hover:bg-gray-200.dark:hover:bg-gray-600.rounded-full.flex.items-center.justify-center.text-gray-600.dark:text-gray-300.transition type="button" data-action="click->theme#toggle"
+                  span data-theme-target="currentIcon"
+                    svg.w-5.h-5 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                      path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+
+                / テーマ選択ドロップダウン（上方向）
+                .absolute.bottom-full.right-0.mb-2.w-40.bg-white.dark:bg-gray-700.rounded-lg.shadow-lg.border.border-gray-200.dark:border-gray-600.hidden data-theme-target="dropdown"
+                  .py-2
+                    button.w-full.px-4.py-2.text-left.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition.flex.items-center type="button" data-action="click->theme#select" data-theme-id="light"
+                      span.mr-2
+                        svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                          path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                      span Light
+                    button.w-full.px-4.py-2.text-left.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition.flex.items-center type="button" data-action="click->theme#select" data-theme-id="dark"
+                      span.mr-2
+                        svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                          path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                      span Dark
+                    button.w-full.px-4.py-2.text-left.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition.flex.items-center type="button" data-action="click->theme#select" data-theme-id="system"
+                      span.mr-2
+                        svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                          path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      span System
+
+              / ヘルプアイコン
+              .relative data-controller="help-menu"
+                button.w-10.h-10.bg-gray-100.dark:bg-gray-700.hover:bg-gray-200.dark:hover:bg-gray-600.rounded-full.flex.items-center.justify-center.text-gray-600.dark:text-gray-300.transition type="button" data-action="click->help-menu#toggle"
+                  | ?
+
+                / ヘルプメニュードロップダウン（上方向）
+                .absolute.bottom-full.right-0.mb-2.w-48.bg-white.dark:bg-gray-700.rounded-lg.shadow-lg.border.border-gray-200.dark:border-gray-600.hidden data-help-menu-target="dropdown"
+                  .py-2
+                    = link_to terms_path, class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition", data: { turbo: false } do
+                      | 利用規約
+                    = link_to privacy_path, class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition", data: { turbo: false } do
+                      | プライバシーポリシー
+                    a.block.px-4.py-2.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition href="https://forms.gle/a6EYBBxhMdGc4TJq6" target="_blank" rel="noopener noreferrer"
+                      | お問い合わせ
+
         - else
-          .text-center
-            / ベータ版制限中の情報表示（本番環境のみ）
-            - if Rails.env.production?
-              .bg-blue-50.dark:bg-blue-900.border.border-blue-200.dark:border-blue-700.rounded-lg.p-4.mb-3
-                / ベータアイコン
-                svg.w-10.h-10.mx-auto.mb-2.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                  path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
-                p.text-sm.font-semibold.text-blue-800.dark:text-blue-300.mb-2 ベータ版テスト中
-                p.text-xs.text-blue-700.dark:text-blue-400.leading-relaxed
-                  | 現在、限定ユーザーのみ
-                  br
-                  | ログイン可能です
+          / ログアウト状態
+          / ベータ版制限中の情報表示（本番環境のみ）
+          - if Rails.env.production?
+            .bg-blue-50.dark:bg-blue-900.border.border-blue-200.dark:border-blue-700.rounded-lg.p-4.mb-3
+              svg.w-10.h-10.mx-auto.mb-2.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+              p.text-sm.font-semibold.text-blue-800.dark:text-blue-300.mb-2.text-center ベータ版テスト中
+              p.text-xs.text-blue-700.dark:text-blue-400.leading-relaxed.text-center
+                | 現在、限定ユーザーのみ
+                br
+                | ログイン可能です
 
-              .bg-gray-100.dark:bg-gray-800.rounded-lg.p-3.mb-3
-                p.text-xs.text-gray-600.dark:text-gray-400.mb-2 アクセスをご希望の方は
-                a.text-xs.text-blue-600.dark:text-blue-400.hover:underline.font-medium href="https://forms.gle/a6EYBBxhMdGc4TJq6" target="_blank" rel="noopener noreferrer"
-                  | こちらからご連絡ください
+            .bg-gray-100.dark:bg-gray-800.rounded-lg.p-3.mb-3.text-center
+              p.text-xs.text-gray-600.dark:text-gray-400.mb-2 アクセスをご希望の方は
+              a.text-xs.text-blue-600.dark:text-blue-400.hover:underline.font-medium href="https://forms.gle/a6EYBBxhMdGc4TJq6" target="_blank" rel="noopener noreferrer"
+                | こちらからご連絡ください
 
-            / Googleログインボタン（常に表示）
-            p.text-xs.text-gray-600.dark:text-gray-400.mb-3 ログインして自分専用のキーマップを保存
-            div data-turbo="false"
+          / Googleログインボタン + ヘルプアイコン
+          .flex.items-center.gap-2
+            / Googleログインボタン（70%）
+            .flex-grow data-turbo="false"
               #g_id_onload data-client_id=Rails.application.credentials.dig(:google, :client_id) data-callback="handleCredentialResponse" data-auto_prompt="false"
               .g_id_signin data-type="standard" data-size="medium" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left"
 
-              javascript:
-                function handleCredentialResponse(response) {
-                  fetch('/auth/google', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ credential: response.credential })
-                  })
-                  .then(res => res.json())
-                  .then(data => {
-                    if (data.success) {
-                      window.location.href = data.redirect_url;
-                    } else {
-                      alert('ログインに失敗しました: ' + (data.error || '不明なエラー'));
-                    }
-                  })
-                  .catch(error => {
-                    console.error('Error:', error);
-                    alert('ログインエラーが発生しました');
-                  });
-                }
+            javascript:
+              function handleCredentialResponse(response) {
+                fetch('/auth/google', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ credential: response.credential })
+                })
+                .then(res => res.json())
+                .then(data => {
+                  if (data.success) {
+                    window.location.href = data.redirect_url;
+                  } else {
+                    alert('ログインに失敗しました: ' + (data.error || '不明なエラー'));
+                  }
+                })
+                .catch(error => {
+                  console.error('Error:', error);
+                  alert('ログインエラーが発生しました');
+                });
+              }
+
+            / ヘルプアイコン
+            .relative data-controller="help-menu"
+              button.w-10.h-10.bg-gray-100.dark:bg-gray-700.hover:bg-gray-200.dark:hover:bg-gray-600.rounded-full.flex.items-center.justify-center.text-gray-600.dark:text-gray-300.transition type="button" data-action="click->help-menu#toggle"
+                | ?
+
+              / ヘルプメニュードロップダウン（上方向）
+              .absolute.bottom-full.right-0.mb-2.w-48.bg-white.dark:bg-gray-700.rounded-lg.shadow-lg.border.border-gray-200.dark:border-gray-600.hidden data-help-menu-target="dropdown"
+                .py-2
+                  = link_to terms_path, class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition", data: { turbo: false } do
+                    | 利用規約
+                  = link_to privacy_path, class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition", data: { turbo: false } do
+                    | プライバシーポリシー
+                  a.block.px-4.py-2.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition href="https://forms.gle/a6EYBBxhMdGc4TJq6" target="_blank" rel="noopener noreferrer"
+                    | お問い合わせ
 
     / 右メインコンテンツエリア
     main.flex-1.overflow-y-auto.bg-gray-50.dark:bg-gray-900.transition-colors style="margin-left: 300px;"
