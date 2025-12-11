@@ -113,6 +113,24 @@ html
           = button_to "ログアウト", logout_path, method: :delete, class: "w-full px-4 py-2 bg-gray-600 dark:bg-gray-700 text-white text-sm rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition", data: { turbo: false }
         - else
           .text-center
+            / ベータ版制限中の情報表示（本番環境のみ）
+            - if Rails.env.production?
+              .bg-blue-50.dark:bg-blue-900.border.border-blue-200.dark:border-blue-700.rounded-lg.p-4.mb-3
+                / ベータアイコン
+                svg.w-10.h-10.mx-auto.mb-2.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                  path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                p.text-sm.font-semibold.text-blue-800.dark:text-blue-300.mb-2 ベータ版テスト中
+                p.text-xs.text-blue-700.dark:text-blue-400.leading-relaxed
+                  | 現在、限定ユーザーのみ
+                  br
+                  | ログイン可能です
+
+              .bg-gray-100.dark:bg-gray-800.rounded-lg.p-3.mb-3
+                p.text-xs.text-gray-600.dark:text-gray-400.mb-2 アクセスをご希望の方は
+                a.text-xs.text-blue-600.dark:text-blue-400.hover:underline.font-medium href="https://forms.gle/a6EYBBxhMdGc4TJq6" target="_blank" rel="noopener noreferrer"
+                  | こちらからご連絡ください
+
+            / Googleログインボタン（常に表示）
             p.text-xs.text-gray-600.dark:text-gray-400.mb-3 ログインして自分専用のキーマップを保存
             div data-turbo="false"
               #g_id_onload data-client_id=Rails.application.credentials.dig(:google, :client_id) data-callback="handleCredentialResponse" data-auto_prompt="false"

@@ -15,7 +15,10 @@ class User < ApplicationRecord
   # 許可リストに含まれているかチェック
   def self.email_allowed?(email)
     allowed_emails = Rails.application.config.allowed_emails
-    return true if allowed_emails.empty? # 許可リストが空なら全員許可（開発時用）
+
+    # 開発環境では空なら全員許可、本番環境では空なら全員拒否（安全性重視）
+    return true if allowed_emails.empty? && !Rails.env.production?
+
     allowed_emails.include?(email)
   end
 end
