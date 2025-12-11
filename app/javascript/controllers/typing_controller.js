@@ -28,17 +28,18 @@ export default class extends Controller {
   }
 
   // 指ごとの色（薄い背景色と濃いハイライト色）
+  // ライトモードとダークモード両方のクラスを含む
   fingerColors = {
-    'left-pinky': { light: 'bg-red-100', dark: 'bg-red-300' },
-    'left-ring': { light: 'bg-yellow-100', dark: 'bg-yellow-300' },
-    'left-middle': { light: 'bg-blue-100', dark: 'bg-blue-300' },
-    'left-index': { light: 'bg-green-100', dark: 'bg-green-300' },
-    'left-thumb': { light: 'bg-gray-100', dark: 'bg-gray-300' },
-    'right-thumb': { light: 'bg-gray-100', dark: 'bg-gray-300' },
-    'right-index': { light: 'bg-green-100', dark: 'bg-green-300' },
-    'right-middle': { light: 'bg-blue-100', dark: 'bg-blue-300' },
-    'right-ring': { light: 'bg-yellow-100', dark: 'bg-yellow-300' },
-    'right-pinky': { light: 'bg-red-100', dark: 'bg-red-300' }
+    'left-pinky': { light: 'bg-red-100 dark:bg-red-900', dark: 'bg-red-300 dark:bg-red-700' },
+    'left-ring': { light: 'bg-yellow-100 dark:bg-yellow-900', dark: 'bg-yellow-300 dark:bg-yellow-700' },
+    'left-middle': { light: 'bg-blue-100 dark:bg-blue-900', dark: 'bg-blue-300 dark:bg-blue-700' },
+    'left-index': { light: 'bg-green-100 dark:bg-green-900', dark: 'bg-green-300 dark:bg-green-700' },
+    'left-thumb': { light: 'bg-gray-100 dark:bg-gray-800', dark: 'bg-gray-300 dark:bg-gray-600' },
+    'right-thumb': { light: 'bg-gray-100 dark:bg-gray-800', dark: 'bg-gray-300 dark:bg-gray-600' },
+    'right-index': { light: 'bg-green-100 dark:bg-green-900', dark: 'bg-green-300 dark:bg-green-700' },
+    'right-middle': { light: 'bg-blue-100 dark:bg-blue-900', dark: 'bg-blue-300 dark:bg-blue-700' },
+    'right-ring': { light: 'bg-yellow-100 dark:bg-yellow-900', dark: 'bg-yellow-300 dark:bg-yellow-700' },
+    'right-pinky': { light: 'bg-red-100 dark:bg-red-900', dark: 'bg-red-300 dark:bg-red-700' }
   }
 
   connect() {
@@ -258,9 +259,10 @@ export default class extends Controller {
       positions.forEach(position => {
         const keyElement = document.querySelector(`.key[data-position="${position}"]`)
         if (keyElement) {
-          // bg-whiteを削除して、指ごとの色（薄い色）を追加
-          keyElement.classList.remove('bg-white')
-          keyElement.classList.add(colors.light)
+          // bg-white と dark:bg-gray-700 を削除して、指ごとの色（薄い色）を追加
+          keyElement.classList.remove('bg-white', 'dark:bg-gray-700')
+          // 複数のクラスを一度に追加（スペース区切りを分割）
+          colors.light.split(' ').forEach(cls => keyElement.classList.add(cls))
           // data属性に指情報を保存
           keyElement.dataset.finger = finger
 
@@ -340,11 +342,13 @@ export default class extends Controller {
       const finger = key.dataset.finger
       const colors = this.fingerColors[finger]
       if (colors) {
-        // 濃い色を削除して薄い色に戻す
-        key.classList.remove(colors.dark)
-        if (!key.classList.contains(colors.light)) {
-          key.classList.add(colors.light)
-        }
+        // 濃い色を削除して薄い色に戻す（スペース区切りのクラスを適切に処理）
+        colors.dark.split(' ').forEach(cls => key.classList.remove(cls))
+        colors.light.split(' ').forEach(cls => {
+          if (!key.classList.contains(cls)) {
+            key.classList.add(cls)
+          }
+        })
         // リングも削除
         key.classList.remove('ring-2')
       }
@@ -355,12 +359,14 @@ export default class extends Controller {
       const finger = guide.dataset.finger
       const colors = this.fingerColors[finger]
       if (colors) {
-        // 濃い色を削除
-        guide.classList.remove(colors.dark)
+        // 濃い色を削除（スペース区切りのクラスを適切に処理）
+        colors.dark.split(' ').forEach(cls => guide.classList.remove(cls))
         // 薄い色を追加（もし削除されていた場合のために）
-        if (!guide.classList.contains(colors.light)) {
-          guide.classList.add(colors.light)
-        }
+        colors.light.split(' ').forEach(cls => {
+          if (!guide.classList.contains(cls)) {
+            guide.classList.add(cls)
+          }
+        })
         // リングを削除
         guide.classList.remove('ring-2')
       }
@@ -432,16 +438,16 @@ export default class extends Controller {
       if (targetFinger) {
         const colors = this.fingerColors[targetFinger]
 
-        // キーを濃い色にする
-        keyElement.classList.remove(colors.light)
-        keyElement.classList.add(colors.dark)
+        // キーを濃い色にする（スペース区切りのクラスを適切に削除/追加）
+        colors.light.split(' ').forEach(cls => keyElement.classList.remove(cls))
+        colors.dark.split(' ').forEach(cls => keyElement.classList.add(cls))
         keyElement.classList.add('ring-2')
 
         // 指ガイドも濃い色にする
         const guideElement = document.querySelector(`.finger-guide[data-finger="${targetFinger}"]`)
         if (guideElement) {
-          guideElement.classList.remove(colors.light)
-          guideElement.classList.add(colors.dark)
+          colors.light.split(' ').forEach(cls => guideElement.classList.remove(cls))
+          colors.dark.split(' ').forEach(cls => guideElement.classList.add(cls))
           guideElement.classList.add('ring-2')
         }
       }
