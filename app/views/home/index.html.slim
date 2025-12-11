@@ -1,35 +1,35 @@
 / ページヘッダー
 .mb-8
-  h2.text-3xl.font-bold.text-gray-800 レッスンを選択
-  p.text-gray-600.mt-2 練習したいレッスンを選んでタイピング練習を始めましょう
+  h2.text-3xl.font-bold.text-gray-800.dark:text-white レッスンを選択
+  p.text-gray-600.dark:text-gray-400.mt-2 練習したいレッスンを選んでタイピング練習を始めましょう
 
 / レッスン選択エリア
 .space-y-8
   - @categories.each do |category_key, category_data|
-    .bg-white.rounded-lg.shadow-md.p-6
+    .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6.transition-colors
       / カテゴリヘッダー
       .mb-4
-        h2.text-2xl.font-bold.text-gray-800 = category_data['category']
-        p.text-gray-600.mt-1 = category_data['description']
+        h2.text-2xl.font-bold.text-gray-800.dark:text-white = category_data['category']
+        p.text-gray-600.dark:text-gray-400.mt-1 = category_data['description']
 
       / レッスンカード一覧
       .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-4
         - category_data['lessons'].each do |lesson|
-          = link_to practice_path(category: category_key, lesson: lesson['id']), class: "block bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-5 hover:shadow-lg hover:border-blue-400 transition transform hover:-translate-y-1" do
+          = link_to practice_path(category: category_key, lesson: lesson['id']), class: "block bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border-2 border-blue-200 dark:border-blue-700 rounded-lg p-5 hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500 transition transform hover:-translate-y-1" do
             .flex.items-start.justify-between.mb-2
-              h3.text-lg.font-bold.text-gray-800 = lesson['name']
-              .px-2.py-1.bg-blue-100.text-blue-700.text-xs.rounded-full.font-semibold
+              h3.text-lg.font-bold.text-gray-800.dark:text-white = lesson['name']
+              .px-2.py-1.bg-blue-100.dark:bg-blue-800.text-blue-700.dark:text-blue-200.text-xs.rounded-full.font-semibold
                 = "#{lesson['count']}問"
-            p.text-sm.text-gray-600.line-clamp-2 = lesson['description']
-            .mt-3.flex.items-center.text-sm.text-blue-600
+            p.text-sm.text-gray-600.dark:text-gray-300.line-clamp-2 = lesson['description']
+            .mt-3.flex.items-center.text-sm.text-blue-600.dark:text-blue-400
               span 練習を始める →
 
 / ログインしていない場合のメッセージ
 - unless logged_in?
-  .mt-8.bg-blue-50.border-l-4.border-blue-500.p-4.rounded
+  .mt-8.bg-blue-50.dark:bg-blue-900.border-l-4.border-blue-500.dark:border-blue-400.p-4.rounded.transition-colors
     .flex.items-start
-      svg.h-6.w-6.text-blue-500.mr-3 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+      svg.h-6.w-6.text-blue-500.dark:text-blue-400.mr-3 fill="none" stroke="currentColor" viewBox="0 0 24 24"
         path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
       div
-        p.font-semibold.text-blue-800 ログインすると、さらに多くのレッスンが利用できます！
-        p.text-sm.text-blue-700.mt-1 短文練習、テーマ別単語、プログラミング用語など
+        p.font-semibold.text-blue-800.dark:text-blue-200 ログインすると、さらに多くのレッスンが利用できます！
+        p.text-sm.text-blue-700.dark:text-blue-300.mt-1 短文練習、テーマ別単語、プログラミング用語など
