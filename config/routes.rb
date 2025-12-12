@@ -25,6 +25,10 @@ Rails.application.routes.draw do
   # Typing practice
   get "practice", to: "practice#index"
 
+  # Static pages
+  get "terms", to: "pages#terms"
+  get "privacy", to: "pages#privacy"
+
   # Defines the root path route ("/")
   root "home#index"
 end
