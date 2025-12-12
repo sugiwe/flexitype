@@ -54,8 +54,8 @@ env:
     # WEB_CONCURRENCY: 2
 
     # PostgreSQL接続設定（VPS上でPostgreSQLを直接稼働させる場合）
-    # VPSのローカルIPまたは "localhost" を指定
-    DB_HOST: localhost
+    # Dockerコンテナからホストに接続するため、VPSのIPアドレスを指定
+    DB_HOST: 153.120.65.157
 
     # ベータ版リリース時は空文字列（全員に制限メッセージ表示）
     # 正式リリース後はカンマ区切りでメールアドレスを指定
@@ -98,8 +98,8 @@ builder:
   #   - RAILS_MASTER_KEY
 
 # Use a different ssh user than root
-# ssh:
-#   user: app
+ssh:
+  user: ubuntu
 
 # Use accessory services (secrets come from .kamal/secrets).
 # accessories:
