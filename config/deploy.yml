@@ -5,13 +5,12 @@ service: flexitype
 image: flexitype
 
 # Deploy to these servers.
-# 本番環境のVPS IPアドレスに置き換える必要があります
 servers:
   web:
-    - YOUR_VPS_IP_ADDRESS
+    - 153.120.65.157
   # job:
   #   hosts:
-  #     - YOUR_VPS_IP_ADDRESS
+  #     - 153.120.65.157
   #   cmd: bin/jobs
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
