@@ -25,7 +25,8 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  config.assume_ssl = true
+  # SSL設定は一旦無効化（問題切り分けのため）
+  # config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # kamal-proxyがSSL終端を行うため、Rails側でのリダイレクトは不要
@@ -61,7 +62,8 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "typnix.com", protocol: "https" }
+  # 一旦HTTPに戻す（問題切り分けのため）
+  config.action_mailer.default_url_options = { host: "typnix.com", protocol: "http" }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   # config.action_mailer.smtp_settings = {
@@ -83,12 +85,13 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  config.hosts = [
-    "typnix.com",           # Allow requests from typnix.com
-    "www.typnix.com",       # Allow requests from www.typnix.com
-    "153.120.65.157"        # Allow requests from VPS IP (for health checks)
-  ]
+  # 一旦無効化（問題切り分けのため）
+  # config.hosts = [
+  #   "typnix.com",           # Allow requests from typnix.com
+  #   "www.typnix.com",       # Allow requests from www.typnix.com
+  #   "153.120.65.157"        # Allow requests from VPS IP (for health checks)
+  # ]
   #
   # Skip DNS rebinding protection for the default health check endpoint.
-  config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end
