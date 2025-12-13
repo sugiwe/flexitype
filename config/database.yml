@@ -90,6 +90,8 @@ production:
     database: flexitype_production
     username: flexitype
     password: <%= ENV["FLEXITYPE_DATABASE_PASSWORD"] %>
+    host: <%= ENV.fetch("DB_HOST", "localhost") %>
+    port: <%= ENV.fetch("DB_PORT", "5432") %>
   cache:
     <<: *primary_production
     database: flexitype_production_cache

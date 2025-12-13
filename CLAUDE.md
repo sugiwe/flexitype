@@ -446,12 +446,35 @@ intermediate:
 - 履歴一覧ページ
 - 簡易統計表示
 
-### Phase 5: デプロイ (Day 18-21)
+### Phase 5: デプロイ (Day 13-21)
 
-- Kamal セットアップ
-- さくら VPS への初回デプロイ
-- PostgreSQL セットアップ (VPS 内)
-- 独自ドメイン取得・設定
+- Day 13: VPS初回デプロイ ✅ **完了**
+  - **デプロイドキュメント・スクリプトの作成**
+    - docs/deployment_guide.md（310行）の作成
+    - .kamal/secrets.example テンプレート作成
+    - scripts/pre_deploy_check.sh（自動デプロイ前チェック）
+    - scripts/vps_setup.sh（VPS初期セットアップ自動化）
+    - README.mdの更新（デプロイガイドへのリンク追加）
+  - **VPSセットアップ**
+    - さくらVPS（Ubuntu 22.04）の初期設定
+    - Dockerのインストールと設定
+    - PostgreSQL 14のインストール
+    - 4つのデータベース作成（primary, cache, queue, cable）
+    - PostgreSQL接続設定（listen_addresses, pg_hba.conf）
+  - **Kamalデプロイ設定**
+    - config/deploy.yml の設定（VPS IP、SSH user）
+    - config/database.yml の環境変数化
+    - .kamal/secrets の設定（RAILS_MASTER_KEY、DB_PASSWORD）
+  - **デプロイ実行とトラブルシューティング**
+    - Dockerイメージビルド・プッシュ成功
+    - データベース接続問題の解決（DB_HOST設定、pg_hba.conf調整）
+    - Solid Queue問題の対処（一時無効化）
+    - ファイアウォール設定（ufw + さくらVPSパケットフィルタ）
+    - http://153.120.65.157 で外部アクセス可能に！
+- 独自ドメイン・SSL設定（予定）
+  - CloudflareでAレコード設定
+  - Let's EncryptでSSL証明書取得
+  - Google OAuth設定更新
 
 ### Phase 6: ブラッシュアップ (Day 22-25)
 
