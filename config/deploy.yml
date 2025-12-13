@@ -19,10 +19,11 @@ servers:
 # Using an SSL proxy like this requires turning on config.assume_ssl and config.force_ssl in production.rb!
 #
 # Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
-# 一旦proxy設定自体を無効化（問題切り分けのため）
+#
+# 独自ドメイン取得後、以下のコメントを外してドメイン名を設定してください
 # proxy:
-#   ssl: false
-#   host: typnix.com
+#   ssl: true
+#   host: your-domain.com
 
 # Where you keep your container images.
 # ローカルでビルドしてVPSに直接送信する場合はlocalhostのまま
@@ -45,8 +46,7 @@ env:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.
     # 一旦無効化（バックグラウンドジョブを使っていないため）
-    # 環境変数を設定しないことでPumaプラグインを無効化
-    # SOLID_QUEUE_IN_PUMA: false
+    SOLID_QUEUE_IN_PUMA: false
 
     # Set number of processes dedicated to Solid Queue (default: 1)
     # JOB_CONCURRENCY: 3

@@ -25,11 +25,9 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  # SSL設定は一旦無効化（問題切り分けのため）
   # config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # kamal-proxyがSSL終端を行うため、Rails側でのリダイレクトは不要
   # config.force_ssl = true
 
   # Skip http-to-https redirect for the default health check endpoint.
@@ -52,10 +50,8 @@ Rails.application.configure do
   config.cache_store = :solid_cache_store
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
-  # 一時的にAsync（インメモリ）に変更（Solid Queueは現在未使用）
-  config.active_job.queue_adapter = :async
-  # config.active_job.queue_adapter = :solid_queue
-  # config.solid_queue.connects_to = { database: { writing: :queue } }
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
@@ -84,11 +80,9 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # 一旦無効化（問題切り分けのため）
   # config.hosts = [
-  #   "typnix.com",           # Allow requests from typnix.com
-  #   "www.typnix.com",       # Allow requests from www.typnix.com
-  #   "153.120.65.157"        # Allow requests from VPS IP (for health checks)
+  #   "example.com",     # Allow requests from example.com
+  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
   # ]
   #
   # Skip DNS rebinding protection for the default health check endpoint.
