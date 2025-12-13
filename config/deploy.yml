@@ -19,10 +19,10 @@ servers:
 # Using an SSL proxy like this requires turning on config.assume_ssl and config.force_ssl in production.rb!
 #
 # Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
-# 一旦SSL無効化（問題切り分けのため）
-proxy:
-  ssl: false
-  host: typnix.com
+# 一旦proxy設定自体を無効化（問題切り分けのため）
+# proxy:
+#   ssl: false
+#   host: typnix.com
 
 # Where you keep your container images.
 # ローカルでビルドしてVPSに直接送信する場合はlocalhostのまま
