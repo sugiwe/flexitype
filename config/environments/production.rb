@@ -62,8 +62,7 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  # 一旦HTTPに戻す（問題切り分けのため）
-  config.action_mailer.default_url_options = { host: "typnix.com", protocol: "http" }
+  config.action_mailer.default_url_options = { host: "example.com" }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   # config.action_mailer.smtp_settings = {
