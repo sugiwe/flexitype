@@ -34,11 +34,27 @@ html
       |   }
       | })();
 
-  body.h-screen.flex.bg-gray-50.dark:bg-gray-900.overflow-hidden.transition-colors
+  body.h-screen.flex.bg-gray-50.dark:bg-gray-900.overflow-hidden.transition-colors data-controller="sidebar"
+    / デスクトップ推奨バナー（モバイルのみ表示）
+    = render "layouts/shared/desktop_banner"
+
+    / ハンバーガーメニューボタン（モバイルのみ表示・右下固定・サイドバーの？アイコンの右に配置）
+    button.md:hidden.fixed.z-50.w-10.h-10.bg-blue-600.dark:bg-blue-700.text-white.rounded-full.shadow-lg.hover:bg-blue-700.dark:hover:bg-blue-800.transition.flex.items-center.justify-center class="bottom-4 right-4" data-action="click->sidebar#toggle"
+      svg.w-5.h-5 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"
+
+    / オーバーレイ（モバイルでサイドバー開いている時のみ表示）
+    .md:hidden.fixed.inset-0.z-30.hidden.transition-opacity.duration-300 class="bg-black/50" data-sidebar-target="overlay" data-action="click->sidebar#close"
+
     / 左カラムサイドバー
     = render "layouts/shared/sidebar"
 
     / 右メインコンテンツエリア
-    main.flex-1.overflow-y-auto.bg-gray-50.dark:bg-gray-900.transition-colors style="margin-left: 300px;"
-      .container.mx-auto.p-8
+    main.flex-1.overflow-y-auto.bg-gray-50.dark:bg-gray-900.transition-colors class="md:ml-[300px]"
+      / モバイル用ロゴヘッダー（モバイルのみ表示・上部中央・スクロールで流れる）
+      .md:hidden.bg-white.dark:bg-gray-800.py-3.px-4.flex.justify-center
+        = link_to root_path, data: { turbo: false } do
+          = image_tag "logo.svg", alt: "Typnix", class: "h-8 dark:brightness-0 dark:invert"
+
+      .container.mx-auto.p-4.md:p-8
         = yield
