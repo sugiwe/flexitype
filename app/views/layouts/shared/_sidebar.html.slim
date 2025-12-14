@@ -2,9 +2,10 @@
 aside.bg-white.dark:bg-gray-800.shadow-lg.flex.flex-col.fixed.h-full.left-0.top-0.z-10.transition-colors style="width: 300px;"
   / ロゴエリア
   .p-6.border-b.border-gray-200.dark:border-gray-700
-    = link_to root_path, class: "block", data: { turbo: false } do
-      h1.text-2xl.font-bold.text-gray-800.dark:text-white Typnix
-      p.text-xs.text-gray-500.dark:text-gray-400.mt-1 垂直配列タイピング練習アプリ
+    = link_to root_path, class: "flex flex-col gap-2", data: { turbo: false } do
+      h1
+        = image_tag "logo.svg", alt: "Typnix", class: "w-32 dark:brightness-0 dark:invert"
+      p.text-xs.text-gray-500.dark:text-gray-400 垂直配列タイピング練習アプリ
 
   / ナビゲーションメニュー
   = render "layouts/shared/sidebar_navigation"
