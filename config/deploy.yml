@@ -20,10 +20,10 @@ servers:
 #
 # Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
 #
-# 独自ドメイン取得後、以下のコメントを外してドメイン名を設定してください
-# Cloudflareプロキシ使用時はssl: falseにする（CloudflareがSSL終端を担当）
+# Full SSL設定: kamal-proxyがLet's Encryptで自動的にSSL証明書を取得
+# CloudflareのSSL/TLS暗号化モードは「Full」に設定すること
 proxy:
-  ssl: false
+  ssl: true
   host: typnix.com
 
 # Where you keep your container images.
