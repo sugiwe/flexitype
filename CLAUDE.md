@@ -363,7 +363,7 @@ intermediate:
   - 2段表示機能（Q|q形式、デリミタ統一）
   - UI/UX改善（自動フォーカス、タイトル削除、ハイライト抑制）
 
-**進捗状況:** Day 12まで完了。ベータ版リリース準備、UI/UX改善、レイアウトリファクタリングが完了！予定より大幅に早いペースで進行中。
+**進捗状況:** Day 14まで完了。独自ドメイン（typnix.com）でのHTTPS公開が完了！予定より大幅に早いペースで進行中。
 
 ### Phase 3: UX 向上 (Day 9-11)
 
@@ -471,10 +471,23 @@ intermediate:
     - Solid Queue問題の対処（一時無効化）
     - ファイアウォール設定（ufw + さくらVPSパケットフィルタ）
     - http://153.120.65.157 で外部アクセス可能に！
-- 独自ドメイン・SSL設定（予定）
-  - CloudflareでAレコード設定
-  - Let's EncryptでSSL証明書取得
-  - Google OAuth設定更新
+- Day 14: 独自ドメイン・SSL設定 ✅ **完了**
+  - **Cloudflare設定**
+    - DNS Aレコード設定（typnix.com → 153.120.65.157）
+    - SSL/TLS暗号化モードを「Flexible」に設定
+    - Cloudflare ↔ ブラウザ間: HTTPS、Cloudflare ↔ VPS間: HTTP
+  - **Kamal設定**
+    - config/deploy.yml: `proxy.ssl: false`, `proxy.host: typnix.com`
+    - kamal-proxyがホストヘッダーでルーティング
+  - **Rails設定**
+    - config/environments/production.rb: `assume_ssl: true`, `force_ssl: true`
+  - **Google OAuth設定**
+    - 承認済みのJavaScript生成元に `https://typnix.com` を追加
+    - 承認済みのリダイレクトURIに `https://typnix.com/auth/google` を追加
+  - **ALLOWED_EMAILS管理の改善**
+    - .kamal/secrets（Git管理外）で管理
+    - config/deploy.yml: `env.secret` に `ALLOWED_EMAILS` を追加
+  - **本番環境URL**: https://typnix.com/ （HTTPS接続、全機能動作中）
 
 ### Phase 6: ブラッシュアップ (Day 22-25)
 

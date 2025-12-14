@@ -21,9 +21,10 @@ servers:
 # Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
 #
 # 独自ドメイン取得後、以下のコメントを外してドメイン名を設定してください
-# proxy:
-#   ssl: true
-#   host: your-domain.com
+# Cloudflareプロキシ使用時はssl: falseにする（CloudflareがSSL終端を担当）
+proxy:
+  ssl: false
+  host: typnix.com
 
 # Where you keep your container images.
 # ローカルでビルドしてVPSに直接送信する場合はlocalhostのまま
@@ -42,6 +43,7 @@ env:
   secret:
     - RAILS_MASTER_KEY
     - FLEXITYPE_DATABASE_PASSWORD
+    - ALLOWED_EMAILS
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.
@@ -57,10 +59,6 @@ env:
     # PostgreSQL接続設定（VPS上でPostgreSQLを直接稼働させる場合）
     # Dockerコンテナからホストに接続するため、VPSのIPアドレスを指定
     DB_HOST: 153.120.65.157
-
-    # ベータ版リリース時は空文字列（全員に制限メッセージ表示）
-    # 正式リリース後はカンマ区切りでメールアドレスを指定
-    ALLOWED_EMAILS: ""
 
     # Log everything from Rails (本番環境では info または warn 推奨)
     RAILS_LOG_LEVEL: info
