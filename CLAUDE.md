@@ -471,14 +471,15 @@ intermediate:
     - Solid Queue問題の対処（一時無効化）
     - ファイアウォール設定（ufw + さくらVPSパケットフィルタ）
     - http://153.120.65.157 で外部アクセス可能に！
-- Day 14: 独自ドメイン・SSL設定 ✅ **完了**
+- Day 14: 独自ドメイン・Full SSL設定 ✅ **完了**
   - **Cloudflare設定**
     - DNS Aレコード設定（typnix.com → 153.120.65.157）
-    - SSL/TLS暗号化モードを「Flexible」に設定
-    - Cloudflare ↔ ブラウザ間: HTTPS、Cloudflare ↔ VPS間: HTTP
+    - SSL/TLS暗号化モードを「Full」に設定
+    - エンドツーエンド暗号化（ブラウザ→Cloudflare→VPS）
   - **Kamal設定**
-    - config/deploy.yml: `proxy.ssl: false`, `proxy.host: typnix.com`
-    - kamal-proxyがホストヘッダーでルーティング
+    - config/deploy.yml: `proxy.ssl: true`, `proxy.host: typnix.com`
+    - kamal-proxyがLet's Encryptで自動的にSSL証明書を取得
+    - 証明書は90日ごとに自動更新
   - **Rails設定**
     - config/environments/production.rb: `assume_ssl: true`, `force_ssl: true`
   - **Google OAuth設定**
@@ -487,7 +488,10 @@ intermediate:
   - **ALLOWED_EMAILS管理の改善**
     - .kamal/secrets（Git管理外）で管理
     - config/deploy.yml: `env.secret` に `ALLOWED_EMAILS` を追加
-  - **本番環境URL**: https://typnix.com/ （HTTPS接続、全機能動作中）
+  - **セキュリティ強化**
+    - 当初Flexible SSL（Cloudflare↔VPS間HTTP）で公開
+    - Full SSL（Let's Encrypt）に移行してエンドツーエンド暗号化を実現
+  - **本番環境URL**: https://typnix.com/ （Full SSL、全機能動作中）
 
 ### Phase 6: ブラッシュアップ (Day 22-25)
 
