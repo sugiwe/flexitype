@@ -21,9 +21,10 @@ servers:
 # Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
 #
 # 独自ドメイン取得後、以下のコメントを外してドメイン名を設定してください
-# proxy:
-#   ssl: true
-#   host: your-domain.com
+# Cloudflareプロキシ使用時はssl: falseにする（CloudflareがSSL終端を担当）
+proxy:
+  ssl: false
+  host: typnix.com
 
 # Where you keep your container images.
 # ローカルでビルドしてVPSに直接送信する場合はlocalhostのまま
