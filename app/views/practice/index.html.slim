@@ -38,21 +38,21 @@
 
   / タイピング練習画面（通常時は表示）
   div data-typing-target="practiceScreen"
-    / 単語表示エリア
+    / 単語表示エリア（クリックで入力フォーカス）
     .mb-8
-      .text-center.mb-3
+      .text-center.mb-2
         .inline-block.px-3.py-1.bg-gray-100.dark:bg-gray-700.rounded-full.text-sm.text-gray-600.dark:text-gray-300.transition-colors data-typing-target="progress"
           | 問題 1 / 20
-      .text-center.mb-6.py-6.bg-gray-50.dark:bg-gray-700.rounded-lg.transition-colors
-        .text-5xl.font-mono.tracking-wider data-typing-target="display"
+      .text-center.mb-3
+        p.text-xs.text-gray-500.dark:text-gray-400 ⏱️ 時間計測は最初の入力から開始されます
+      .text-center.mb-6.py-10.bg-gray-100.dark:bg-gray-700.rounded-lg.transition-all.cursor-text.select-none data-action="click->typing#focusInput" data-typing-target="displayArea"
+        .text-6xl.font-mono.tracking-wider data-typing-target="display"
           span.text-green-600.dark:text-green-400.font-semibold hel
           span.text-blue-600.dark:text-blue-400.border-b-4.border-blue-600.dark:border-blue-400.font-semibold l
           span.text-gray-400.dark:text-gray-500 o
 
-    / 入力エリア
-    .mb-8
-      .max-w-2xl.mx-auto
-        input.w-full.px-4.py-3.text-2xl.font-mono.border-2.border-gray-300.dark:border-gray-600.bg-white.dark:bg-gray-700.text-gray-800.dark:text-white.rounded.focus:border-blue-500.dark:focus:border-blue-400.focus:outline-none.transition-colors type="text" placeholder="ここに入力してください" autocomplete="off" data-typing-target="input" data-action="input->typing#handleInput"
+    / 非表示の入力フィールド（実際の入力を受け取る）
+    input.absolute.opacity-0.pointer-events-none type="text" autocomplete="off" data-typing-target="input" data-action="input->typing#handleInput"
 
     / キーボード表示エリア
     .mt-8

@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["currentLayer", "selectedDisplay", "candidateGroup", "keyChar", "saveStatus"]
+  static targets = ["selectedDisplay", "candidateGroup", "keyChar", "saveStatus"]
   static values = { existingKeymaps: Object }
 
   connect() {
@@ -32,18 +32,15 @@ export default class extends Controller {
     const layer = parseInt(event.currentTarget.dataset.layer)
     this.currentLayer = layer
 
-    // レイヤーボタンの見た目を更新
+    // レイヤーボタンの見た目を更新（ダークモード対応）
     const buttons = event.currentTarget.parentElement.querySelectorAll("button")
     buttons.forEach(btn => {
       if (parseInt(btn.dataset.layer) === layer) {
-        btn.className = "px-4 py-2 rounded bg-blue-600 text-white"
+        btn.className = "px-4 py-2 rounded transition bg-blue-600 dark:bg-blue-700 text-white"
       } else {
-        btn.className = "px-4 py-2 rounded bg-white text-gray-700 hover:bg-gray-200"
+        btn.className = "px-4 py-2 rounded transition bg-white dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-500"
       }
     })
-
-    // 現在のレイヤー表示を更新
-    this.currentLayerTarget.textContent = `Layer ${layer}`
 
     // キーボード表示を更新
     this.updateKeyboardDisplay()
@@ -54,7 +51,6 @@ export default class extends Controller {
     }
     this.selectedKey = null
     this.selectedKeyElement = null
-    this.selectedDisplayTarget.textContent = 'キーを選択してください'
   }
 
   // キーを選択（登録待ち状態にする）
@@ -68,10 +64,6 @@ export default class extends Controller {
     this.selectedKey = event.currentTarget.dataset.position
     this.selectedKeyElement = event.currentTarget
     this.selectedKeyElement.classList.add('ring-4', 'ring-green-500', 'ring-offset-2')
-
-    // 選択状態を表示
-    const currentChar = this.keymaps[this.currentLayer][this.selectedKey] || "未設定"
-    this.selectedDisplayTarget.textContent = `${this.selectedKey} (現在: ${currentChar}) に割り当てる文字を選択してください`
   }
 
   // 文字を割り当て
@@ -93,7 +85,6 @@ export default class extends Controller {
     this.selectedKeyElement.classList.remove('ring-4', 'ring-green-500', 'ring-offset-2')
     this.selectedKey = null
     this.selectedKeyElement = null
-    this.selectedDisplayTarget.textContent = 'キーを選択してください'
 
     console.log("Assigned:", "Layer", this.currentLayer, "=", char)
   }
@@ -122,13 +113,13 @@ export default class extends Controller {
   switchTab(event) {
     const targetTab = event.currentTarget.dataset.tab
 
-    // タブボタンの見た目を更新
+    // タブボタンの見た目を更新（ダークモード対応）
     const buttons = event.currentTarget.parentElement.querySelectorAll("button")
     buttons.forEach(btn => {
       if (btn.dataset.tab === targetTab) {
-        btn.className = "px-6 py-2 rounded bg-blue-600 text-white"
+        btn.className = "px-6 py-2 rounded transition bg-blue-600 dark:bg-blue-700 text-white"
       } else {
-        btn.className = "px-6 py-2 rounded bg-white text-gray-700 hover:bg-gray-200"
+        btn.className = "px-6 py-2 rounded transition bg-white dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-500"
       }
     })
 

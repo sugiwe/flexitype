@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "practiceScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay"]
+  static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "practiceScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay", "displayArea"]
   static values = {
     words: Array,
     currentWord: Number,
@@ -52,7 +52,8 @@ export default class extends Controller {
     // 統計情報
     this.mistakeCount = 0 // ミスタイプの総数
     this.totalKeystrokes = 0 // 総キー入力数
-    this.sessionStartTime = null // セッション開始時刻
+    this.sessionStartTime = null // セッション開始時刻（最初の入力時に設定）
+    this.isFirstInput = true // 最初の入力かどうか
 
     // キーマップから逆引きマップを生成（全レイヤー分）
     this.buildKeyMapping()
@@ -64,8 +65,30 @@ export default class extends Controller {
     // 入力欄に自動フォーカス
     this.inputTarget.focus()
 
-    // セッション開始時刻を記録
-    this.sessionStartTime = new Date()
+    // フォーカス状態の監視
+    this.inputTarget.addEventListener('focus', () => this.setActiveState(true))
+    this.inputTarget.addEventListener('blur', () => this.setActiveState(false))
+
+    // 初期状態をアクティブに設定
+    this.setActiveState(true)
+  }
+
+  // 単語表示エリアクリック時に入力欄にフォーカス
+  focusInput() {
+    this.inputTarget.focus()
+  }
+
+  // アクティブ状態の設定
+  setActiveState(isActive) {
+    if (isActive) {
+      // アクティブ時: 青い背景 + リング
+      this.displayAreaTarget.classList.remove('bg-gray-100', 'dark:bg-gray-700')
+      this.displayAreaTarget.classList.add('bg-blue-50', 'dark:bg-blue-900', 'ring-2', 'ring-blue-400', 'dark:ring-blue-500')
+    } else {
+      // 非アクティブ時: うっすらグレーの背景（ライトモード: gray-100, ダークモード: gray-700）
+      this.displayAreaTarget.classList.remove('bg-blue-50', 'dark:bg-blue-900', 'ring-2', 'ring-blue-400', 'dark:ring-blue-500')
+      this.displayAreaTarget.classList.add('bg-gray-100', 'dark:bg-gray-700')
+    }
   }
 
   // キーマップから文字→キー位置の逆引きマップを生成（全レイヤー分）
@@ -120,6 +143,13 @@ export default class extends Controller {
     const input = event.target.value
     const currentWord = this.words[this.currentWordValue]
     const previousLength = this.currentPosition
+
+    // 最初の入力時に計測開始
+    if (this.isFirstInput && input.length > 0) {
+      this.sessionStartTime = new Date()
+      this.isFirstInput = false
+      console.log("Timer started at first input")
+    }
 
     // エラー状態で、かつBackSpaceではない入力の場合は無視（入力ロック）
     if (this.hasError && input.length >= previousLength + 1) {
@@ -211,7 +241,8 @@ export default class extends Controller {
     this.hasError = false
     this.mistakeCount = 0
     this.totalKeystrokes = 0
-    this.sessionStartTime = new Date()
+    this.sessionStartTime = null // 次の入力時に再設定
+    this.isFirstInput = true // 最初の入力フラグをリセット
 
     // 入力欄をクリア
     this.inputTarget.value = ""
@@ -237,19 +268,26 @@ export default class extends Controller {
 
     // 単語表示を更新
     if (this.hasError) {
-      // ミスタイプ時: 現在の文字を赤く表示
+      // ミスタイプ時: 現在の文字を赤く表示 + 背景色追加
       this.displayTarget.innerHTML = `
-        <span class="text-green-600 font-semibold">${completed}</span><span class="text-red-600 border-b-4 border-red-600 font-semibold">${current}</span><span class="text-gray-400">${remaining}</span>
+        <span class="text-green-600 dark:text-green-400 font-semibold">${this.escapeHtml(completed)}</span><span class="inline-block px-2 py-1 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 border-b-4 border-red-600 dark:border-red-400 font-bold rounded animate-shake">${this.escapeHtml(current)}</span><span class="text-gray-400 dark:text-gray-500">${this.escapeHtml(remaining)}</span>
       `
     } else {
-      // 通常時: 現在の文字を青く表示
+      // 通常時: 現在の文字を青く表示 + 背景色追加 + パルスアニメーション + 点滅アンダーライン
       this.displayTarget.innerHTML = `
-        <span class="text-green-600 font-semibold">${completed}</span><span class="text-blue-600 border-b-4 border-blue-600 font-semibold">${current}</span><span class="text-gray-400">${remaining}</span>
+        <span class="text-green-600 dark:text-green-400 font-semibold">${this.escapeHtml(completed)}</span><span class="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold rounded relative"><span class="border-b-4 border-blue-600 dark:border-blue-400 animate-blink-underline">${this.escapeHtml(current)}</span></span><span class="text-gray-400 dark:text-gray-500">${this.escapeHtml(remaining)}</span>
       `
     }
 
     // 進捗表示を更新
     this.progressTarget.textContent = `問題 ${this.currentWordValue + 1} / ${this.words.length}`
+  }
+
+  // HTMLエスケープ用ヘルパー
+  escapeHtml(text) {
+    const div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
   }
 
   // キーボードに指ごとの色を適用し、全レイヤーのデータを保存
