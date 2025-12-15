@@ -1,6 +1,7 @@
 / 左カラムサイドバー（300px）
 / モバイルでは初期非表示、右からスライド、ハンバーガーメニューで表示切り替え
-aside.bg-white.dark:bg-gray-800.shadow-lg.flex.flex-col.fixed.h-screen.top-0.z-40.md:left-0 class="w-[300px] right-0 translate-x-full md:translate-x-0 transition-transform duration-300" data-sidebar-target="menu"
+/ モバイルブラウザのアドレスバー対応: dvh (dynamic viewport height) を使用
+aside.bg-white.dark:bg-gray-800.shadow-lg.flex.flex-col.fixed.top-0.z-40.md:left-0 class="w-[300px] right-0 translate-x-full md:translate-x-0 transition-transform duration-300" style="height: 100dvh;" data-sidebar-target="menu"
   / 上部グループ（ロゴ + ナビゲーション）
   .flex-1.flex.flex-col.overflow-hidden
     / ロゴエリア
