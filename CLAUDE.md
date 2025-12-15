@@ -327,11 +327,50 @@ intermediate:
 
 ---
 
-### 5. 練習履歴・統計 (後期実装)
+### 5. 練習履歴・統計（実装済み）
 
-- 練習日時、単語数、正答率などを DB 保存
-- 履歴一覧ページ
-- 統計グラフ (正答率の推移など)
+#### 概要
+- ログインユーザー向け機能
+- 無料ユーザーは50件の履歴を保持（自動クリーンアップ）
+- 将来の課金ユーザー向けに拡張可能な設計
+
+#### データベース設計
+- **TypingSessionモデル**
+  - フィールド: user_id, category, lesson_id, lesson_name, word_count, correct_count, mistake_count, accuracy, duration_seconds, completed_at
+  - インデックス: [user_id, completed_at], [user_id, created_at]（両方とも降順）
+- **Userモデル**
+  - history_limitカラム（デフォルト: 50）
+  - cleanup_old_typing_sessionsメソッド（古い履歴削除）
+
+#### 自動クリーンアップ
+- TypingSession作成後、after_createコールバックで実行
+- history_limitを超えた古い履歴を自動削除
+- パフォーマンスを考慮したインデックス設計
+
+#### 履歴一覧ページ（/history）
+- **レスポンシブUI**
+  - PC: テーブル形式（日時、レッスン、単語数、正答率、所要時間、ミス数）
+  - モバイル: カード形式（同じ情報をコンパクトに表示）
+- **ミニ統計**
+  - 総練習回数（青色アイコン）
+  - 平均正答率（緑色アイコン）
+- **正答率の色分け**
+  - 90%以上: 緑色
+  - 70%以上: 黄色
+  - それ以下: 赤色
+- **ページネーション**: Kaminari gem、1ページ20件
+- **空状態UI**: 履歴なし時の誘導メッセージ
+
+#### 自動保存機能
+- タイピング練習終了時に自動的に履歴を保存
+- typing_controller.jsでJSON APIを呼び出し
+- ログインユーザーのみ保存（loggedInValueで判定）
+- CSRF対策、エラーハンドリング
+
+#### 将来の拡張
+- 統計グラフ（正答率の推移など）
+- 詳細な統計ページ（/history/stats）
+- WPM（Words Per Minute）の記録
 
 ---
 
@@ -477,9 +516,36 @@ intermediate:
 
 ### Phase 4: 履歴機能 (Day 16-17)
 
-- 練習履歴の DB 保存
-- 履歴一覧ページ
-- 簡易統計表示
+- Day 16: タイピング練習履歴機能の実装 ✅ **完了**
+  - **データベース設計**
+    - TypingSessionモデル作成（user_id, category, lesson_id, lesson_name, word_count, correct_count, mistake_count, accuracy, duration_seconds, completed_at）
+    - インデックス最適化（[user_id, completed_at], [user_id, created_at]の降順インデックス）
+    - Userモデルにhistory_limitカラム追加（デフォルト: 50）
+  - **自動クリーンアップ機能**
+    - after_createコールバックで古い履歴を自動削除
+    - history_limitを超えた分を自動的に削除
+  - **HistoryController実装**
+    - indexアクション: 履歴一覧とミニ統計（総回数、平均正答率）
+    - createアクション: 練習終了時に履歴を保存（JSON API）
+    - Strong Parametersでセキュアなパラメータ処理
+  - **レスポンシブUI**
+    - PC: テーブル形式（日時、レッスン、単語数、正答率、所要時間、ミス数）
+    - モバイル: カード形式（同じ情報をコンパクトに表示）
+    - 正答率の色分け（90%以上=緑、70%以上=黄色、それ以下=赤）
+    - ページネーション（Kaminari gem、1ページ20件）
+    - 履歴なし時の空状態UI
+  - **typing_controller.js拡張**
+    - 練習完了時に自動的に履歴を保存
+    - loggedInValueで認証状態を判定
+    - CSRF対策、エラーハンドリング
+  - **本番環境デプロイ**
+    - feature/typing-historyブランチから本番環境（typnix.com）へデプロイ成功
+    - マイグレーション実行: typing_sessionsテーブルとusers.history_limitカラム作成
+  - **KeymapsControllerセキュリティ改善**
+    - Brakeman警告を解決（permit!から明示的レイヤー許可に変更）
+    - セキュリティ警告0件達成
+
+**進捗状況:** Day 16まで完了。Phase 4（履歴機能）が完成し、本番環境で稼働中。主要機能（練習、キーマップ設定、履歴）がすべて揃った。
 
 ### Phase 5: デプロイ (Day 13-21)
 
@@ -546,46 +612,71 @@ intermediate:
 
 ### User
 
-ruby
-
 ```ruby
 - id
 - google_uid (string, unique, indexed)
-- email (string)
-- name (string)
+- email (string, max: 254)
+- name (string, max: 30)
+- icon_url (string, max: 4096)
+- history_limit (integer, default: 50)
 - created_at
 - updated_at
+
+# アソシエーション
+- has_many :keymaps, dependent: :destroy
+- has_many :typing_sessions, dependent: :destroy
+
+# メソッド
+- self.from_google(payload): Google認証からユーザーを作成/取得
+- self.email_allowed?(email): メール許可リストチェック
+- cleanup_old_typing_sessions: 古い履歴を削除
 ```
 
 ### Keymap
-
-ruby
 
 ```ruby
 - id
 - user_id (references User)
 - layer (integer, 0-5)
 - key_position (string, 例: "L0-R0")
-- character (string)
+- character (string, max: 20)
 - created_at
 - updated_at
 
 # インデックス
 - index: [user_id, layer, key_position], unique: true
+
+# スコープ・メソッド
+- for_user_layer(user_id, layer): 特定レイヤーのキーマップをハッシュで取得
+- bulk_upsert(user_id, layer, keymap_hash): キーマップの一括更新
 ```
 
-### TypingSession (後期実装)
-
-ruby
+### TypingSession（実装済み）
 
 ```ruby
 - id
-- user_id (references User)
-- word_count (integer)
-- accuracy (decimal, 正答率)
+- user_id (references User, not null)
+- category (string)
+- lesson_id (string)
+- lesson_name (string)
+- word_count (integer, default: 0, not null)
+- correct_count (integer, default: 0, not null)
+- mistake_count (integer, default: 0, not null)
+- accuracy (decimal, precision: 5, scale: 2)
+- duration_seconds (integer)
 - completed_at (datetime)
 - created_at
 - updated_at
+
+# インデックス
+- index: [user_id, completed_at], order: { completed_at: :desc }
+- index: [user_id, created_at], order: { created_at: :desc }
+
+# スコープ
+- recent: order(completed_at: :desc)
+
+# コールバック
+- after_create :cleanup_old_sessions
 ```
 
 ---
