@@ -14,13 +14,21 @@ class PracticeController < ApplicationController
     if @words.empty?
       words_data = YAML.load_file(Rails.root.join("config", "typing_words.yml"))
       @words = words_data["beginner"] || []
+      category_key = "word_practice"
+      lesson_id = "beginner_words"
       @lesson_info = {
+        category_key: category_key,
+        lesson_id: lesson_id,
         category_name: "単語練習",
         lesson_name: "初級単語",
         lesson_description: "短くて簡単な単語",
         lesson_type: "words",
         count: 20
       }
+    else
+      # category_keyとlesson_idを追加（履歴保存用）
+      @lesson_info[:category_key] = category_key
+      @lesson_info[:lesson_id] = lesson_id
     end
 
     # キーマップを読み込む（ユーザーのキーマップまたはデフォルト）
