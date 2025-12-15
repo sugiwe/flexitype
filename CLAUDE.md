@@ -116,15 +116,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### フロントエンド
 
 - 基本: Slim テンプレートエンジン
-- スタイリング: Tailwind CSS (固定レイアウト、横 1200px 想定)
+- スタイリング: Tailwind CSS v4 (レスポンシブ対応、ダークモード対応)
 - インタラクション: Hotwire (Turbo + Stimulus)
-- レスポンシブ: 不要 (デスクトップ専用)
+- レスポンシブ: モバイル・PC両対応（ブレークポイント: 768px）
+  - モバイル: ハンバーガーメニュー方式
+  - PC: 左固定サイドバー（300px）
+- SEO/SNS: OGP設定、Twitter Card対応
 
 ### インフラ
 
 - デプロイ: Kamal
 - サーバー: さくら VPS (PostgreSQL も VPS 内で稼働)
-- ドメイン: 独自ドメイン取得予定
+- ドメイン: typnix.com (独自ドメイン取得済み、SSL/TLS対応)
 
 ### データ管理
 
