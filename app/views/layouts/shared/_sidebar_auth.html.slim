@@ -1,7 +1,7 @@
 / ユーザー情報・認証エリア（常に下部に固定）
 .p-4.border-t.border-gray-200.dark:border-gray-700
   - if logged_in?
-    / ログイン状態: ユーザーアイコン + テーマアイコン + ヘルプアイコン
+    / ログイン状態: ユーザーアイコン + テーマアイコン + ヘルプアイコン + ハンバーガー用スペース
     .flex.items-center.justify-between
       / ユーザーアイコン（左）
       .relative data-controller="user-menu"
@@ -20,12 +20,12 @@
           .py-2
             / アカウント設定（将来実装）
             a.block.px-4.py-2.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition.cursor-not-allowed.opacity-50 href="#"
-              | アカウント設定
+              | アカウント設定（準備中）
             / ログアウト
             = button_to logout_path, method: :delete, class: "w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition", data: { turbo: false } do
               | ログアウト
 
-      / 右側アイコングループ（テーマ + ヘルプ）
+      / 右側アイコングループ（テーマ + ヘルプ + ハンバーガー用スペース）
       .flex.items-center.gap-2
         / テーマアイコン
         .relative data-controller="theme"
@@ -67,6 +67,9 @@
                 | プライバシーポリシー
               a.block.px-4.py-2.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition href="https://forms.gle/a6EYBBxhMdGc4TJq6" target="_blank" rel="noopener noreferrer"
                 | お問い合わせ
+
+        / ハンバーガーメニュー用スペース（モバイルのみ・幅確保のみ）
+        .md:hidden class="w-10"
 
   - else
     / ログアウト状態
@@ -130,3 +133,6 @@
               span お問い合わせ
               svg.w-3.h-3 fill="none" stroke="currentColor" viewBox="0 0 24 24"
                 path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+
+      / ハンバーガーメニュー用スペース（モバイルのみ・幅確保のみ）
+      .md:hidden class="w-10"

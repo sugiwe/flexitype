@@ -21,7 +21,7 @@ class KeymapsController < ApplicationController
 
   def update
     # キーマップを一括保存
-    keymaps_params = params[:keymaps]
+    keymaps_params = keymap_params
 
     ActiveRecord::Base.transaction do
       keymaps_params.each do |layer, keymap_hash|
@@ -46,5 +46,19 @@ class KeymapsController < ApplicationController
     unless logged_in?
       redirect_to root_path, alert: "ログインが必要です"
     end
+  end
+
+  def keymap_params
+    # keymapsパラメータを許可（ネストしたハッシュ形式）
+    # 形式: { "0" => { "L0-R0" => "Q|q", ... }, "1" => { ... }, ... }
+    # レイヤー0-5のみ許可し、各レイヤー内の動的なキー位置を許可
+    params.require(:keymaps).permit(
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {},
+      "4": {},
+      "5": {}
+    )
   end
 end
