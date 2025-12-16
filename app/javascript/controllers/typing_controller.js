@@ -5,7 +5,9 @@ export default class extends Controller {
   static values = {
     words: Array,
     currentWord: Number,
-    keymaps: Object
+    keymaps: Object,
+    lessonInfo: Object,
+    loggedIn: Boolean
   }
 
   // キーマップから動的に生成する（初期化時に設定）
@@ -228,9 +230,45 @@ export default class extends Controller {
     this.timeDisplayTarget.textContent = timeString
     this.mistakesDisplayTarget.textContent = this.mistakeCount
 
+    // ログインユーザーの場合、履歴を保存
+    if (this.loggedInValue) {
+      this.saveHistory(accuracy, elapsedSeconds)
+    }
+
     // 画面を切り替え
     this.practiceScreenTarget.classList.add('hidden')
     this.completionScreenTarget.classList.remove('hidden')
+  }
+
+  // 履歴を保存
+  async saveHistory(accuracy, durationSeconds) {
+    try {
+      const response = await fetch('/history', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          session: {
+            category: this.lessonInfoValue.category_key,
+            lesson_id: this.lessonInfoValue.lesson_id,
+            lesson_name: this.lessonInfoValue.lesson_name,
+            word_count: this.words.length,
+            correct_count: this.words.length * this.words.reduce((sum, word) => sum + word.length, 0) - this.mistakeCount,
+            mistake_count: this.mistakeCount,
+            accuracy: accuracy,
+            duration_seconds: durationSeconds
+          }
+        })
+      })
+
+      if (!response.ok) {
+        console.error('Failed to save history:', await response.text())
+      }
+    } catch (error) {
+      console.error('Error saving history:', error)
+    }
   }
 
   // セッションを再開

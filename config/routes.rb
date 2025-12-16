@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  # History
+  get "history", to: "history#index"
+  post "history", to: "history#create"
+
   # Keymap management
   resources :keymaps, only: [ :index, :edit, :update ] do
     collection do
