@@ -38,7 +38,7 @@ html
     / テーマのちらつき防止: ページ読み込み前にdarkクラスを適用
     script
       | (function() {
-      |   const theme = localStorage.getItem('theme') || 'system';
+      |   const theme = localStorage.getItem('theme') || 'light';
       |   if (theme === 'dark') {
       |     document.documentElement.classList.add('dark');
       |   } else if (theme === 'light') {
