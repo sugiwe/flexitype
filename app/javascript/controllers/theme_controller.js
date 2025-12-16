@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["dropdown", "currentIcon", "currentName"]
   static values = {
-    current: { type: String, default: "system" }
+    current: { type: String, default: "light" }
   }
 
   // テーマ定義（SVGアイコン用）
@@ -41,7 +41,7 @@ export default class extends Controller {
 
   initialize() {
     // LocalStorageから設定を読み込み
-    const savedTheme = localStorage.getItem('theme') || 'system'
+    const savedTheme = localStorage.getItem('theme') || 'light'
     this.currentValue = savedTheme
     this.applyTheme(savedTheme)
     this.updateCurrentThemeDisplay()
@@ -145,6 +145,6 @@ export default class extends Controller {
 
   // 現在のテーマ情報を取得
   get currentTheme() {
-    return this.themes.find(t => t.id === this.currentValue) || this.themes[2] // デフォルトはsystem
+    return this.themes.find(t => t.id === this.currentValue) || this.themes[0] // デフォルトはlight
   }
 }
