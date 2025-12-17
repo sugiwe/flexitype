@@ -630,16 +630,78 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## 🗺️ URL構造設計
+
+### 現在の課題
+
+現状のURL構造には一貫性がなく、将来的な拡張を考慮すると整理が必要：
+- `/practices/:id` - 練習ページ（個別ID、良い設計）
+- `/keymaps/current/edit` - キーマップ設定（冗長、`current`が不要）
+- `/history` - 練習履歴（個人ページなのにトップレベル）
+
+### 設計方針
+
+**個人ページは `/my` 名前空間に統一**
+- 認証が必要なユーザー個人のページは `/my/*` にまとめる
+- 将来的な機能拡張（複数キーマップ、カスタムレッスン、アカウント設定など）を見据えた設計
+- ユーザープロフィール機能を実装した際は `/@username` 形式で公開プロフィールを提供
+
+### URL一覧
+
+#### 公開ページ（認証不要）
+- `/` - トップページ（レッスン一覧）
+- `/practices` - 練習一覧（将来的に実装）
+- `/practices/:id` - 練習ページ
+- `/@username` - ユーザープロフィール（将来実装）
+- `/terms` - 利用規約
+- `/privacy` - プライバシーポリシー
+
+#### 個人ページ（認証必要、`/my` 名前空間）
+- `/my` - マイページ（設定ダッシュボード）
+- `/my/profile` - プロフィール編集
+- `/my/keymaps` - キーマップ一覧（将来的に複数対応）
+- `/my/keymaps/1/edit` - キーマップ編集（現在はID=1固定、将来的に複数対応）
+- `/my/lessons` - カスタムレッスン管理（将来実装）
+- `/my/history` - 練習履歴
+- `/my/account` - アカウント設定
+- `/my/account/delete` - アカウント削除
+
+#### 認証
+- POST `/auth/google` - Google認証
+- DELETE `/logout` - ログアウト
+
+### 実装フェーズ
+
+**Phase 1: 既存ページの移行（Day 17-18 予定）**
+- `/history` → `/my/history`
+- `/keymaps/current/edit` → `/my/keymaps/1/edit`
+- `/my` ダッシュボードページの作成（簡易版）
+
+**Phase 2: 将来的な拡張**
+- `/my/profile` - プロフィール編集機能
+- `/my/keymaps` - 複数キーマップ対応
+- `/my/lessons` - カスタムレッスン作成機能
+- `/@username` - 公開プロフィールページ
+
+---
+
 ## 📝 今後の予定タスク
 
 ### 優先度: 高（Phase 7 で実装予定）
 
-#### 1. アクセス制御の実装（Day 18 予定）
+#### 1. URL構造の整理（Day 17-18 予定）
+- `/my` 名前空間の導入
+- `/history` → `/my/history` への移行
+- `/keymaps/current/edit` → `/my/keymaps/1/edit` への移行
+- `/my` ダッシュボードページの作成
+- `/@username` ユーザープロフィール機能の実装（同時に実施）
+
+#### 2. アクセス制御の実装（Day 18 予定）
 - ログイン必須の練習ページへの非ログインユーザーのアクセスを制限
 - リダイレクト処理とフラッシュメッセージの実装
 - LessonLoader側で `requires_login` フラグを活用
 
-#### 2. Googleツール系の導入（Day 19 予定）
+#### 3. Googleツール系の導入（Day 19 予定）
 - **Google Tag Manager（GTM）での一括管理**
   - アナリティクス、アドセンス、将来的な他のタグも一元管理
   - コード変更なしでタグを追加・変更できる

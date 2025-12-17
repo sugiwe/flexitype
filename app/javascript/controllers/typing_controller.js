@@ -243,7 +243,7 @@ export default class extends Controller {
   // 履歴を保存
   async saveHistory(accuracy, durationSeconds) {
     try {
-      const response = await fetch('/history', {
+      const response = await fetch('/my/history', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

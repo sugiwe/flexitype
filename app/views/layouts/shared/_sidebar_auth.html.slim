@@ -18,9 +18,14 @@
             p.text-sm.font-semibold.text-gray-800.dark:text-white.truncate = current_user.name
             p.text-xs.text-gray-500.dark:text-gray-400.truncate = current_user.email
           .py-2
-            / アカウント設定（将来実装）
-            a.block.px-4.py-2.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition.cursor-not-allowed.opacity-50 href="#"
-              | アカウント設定（準備中）
+            / プロフィール（自分の公開ページ）
+            = link_to profile_path(username: current_user.id), class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition" do
+              | プロフィール
+            / マイページ（設定ダッシュボード）
+            = link_to my_root_path, class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition" do
+              | マイページ
+            / 区切り線
+            .border-t.border-gray-200.dark:border-gray-600.my-2
             / ログアウト
             = button_to logout_path, method: :delete, class: "w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition", data: { turbo: false } do
               | ログアウト
