@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  has_many :keymap_sets, dependent: :destroy
   has_many :keymaps, dependent: :destroy
   has_many :typing_sessions, dependent: :destroy
 

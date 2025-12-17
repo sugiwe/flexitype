@@ -1,5 +1,6 @@
 class Keymap < ApplicationRecord
   belongs_to :user
+  belongs_to :keymap_set
 
   validates :layer, presence: true, inclusion: { in: 0..5 }
   validates :key_position, presence: true
