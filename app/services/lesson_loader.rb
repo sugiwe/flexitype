@@ -1,12 +1,30 @@
 # frozen_string_literal: true
 
 # レッスンデータをYAMLファイルから読み込むサービスクラス
+# 数値IDベースでレッスンを管理（将来的なDB化を見据えた設計）
 class LessonLoader
   LESSONS_FILE = Rails.root.join("config/typing_lessons.yml")
 
-  # 全レッスンデータを読み込む
+  # 全レッスンデータを読み込む（カテゴリごと）
   def self.all_lessons
     @all_lessons ||= YAML.load_file(LESSONS_FILE)["lessons"]
+  end
+
+  # 全レッスンをフラットな配列として取得（ID順）
+  def self.all_lessons_flat
+    @all_lessons_flat ||= begin
+      lessons = []
+      all_lessons.each_value do |category_data|
+        category_data["lessons"].each do |lesson|
+          lesson["category"] = category_data["category"]
+          lesson["category_description"] = category_data["description"]
+          lesson["requires_login"] = category_data["requires_login"]
+          lesson["premium"] = category_data["premium"]
+          lessons << lesson
+        end
+      end
+      lessons.sort_by { |l| l["id"] }
+    end
   end
 
   # カテゴリごとにグループ化されたレッスンを取得
@@ -22,17 +40,15 @@ class LessonLoader
     end
   end
 
-  # 特定のレッスンを取得
-  def self.find_lesson(category_key, lesson_id)
-    category = all_lessons[category_key]
-    return nil unless category
-
-    category["lessons"]&.find { |lesson| lesson["id"] == lesson_id }
+  # 数値IDから特定のレッスンを取得
+  def self.find_lesson(id)
+    id = id.to_i
+    all_lessons_flat.find { |lesson| lesson["id"] == id }
   end
 
   # レッスンIDから練習用の単語/文章リストを取得
-  def self.get_practice_items(category_key, lesson_id)
-    lesson = find_lesson(category_key, lesson_id)
+  def self.get_practice_items(id)
+    lesson = find_lesson(id)
     return [] unless lesson
 
     # itemsフィールドから指定された数だけランダムに取得
@@ -43,21 +59,21 @@ class LessonLoader
     items.shuffle.take(count)
   end
 
-  # カテゴリキーとレッスンIDから完全なレッスン情報を取得
-  def self.get_lesson_info(category_key, lesson_id)
-    category = all_lessons[category_key]
-    return nil unless category
-
-    lesson = find_lesson(category_key, lesson_id)
+  # レッスンIDから完全なレッスン情報を取得
+  def self.get_lesson_info(id)
+    lesson = find_lesson(id)
     return nil unless lesson
 
     {
-      category_name: category["category"],
-      category_description: category["description"],
+      id: lesson["id"],
+      category_name: lesson["category"],
+      category_description: lesson["category_description"],
       lesson_name: lesson["name"],
       lesson_description: lesson["description"],
       lesson_type: lesson["type"],
-      count: lesson["count"]
+      count: lesson["count"],
+      requires_login: lesson["requires_login"],
+      premium: lesson["premium"]
     }
   end
 end

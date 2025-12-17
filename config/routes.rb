@@ -27,7 +27,7 @@ Rails.application.routes.draw do
   delete "/logout", to: "sessions#destroy"
 
   # Typing practice
-  get "practice", to: "practice#index"
+  resources :practices, only: [ :show ]
 
   # Static pages
   get "terms", to: "pages#terms"
