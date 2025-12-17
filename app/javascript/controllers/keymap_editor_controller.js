@@ -97,7 +97,7 @@ export default class extends Controller {
       const keyElement = target.closest(".key")
       const position = keyElement.dataset.position
       const char = layerData[position] || "-"
-      target.textContent = char
+      target.innerHTML = this.formatKeyDisplay(char)
     })
   }
 
@@ -105,8 +105,55 @@ export default class extends Controller {
   updateKeyCharacter(keyElement, char) {
     const charTarget = keyElement.querySelector("[data-keymap-editor-target='keyChar']")
     if (charTarget) {
-      charTarget.textContent = char
+      charTarget.innerHTML = this.formatKeyDisplay(char)
     }
+  }
+
+  // format_key_displayヘルパーのJavaScript版（2段表示対応）
+  formatKeyDisplay(char) {
+    if (!char || char === '-') return '<div class="text-xs text-gray-700 dark:text-gray-200">-</div>'
+
+    // 特殊キーの表示名マッピング（1段表示）
+    const specialKeys = {
+      'spc': 'Spc', 'space': 'Spc',
+      'bs': 'BS', 'backspace': 'BS',
+      'ent': 'Ent', 'enter': 'Ent',
+      'tab': 'Tab',
+      'esc': 'Esc',
+      'del': 'Del',
+      'layer1': 'Lyr1', 'lyr1': 'Lyr1',
+      'layer2': 'Lyr2', 'lyr2': 'Lyr2',
+      'lower': 'Lower',
+      'raise': 'Raise',
+      'shift': 'Shift',
+      'ctrl': 'Ctrl',
+      'alt': 'Alt',
+      'cmd': 'Cmd',
+      'caps': 'Caps'
+    }
+
+    const lowerChar = char.toLowerCase()
+    if (specialKeys[lowerChar]) {
+      return `<div class="text-xs text-gray-700 dark:text-gray-200">${specialKeys[lowerChar]}</div>`
+    }
+
+    // "Q|q" や "!|1" 形式の場合は2段表示
+    // 上段: 小さめ・グレー、下段: 大きめ・太字・黒
+    if (char.includes('|')) {
+      const parts = char.split('|')
+      const upper = parts[0] || ''
+      const lower = parts[1] || ''
+
+      return `
+        <div class="flex flex-col items-center justify-center h-full">
+          <div class="text-xs text-gray-400 dark:text-gray-400 mb-1">${upper}</div>
+          <div class="text-base font-semibold text-gray-700 dark:text-gray-200">${lower}</div>
+        </div>
+      `
+    }
+
+    // 単一文字の場合
+    return `<div class="text-xs text-gray-700 dark:text-gray-200">${char}</div>`
   }
 
   // タブ切り替え

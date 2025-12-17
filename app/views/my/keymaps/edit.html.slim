@@ -31,19 +31,23 @@
           / 1行目
           - ["L0-R0", "L0-R1", "L0-R2", "L0-R3", "L0-R4", "L0-R5"].each do |pos|
             .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
-              .text-base.font-semibold.text-gray-700.dark:text-gray-200 data-keymap-editor-target="keyChar" -
+              div data-keymap-editor-target="keyChar"
+                = format_key_display("-")
           / 2行目
           - ["L1-R0", "L1-R1", "L1-R2", "L1-R3", "L1-R4", "L1-R5"].each do |pos|
             .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
-              .text-base.font-semibold.text-gray-700.dark:text-gray-200 data-keymap-editor-target="keyChar" -
+              div data-keymap-editor-target="keyChar"
+                = format_key_display("-")
           / 3行目
           - ["L2-R0", "L2-R1", "L2-R2", "L2-R3", "L2-R4", "L2-R5"].each do |pos|
             .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
-              .text-base.font-semibold.text-gray-700.dark:text-gray-200 data-keymap-editor-target="keyChar" -
+              div data-keymap-editor-target="keyChar"
+                = format_key_display("-")
           / 4行目（最下段）
           - ["L3-R0", "L3-R1", "L3-R2", "L3-R3", "L3-R4", "L3-R5"].each do |pos|
             .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
-              .text-base.font-semibold.text-gray-700.dark:text-gray-200 data-keymap-editor-target="keyChar" -
+              div data-keymap-editor-target="keyChar"
+                = format_key_display("-")
 
       / 右手側
       .keyboard-half
@@ -52,19 +56,23 @@
           / 1行目
           - ["R0-R0", "R0-R1", "R0-R2", "R0-R3", "R0-R4", "R0-R5"].each do |pos|
             .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
-              .text-base.font-semibold.text-gray-700.dark:text-gray-200 data-keymap-editor-target="keyChar" -
+              div data-keymap-editor-target="keyChar"
+                = format_key_display("-")
           / 2行目
           - ["R1-R0", "R1-R1", "R1-R2", "R1-R3", "R1-R4", "R1-R5"].each do |pos|
             .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
-              .text-base.font-semibold.text-gray-700.dark:text-gray-200 data-keymap-editor-target="keyChar" -
+              div data-keymap-editor-target="keyChar"
+                = format_key_display("-")
           / 3行目
           - ["R2-R0", "R2-R1", "R2-R2", "R2-R3", "R2-R4", "R2-R5"].each do |pos|
             .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
-              .text-base.font-semibold.text-gray-700.dark:text-gray-200 data-keymap-editor-target="keyChar" -
+              div data-keymap-editor-target="keyChar"
+                = format_key_display("-")
           / 4行目（最下段）
           - ["R3-R0", "R3-R1", "R3-R2", "R3-R3", "R3-R4", "R3-R5"].each do |pos|
             .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
-              .text-base.font-semibold.text-gray-700.dark:text-gray-200 data-keymap-editor-target="keyChar" -
+              div data-keymap-editor-target="keyChar"
+                = format_key_display("-")
 
   / 入力候補エリア
   .mt-8

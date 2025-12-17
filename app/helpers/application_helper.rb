@@ -35,22 +35,23 @@ module ApplicationHelper
 
     # 特殊キーの場合は1段表示
     if special_keys[char_str.downcase]
-      return content_tag(:div, special_keys[char_str.downcase], class: "text-xs")
+      return content_tag(:div, special_keys[char_str.downcase], class: "text-xs text-gray-700 dark:text-gray-200")
     end
 
     # "Q|q" や "!|1" 形式の場合は2段表示
+    # 上段: 小さめ・グレー、下段: 大きめ・太字・黒
     if char_str.include?("|")
       parts = char_str.split("|")
       upper = parts[0] || ""
       lower = parts[1] || ""
 
       return content_tag(:div, class: "flex flex-col items-center justify-center h-full") do
-        content_tag(:div, upper, class: "text-xs leading-none") +
-        content_tag(:div, lower, class: "text-xs leading-none mt-0.5")
+        content_tag(:div, upper, class: "text-xs text-gray-400 dark:text-gray-400 mb-1") +
+        content_tag(:div, lower, class: "text-base font-semibold text-gray-700 dark:text-gray-200")
       end
     end
 
     # 単一文字の場合
-    content_tag(:div, char_str, class: "text-xs")
+    content_tag(:div, char_str, class: "text-xs text-gray-700 dark:text-gray-200")
   end
 end

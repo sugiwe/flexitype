@@ -367,7 +367,7 @@ export default class extends Controller {
 
   // format_key_displayヘルパーのJavaScript版（2段表示対応）
   formatKeyDisplay(char) {
-    if (!char) return '<div class="text-xs">-</div>'
+    if (!char) return '<div class="text-xs text-gray-700 dark:text-gray-200">-</div>'
 
     // 特殊キーの表示名マッピング（1段表示）
     const specialKeys = {
@@ -390,10 +390,11 @@ export default class extends Controller {
 
     const lowerChar = char.toLowerCase()
     if (specialKeys[lowerChar]) {
-      return `<div class="text-xs">${specialKeys[lowerChar]}</div>`
+      return `<div class="text-xs text-gray-700 dark:text-gray-200">${specialKeys[lowerChar]}</div>`
     }
 
     // "Q|q" や "!|1" 形式の場合は2段表示
+    // 上段: 小さめ・グレー、下段: 大きめ・太字・黒
     if (char.includes('|')) {
       const parts = char.split('|')
       const upper = parts[0] || ''
@@ -401,14 +402,14 @@ export default class extends Controller {
 
       return `
         <div class="flex flex-col items-center justify-center h-full">
-          <div class="text-xs leading-none">${upper}</div>
-          <div class="text-xs leading-none mt-0.5">${lower}</div>
+          <div class="text-xs text-gray-400 dark:text-gray-400 mb-1">${upper}</div>
+          <div class="text-base font-semibold text-gray-700 dark:text-gray-200">${lower}</div>
         </div>
       `
     }
 
     // 単一文字の場合
-    return `<div class="text-xs">${char}</div>`
+    return `<div class="text-xs text-gray-700 dark:text-gray-200">${char}</div>`
   }
 
   // 次に打つべきキーをハイライト（レイヤー自動判定付き）
