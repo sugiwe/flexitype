@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   # Personal pages (authentication required, /my namespace)
   namespace :my do
     root to: "dashboard#index"  # /my
-    resources :keymaps, only: [ :index, :edit, :update ]  # /my/keymaps, /my/keymaps/1/edit, PATCH /my/keymaps/1
+    resources :keymaps, only: [ :index, :edit, :update, :destroy ]  # /my/keymaps, /my/keymaps/1/edit, PATCH /my/keymaps/1, DELETE /my/keymaps/1
     resources :history, only: [ :index, :create ]  # /my/history, POST /my/history
     resource :account, only: [ :edit, :update ]  # /my/account/edit, PATCH /my/account
   end

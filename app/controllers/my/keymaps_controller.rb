@@ -33,6 +33,12 @@ class My::KeymapsController < My::ApplicationController
     render json: { success: false, error: e.message }, status: :unprocessable_entity
   end
 
+  def destroy
+    # ユーザーのキーマップを全削除（デフォルトに戻す）
+    current_user.keymaps.destroy_all
+    head :ok
+  end
+
   private
 
   def keymap_params
