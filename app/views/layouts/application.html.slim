@@ -51,6 +51,9 @@ html
       | })();
 
   body.h-screen.flex.bg-gray-50.dark:bg-gray-900.overflow-hidden.transition-colors data-controller="sidebar"
+    / フラッシュメッセージ
+    = render "layouts/shared/flash_messages"
+
     / デスクトップ推奨バナー（モバイルのみ表示）
     = render "layouts/shared/desktop_banner"
 
