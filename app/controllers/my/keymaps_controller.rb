@@ -22,8 +22,25 @@ class My::KeymapsController < My::ApplicationController
     keymaps_params = keymap_params
 
     ActiveRecord::Base.transaction do
+      # ユーザーのKeymap Setを取得または作成
+      keymap_set = current_user.keymap_sets.first_or_create!(
+        name: "デフォルト",
+        description: "マイキーマップ",
+        is_public: false
+      )
+
       keymaps_params.each do |layer, keymap_hash|
-        Keymap.bulk_upsert(current_user.id, layer.to_i, keymap_hash)
+        keymap_hash.each do |position, char|
+          next if char.blank?
+
+          keymap = current_user.keymaps.find_or_initialize_by(
+            keymap_set: keymap_set,
+            layer: layer.to_i,
+            key_position: position
+          )
+          keymap.character = char
+          keymap.save!
+        end
       end
     end
 
@@ -34,8 +51,9 @@ class My::KeymapsController < My::ApplicationController
   end
 
   def destroy
-    # ユーザーのキーマップを全削除（デフォルトに戻す）
-    current_user.keymaps.destroy_all
+    # ユーザーのキーマップセットを全削除（デフォルトに戻す）
+    # KeymapSetを削除すると、dependent: :destroyでKeymapも自動削除される
+    current_user.keymap_sets.destroy_all
     head :ok
   end
 
