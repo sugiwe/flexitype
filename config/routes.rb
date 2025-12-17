@@ -1,17 +1,4 @@
 Rails.application.routes.draw do
-  # History
-  get "history", to: "history#index"
-  post "history", to: "history#create"
-
-  # Keymap management
-  resources :keymaps, only: [ :index, :edit, :update ] do
-    collection do
-      get :default
-    end
-  end
-  # カスタムルート: キーマップの一括保存用
-  patch "keymaps/current", to: "keymaps#update"
-
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -26,13 +13,20 @@ Rails.application.routes.draw do
   post "/auth/google", to: "sessions#create"
   delete "/logout", to: "sessions#destroy"
 
-  # Typing practice
+  # Public pages
+  root "home#index"
   resources :practices, only: [ :show ]
-
-  # Static pages
   get "terms", to: "pages#terms"
   get "privacy", to: "pages#privacy"
 
-  # Defines the root path route ("/")
-  root "home#index"
+  # User profiles (public)
+  get "/@:username", to: "profiles#show", as: :profile, constraints: { username: /[^\/]+/ }
+
+  # Personal pages (authentication required, /my namespace)
+  namespace :my do
+    root to: "dashboard#index"  # /my
+    resources :keymaps, only: [ :index, :edit, :update, :destroy ]  # /my/keymaps, /my/keymaps/1/edit, PATCH /my/keymaps/1, DELETE /my/keymaps/1
+    resources :history, only: [ :index, :create ]  # /my/history, POST /my/history
+    resource :account, only: [ :edit, :update ]  # /my/account/edit, PATCH /my/account
+  end
 end

@@ -7,6 +7,10 @@ class User < ApplicationRecord
   validates :name, presence: true, length: { maximum: 30 }
   validates :icon_url, length: { maximum: 4096 }, allow_blank: true
   validates :history_limit, presence: true, numericality: { greater_than: 0 }
+  validates :username, presence: true, uniqueness: { case_sensitive: false },
+                       format: { with: /\A[a-z0-9]+(?:[._-][a-z0-9]+)*\z/,
+                                message: "は半角英数字、ハイフン、アンダースコア、ドットのみ使用できます（記号は連続不可、先頭・末尾不可）" },
+                       length: { minimum: 3, maximum: 30 }
 
   # Google IDトークンのペイロードからユーザーを検索または作成
   def self.from_google(payload)
@@ -14,7 +18,24 @@ class User < ApplicationRecord
       user.email = payload["email"]
       user.name = payload["name"]
       user.icon_url = payload["picture"]
+      user.username = generate_unique_username(payload["email"])
     end
+  end
+
+  # Gmailアドレスからユニークなusernameを生成
+  def self.generate_unique_username(email)
+    # Gmailアドレスの@の前の部分を取得し、小文字化
+    username_base = email.split("@").first.downcase
+
+    # 既存のusernameと重複しないようにする
+    username = username_base
+    counter = 1
+    while exists?(username: username)
+      username = "#{username_base}#{counter}"
+      counter += 1
+    end
+
+    username
   end
 
   # 許可リストに含まれているかチェック

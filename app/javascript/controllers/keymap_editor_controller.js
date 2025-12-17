@@ -139,7 +139,7 @@ export default class extends Controller {
 
     try {
       const csrfToken = document.querySelector("[name='csrf-token']").content
-      const response = await fetch("/keymaps/current", {
+      const response = await fetch("/my/keymaps/1", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -180,26 +180,23 @@ export default class extends Controller {
     }
 
     try {
-      // デフォルトキーマップを取得
-      const response = await fetch("/keymaps/default")
+      const csrfToken = document.querySelector("[name='csrf-token']").content
+      const response = await fetch("/my/keymaps/1", {
+        method: "DELETE",
+        headers: {
+          "X-CSRF-Token": csrfToken
+        }
+      })
 
       if (response.ok) {
-        const defaultKeymaps = await response.json()
-        console.log("Default keymaps loaded:", defaultKeymaps)
-
-        // キーマップデータを置き換え
-        this.keymaps = defaultKeymaps
-
-        // 表示を更新
-        this.updateKeyboardDisplay()
-
-        alert("デフォルト設定に戻しました。「すべてのレイヤーを保存」ボタンを押して保存してください。")
+        // 削除成功したらページをリロードしてデフォルト状態を表示
+        window.location.reload()
       } else {
-        alert("デフォルト設定の読み込みに失敗しました")
+        alert("デフォルト設定に戻すことができませんでした")
       }
     } catch (error) {
       console.error("Reset error:", error)
-      alert("デフォルト設定の読み込み中にエラーが発生しました")
+      alert("デフォルト設定に戻す際にエラーが発生しました")
     }
   }
 }

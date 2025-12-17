@@ -630,6 +630,40 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## 🗺️ URL構造設計（✅ Day 17 で整理完了）
+
+### 設計方針
+
+**個人ページは `/my` 名前空間に統一**
+- 認証が必要なユーザー個人のページは `/my/*` にまとめる
+- 将来的な機能拡張（複数キーマップ、カスタムレッスン、アカウント設定など）を見据えた設計
+- ユーザープロフィールは `/@username` 形式で公開
+
+### URL一覧
+
+#### 公開ページ（認証不要）
+- `/` - トップページ（レッスン一覧）
+- `/practices/:id` - 練習ページ（例: `/practices/1`, `/practices/7`）
+- `/@:username` - ユーザープロフィール（例: `/@john`, `/@alice`）
+- `/terms` - 利用規約
+- `/privacy` - プライバシーポリシー
+
+#### 個人ページ（認証必要、`/my` 名前空間）
+- `/my` - マイページ（設定ダッシュボード）
+- `/my/account/edit` - アカウント設定（username編集）
+- `/my/keymaps/1/edit` - キーマップ編集（現在はID=1固定、将来的に複数対応）
+- `/my/history` - 練習履歴
+
+#### 認証
+- POST `/auth/google` - Google認証
+- DELETE `/logout` - ログアウト
+
+### 将来的な拡張
+- `/my/keymaps` - キーマップ一覧（複数対応）
+- `/my/lessons` - カスタムレッスン管理
+
+---
+
 ## 📝 今後の予定タスク
 
 ### 優先度: 高（Phase 7 で実装予定）
@@ -639,7 +673,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - リダイレクト処理とフラッシュメッセージの実装
 - LessonLoader側で `requires_login` フラグを活用
 
-#### 2. Googleツール系の導入（Day 19 予定）
+#### 3. Googleツール系の導入（Day 19 予定）
 - **Google Tag Manager（GTM）での一括管理**
   - アナリティクス、アドセンス、将来的な他のタグも一元管理
   - コード変更なしでタグを追加・変更できる
@@ -710,14 +744,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ セキュリティ強化（Brakeman 警告 0 件）
 - ✅ **練習ページの個別URL化（数値IDベース）** ← Day 17 で完了
 
+- ✅ **URL構造の全面的な整理** ← Day 17 で完了
+- ✅ **ユーザー名（username）機能の実装** ← Day 17 で完了
+
 ### 最近の更新（Day 17）
 
-**練習ページの個別URL化（数値IDベース）**
+**1. 練習ページの個別URL化（数値IDベース）**
 - URL形式: `/practice?category=xxx&lesson=xxx` → `/practices/:id`
 - 全16レッスンに数値ID（1-16）を割り当て
 - Rails標準の`resources`ルーティングを使用
-- LessonLoaderを数値IDベースに全面改修
-- 将来的なDB化が容易になり、拡張性が大幅に向上
+- DB化を見据えた拡張性の高い設計
+
+**2. URL構造の全面的な整理**
+- `/my`名前空間による個人ページの整理
+  - `/history` → `/my/history`
+  - `/keymaps/current/edit` → `/my/keymaps/1/edit`
+  - 新規: `/my`（マイページ）
+  - 新規: `/my/account/edit`（アカウント設定）
+- `My::ApplicationController`でDRY原則に従い認証ロジックを集約
+- RESTful設計（`resource :account`, `resources :keymaps`）
+
+**3. ユーザー名（username）機能の実装**
+- `/@username`形式のプロフィールページ
+- Gmail互換のバリデーション（ドット、ハイフン、アンダースコア対応）
+- 初回ログイン時にGmailアドレスから自動生成
+- アカウント設定画面でusername編集可能
+- プロフィールURLプレビュー機能
 
 ### 次のステップ（Phase 7: ブラッシュアップ）
 
@@ -737,3 +789,184 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 主要機能（練習、キーマップ設定、履歴）がすべて完成し、本番環境で稼働中
 - セキュリティ、レスポンシブ対応、ダークモードなど、プロダクション品質のアプリケーションとして完成度が高い状態
 - Day 17: 数値IDベースのURL設計により、将来的なDB化の基盤が整った
+
+---
+
+## 🗺 将来的な拡張計画
+
+### キーマップ機能の拡張設計（Phase X）
+
+**現状の課題:**
+- ユーザーごとに1つのキーマップのみ（`/my/keymaps/1`固定）
+- 複数のキーマップを管理できない
+- キーマップの公開・共有機能がない
+
+**将来の目標:**
+- 複数キーマップ管理（無課金2つ、課金5つまで）
+- キーマップの公開・共有機能
+- 他ユーザーのキーマップをフォーク（コピー）
+
+#### データベース設計（RESTful分割案）
+
+**KeymapSet モデル（キーマップセット）**
+```ruby
+class KeymapSet < ApplicationRecord
+  belongs_to :user
+  has_many :keymap_layers, dependent: :destroy
+
+  # カラム
+  - name: string (キーマップ名、例: "デフォルト", "プログラミング用")
+  - description: text (キーマップの説明、nullable)
+  - is_public: boolean (公開設定、デフォルト: false)
+  - share_token: string (公開用トークン、unique、インデックス)
+  - forked_from_id: integer (フォーク元のKeymap SetID、nullable)
+  - created_at, updated_at
+
+  # アソシエーション
+  - belongs_to :user
+  - has_many :keymap_layers, dependent: :destroy
+
+  # バリデーション
+  - validates :name, presence: true, length: { maximum: 50 }
+  - validates :description, length: { maximum: 500 }
+  - validate :check_user_keymap_limit
+
+  # スコープ
+  - scope :public_keymaps, -> { where(is_public: true) }
+
+  # メソッド
+  - generate_share_token: 公開時にトークンを生成
+  - fork_to(user): 別のユーザーにフォーク
+end
+```
+
+**KeymapLayer モデル（各レイヤーのキー配置）**
+```ruby
+class KeymapLayer < ApplicationRecord
+  belongs_to :keymap_set
+
+  # カラム
+  - keymap_set_id: references KeymapSet
+  - layer: integer (0-5)
+  - key_position: string (例: "L0-R0")
+  - character: string (max: 20)
+  - created_at, updated_at
+
+  # インデックス
+  - [keymap_set_id, layer, key_position], unique: true
+
+  # バリデーション
+  - validates :layer, presence: true, inclusion: { in: 0..5 }
+  - validates :key_position, presence: true
+  - validates :character, presence: true, length: { maximum: 20 }
+end
+```
+
+#### URL設計
+
+**個人のキーマップ管理（認証必須、`/my`配下）**
+```ruby
+GET    /my/keymaps          # キーマップ一覧
+GET    /my/keymaps/new      # 新規作成フォーム
+POST   /my/keymaps          # 新規作成
+GET    /my/keymaps/:id      # 詳細表示
+GET    /my/keymaps/:id/edit # 編集フォーム
+PATCH  /my/keymaps/:id      # 更新
+DELETE /my/keymaps/:id      # 削除
+```
+
+**公開キーマップ（認証不要、`/@username`配下）**
+```ruby
+GET    /@:username/keymaps          # ユーザーの公開キーマップ一覧
+GET    /@:username/keymaps/:id      # 特定の公開キーマップ詳細
+POST   /@:username/keymaps/:id/fork # フォーク（要認証）
+```
+
+#### 段階的な実装アプローチ
+
+**Phase 1: 現状維持（緊急修正のみ）**
+- 2025-12-17 完了
+- JavaScript URL修正（`/my/keymaps/1`に対応）
+- デフォルトに戻す機能（DELETE リクエストで全削除）
+
+**Phase 2: 複数キーマップ対応**
+- KeymapSet + KeymapLayer モデルの作成
+- マイグレーション：既存Keymapデータを移行
+- `/my/keymaps` 一覧ページの実装
+- 新規作成・削除機能の実装
+- 無課金ユーザーは2つまで制限（`check_user_keymap_limit`バリデーション）
+- 将来の課金ユーザーは5つまで
+
+**Phase 3: 公開・共有機能**
+- `is_public`, `share_token` カラムの活用
+- 公開設定UI（トグルボタン）
+- `/@username/keymaps`での公開キーマップ一覧表示
+- フォーク機能の実装
+- フォーク元のリンク表示
+
+#### 機能要件
+
+**キーマップ一覧（`/my/keymaps`）**
+- キーマップの一覧をカード形式で表示
+- 各カード: 名前、説明、作成日時、公開状態
+- 新規作成ボタン（制限に達している場合は非表示）
+- 編集・削除ボタン
+
+**キーマップ詳細・編集（`/my/keymaps/:id/edit`）**
+- 名前・説明の編集
+- 6レイヤーのキー配置編集（現在の実装と同じUI）
+- 公開設定トグル
+- 保存・キャンセルボタン
+
+**公開キーマップ一覧（`/@username/keymaps`）**
+- ユーザーの公開キーマップのみ表示
+- 各カード: 名前、説明、作成日時
+- フォークボタン（要ログイン）
+
+**公開キーマップ詳細（`/@username/keymaps/:id`）**
+- キーマップの詳細表示（読み取り専用）
+- 6レイヤーのキー配置を視覚的に表示
+- フォークボタン（自分のキーマップとしてコピー）
+- フォーク元の表示（フォークされたキーマップの場合）
+
+#### 設計の利点
+
+**RESTful設計:**
+- KeymapSetとKeymap Layerの分離により、Railsの標準的なリソース設計に従う
+- ルーティングがシンプルで拡張しやすい
+- コントローラのアクションも標準的なCRUD操作
+
+**拡張性:**
+- 課金機能追加時に、キーマップ数制限を柔軟に変更可能
+- 将来的にキーマップのテンプレート機能なども追加しやすい
+- フォーク機能により、コミュニティ的な要素を強化
+
+**ユーザビリティ:**
+- 用途別にキーマップを使い分けられる（プログラミング、ゲーム、日常など）
+- 他のユーザーの設定を参考にできる
+- `/@username/keymaps`により、プロフィールと統一感のあるURL設計
+
+#### 実装時の注意点
+
+**マイグレーション:**
+- 既存のKeymapデータをKeymapSetとKeymap Layerに移行
+- ユーザーごとに「デフォルト」という名前のKeymap Setを作成
+- データの整合性を保つため、トランザクション内で処理
+
+**制限の実装:**
+- `check_user_keymap_limit`バリデーションで、ユーザーのキーマップ数をチェック
+- 無課金ユーザー: 2つまで
+- 課金ユーザー（将来）: 5つまで
+- 制限に達している場合は、新規作成ボタンを非表示にし、エラーメッセージを表示
+
+**公開設定:**
+- デフォルトは非公開（`is_public: false`）
+- 公開時に`share_token`を自動生成（SecureRandom.urlsafe_base64(16)など）
+- 公開URLは`/@username/keymaps/:id`形式
+
+**フォーク機能:**
+- フォーク時に、元のKeymap SetのKeymap Layerを全てコピー
+- `forked_from_id`に元のKeymap Set IDを保存
+- フォーク元のリンクを表示して、クレジットを明示
+
+---
