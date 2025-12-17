@@ -3,17 +3,8 @@ class ProfilesController < ApplicationController
     # /@username 形式のユーザープロフィール表示
     username = params[:username]
 
-    # TODO: 将来的にusernameカラムを追加したら、username経由で検索
-    # 現在は最小限の実装として、IDでの検索のみ対応
-    # 例: /@1 でユーザーID=1のプロフィールを表示
-
-    if username =~ /\A\d+\z/
-      # 数値のみの場合はIDとして検索
-      @user = User.find_by(id: username)
-    else
-      # 将来実装: usernameカラムで検索
-      @user = nil
-    end
+    # usernameで検索（大文字小文字を区別しない）
+    @user = User.find_by("LOWER(username) = ?", username.downcase)
 
     unless @user
       redirect_to root_path, alert: "ユーザーが見つかりませんでした"

@@ -19,7 +19,7 @@
             p.text-xs.text-gray-500.dark:text-gray-400.truncate = current_user.email
           .py-2
             / プロフィール（自分の公開ページ）
-            = link_to profile_path(username: current_user.id), class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition" do
+            = link_to profile_path(username: current_user.username), class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition" do
               | プロフィール
             / マイページ（設定ダッシュボード）
             = link_to my_root_path, class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition" do

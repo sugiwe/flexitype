@@ -20,12 +20,13 @@ Rails.application.routes.draw do
   get "privacy", to: "pages#privacy"
 
   # User profiles (public)
-  get "/@:username", to: "profiles#show", as: :profile
+  get "/@:username", to: "profiles#show", as: :profile, constraints: { username: /[^\/]+/ }
 
   # Personal pages (authentication required, /my namespace)
   namespace :my do
     root to: "dashboard#index"  # /my
     resources :keymaps, only: [ :index, :edit, :update ]  # /my/keymaps, /my/keymaps/1/edit, PATCH /my/keymaps/1
     resources :history, only: [ :index, :create ]  # /my/history, POST /my/history
+    resource :account, only: [ :edit, :update ]  # /my/account/edit, PATCH /my/account
   end
 end

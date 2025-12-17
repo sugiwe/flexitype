@@ -630,58 +630,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
-## 🗺️ URL構造設計
-
-### 現在の課題
-
-現状のURL構造には一貫性がなく、将来的な拡張を考慮すると整理が必要：
-- `/practices/:id` - 練習ページ（個別ID、良い設計）
-- `/keymaps/current/edit` - キーマップ設定（冗長、`current`が不要）
-- `/history` - 練習履歴（個人ページなのにトップレベル）
+## 🗺️ URL構造設計（✅ Day 17 で整理完了）
 
 ### 設計方針
 
 **個人ページは `/my` 名前空間に統一**
 - 認証が必要なユーザー個人のページは `/my/*` にまとめる
 - 将来的な機能拡張（複数キーマップ、カスタムレッスン、アカウント設定など）を見据えた設計
-- ユーザープロフィール機能を実装した際は `/@username` 形式で公開プロフィールを提供
+- ユーザープロフィールは `/@username` 形式で公開
 
 ### URL一覧
 
 #### 公開ページ（認証不要）
 - `/` - トップページ（レッスン一覧）
-- `/practices` - 練習一覧（将来的に実装）
-- `/practices/:id` - 練習ページ
-- `/@username` - ユーザープロフィール（将来実装）
+- `/practices/:id` - 練習ページ（例: `/practices/1`, `/practices/7`）
+- `/@:username` - ユーザープロフィール（例: `/@john`, `/@alice`）
 - `/terms` - 利用規約
 - `/privacy` - プライバシーポリシー
 
 #### 個人ページ（認証必要、`/my` 名前空間）
 - `/my` - マイページ（設定ダッシュボード）
-- `/my/profile` - プロフィール編集
-- `/my/keymaps` - キーマップ一覧（将来的に複数対応）
+- `/my/account/edit` - アカウント設定（username編集）
 - `/my/keymaps/1/edit` - キーマップ編集（現在はID=1固定、将来的に複数対応）
-- `/my/lessons` - カスタムレッスン管理（将来実装）
 - `/my/history` - 練習履歴
-- `/my/account` - アカウント設定
-- `/my/account/delete` - アカウント削除
 
 #### 認証
 - POST `/auth/google` - Google認証
 - DELETE `/logout` - ログアウト
 
-### 実装フェーズ
-
-**Phase 1: 既存ページの移行（Day 17-18 予定）**
-- `/history` → `/my/history`
-- `/keymaps/current/edit` → `/my/keymaps/1/edit`
-- `/my` ダッシュボードページの作成（簡易版）
-
-**Phase 2: 将来的な拡張**
-- `/my/profile` - プロフィール編集機能
-- `/my/keymaps` - 複数キーマップ対応
-- `/my/lessons` - カスタムレッスン作成機能
-- `/@username` - 公開プロフィールページ
+### 将来的な拡張
+- `/my/keymaps` - キーマップ一覧（複数対応）
+- `/my/lessons` - カスタムレッスン管理
 
 ---
 
@@ -689,14 +668,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### 優先度: 高（Phase 7 で実装予定）
 
-#### 1. URL構造の整理（Day 17-18 予定）
-- `/my` 名前空間の導入
-- `/history` → `/my/history` への移行
-- `/keymaps/current/edit` → `/my/keymaps/1/edit` への移行
-- `/my` ダッシュボードページの作成
-- `/@username` ユーザープロフィール機能の実装（同時に実施）
-
-#### 2. アクセス制御の実装（Day 18 予定）
+#### 1. アクセス制御の実装（Day 18 予定）
 - ログイン必須の練習ページへの非ログインユーザーのアクセスを制限
 - リダイレクト処理とフラッシュメッセージの実装
 - LessonLoader側で `requires_login` フラグを活用
@@ -772,14 +744,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ セキュリティ強化（Brakeman 警告 0 件）
 - ✅ **練習ページの個別URL化（数値IDベース）** ← Day 17 で完了
 
+- ✅ **URL構造の全面的な整理** ← Day 17 で完了
+- ✅ **ユーザー名（username）機能の実装** ← Day 17 で完了
+
 ### 最近の更新（Day 17）
 
-**練習ページの個別URL化（数値IDベース）**
+**1. 練習ページの個別URL化（数値IDベース）**
 - URL形式: `/practice?category=xxx&lesson=xxx` → `/practices/:id`
 - 全16レッスンに数値ID（1-16）を割り当て
 - Rails標準の`resources`ルーティングを使用
-- LessonLoaderを数値IDベースに全面改修
-- 将来的なDB化が容易になり、拡張性が大幅に向上
+- DB化を見据えた拡張性の高い設計
+
+**2. URL構造の全面的な整理**
+- `/my`名前空間による個人ページの整理
+  - `/history` → `/my/history`
+  - `/keymaps/current/edit` → `/my/keymaps/1/edit`
+  - 新規: `/my`（マイページ）
+  - 新規: `/my/account/edit`（アカウント設定）
+- `My::ApplicationController`でDRY原則に従い認証ロジックを集約
+- RESTful設計（`resource :account`, `resources :keymaps`）
+
+**3. ユーザー名（username）機能の実装**
+- `/@username`形式のプロフィールページ
+- Gmail互換のバリデーション（ドット、ハイフン、アンダースコア対応）
+- 初回ログイン時にGmailアドレスから自動生成
+- アカウント設定画面でusername編集可能
+- プロフィールURLプレビュー機能
 
 ### 次のステップ（Phase 7: ブラッシュアップ）
 

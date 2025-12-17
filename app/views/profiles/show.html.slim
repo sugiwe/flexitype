@@ -5,8 +5,7 @@
       img.w-20.h-20.rounded-full.mr-4 src=@user.icon_url alt=@user.name
     .flex-1
       h2.text-3xl.font-bold.text-gray-800.dark:text-white = @user.name
-      / TODO: 将来的にusernameカラムを使用
-      p.text-gray-600.dark:text-gray-400.mt-1 = "@#{@user.id}"
+      p.text-gray-600.dark:text-gray-400.mt-1 = "@#{@user.username}"
 
 / 統計情報
 .grid.grid-cols-1.md:grid-cols-2.gap-6.mb-8
