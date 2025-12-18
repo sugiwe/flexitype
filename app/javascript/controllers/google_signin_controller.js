@@ -7,6 +7,11 @@ export default class extends Controller {
   }
 
   connect() {
+    // 既に初期化済みの場合はスキップ（重複初期化を防止）
+    if (this.element.dataset.googleSigninInitialized === 'true') {
+      return
+    }
+
     // Turboのページ遷移後、GISが既に読み込まれているか確認
     if (window.google?.accounts?.id) {
       this.initializeGoogleSignIn()
@@ -18,6 +23,7 @@ export default class extends Controller {
 
   disconnect() {
     // クリーンアップ（必要に応じて）
+    this.element.dataset.googleSigninInitialized = 'false'
   }
 
   waitForGoogleScript() {
@@ -62,6 +68,9 @@ export default class extends Controller {
         logo_alignment: 'left'
       }
     )
+
+    // 初期化完了フラグをセット
+    this.element.dataset.googleSigninInitialized = 'true'
   }
 
   handleCredentialResponse(response) {
