@@ -1,4 +1,6 @@
 class My::KeymapsController < My::ApplicationController
+  before_action :set_keymap_set, only: [ :edit, :update, :destroy ]
+
   def index
     # ユーザーのキーマップセット一覧を取得
     @keymap_sets = current_user.keymap_sets.order(created_at: :desc)
@@ -21,9 +23,6 @@ class My::KeymapsController < My::ApplicationController
   end
 
   def edit
-    # 編集対象のキーマップセットを取得
-    @keymap_set = current_user.keymap_sets.find(params[:id])
-
     # 編集画面を表示（デフォルトキーマップをベースにユーザーのキーマップをマージ）
     @keymaps = {}
     (0..5).each do |layer|
@@ -40,7 +39,6 @@ class My::KeymapsController < My::ApplicationController
 
   def update
     # キーマップを一括保存
-    keymap_set = current_user.keymap_sets.find(params[:id])
     keymaps_params = keymap_params
 
     ActiveRecord::Base.transaction do
@@ -49,7 +47,7 @@ class My::KeymapsController < My::ApplicationController
           next if char.blank?
 
           keymap = current_user.keymaps.find_or_initialize_by(
-            keymap_set: keymap_set,
+            keymap_set: @keymap_set,
             layer: layer.to_i,
             key_position: position
           )
@@ -68,19 +66,22 @@ class My::KeymapsController < My::ApplicationController
   def destroy
     # 特定のキーマップセットを削除
     # KeymapSetを削除すると、dependent: :destroyでKeymapも自動削除される
-    keymap_set = current_user.keymap_sets.find(params[:id])
 
     # 削除可能かチェック（最も古いキーマップセットは削除不可）
-    unless keymap_set.deletable?
+    unless @keymap_set.deletable?
       redirect_to my_keymaps_path, alert: "最初のキーマップは削除できません"
       return
     end
 
-    keymap_set.destroy!
-    redirect_to my_keymaps_path, notice: "キーマップ「#{keymap_set.name}」を削除しました"
+    @keymap_set.destroy!
+    redirect_to my_keymaps_path, notice: "キーマップ「#{@keymap_set.name}」を削除しました"
   end
 
   private
+
+  def set_keymap_set
+    @keymap_set = current_user.keymap_sets.find(params[:id])
+  end
 
   def keymap_set_params
     params.require(:keymap_set).permit(:name, :description)
