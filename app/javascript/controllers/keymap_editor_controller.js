@@ -98,6 +98,15 @@ export default class extends Controller {
       const position = keyElement.dataset.position
       const char = layerData[position] || "-"
       target.innerHTML = this.formatKeyDisplay(char)
+
+      // blankの場合は親要素に背景を設定
+      if (char && char.toLowerCase() === 'blank') {
+        keyElement.classList.add('bg-gray-600', 'dark:bg-gray-800')
+        keyElement.classList.remove('bg-white', 'dark:bg-gray-700')
+      } else {
+        keyElement.classList.remove('bg-gray-600', 'dark:bg-gray-800')
+        keyElement.classList.add('bg-white', 'dark:bg-gray-700')
+      }
     })
   }
 
@@ -106,12 +115,26 @@ export default class extends Controller {
     const charTarget = keyElement.querySelector("[data-keymap-editor-target='keyChar']")
     if (charTarget) {
       charTarget.innerHTML = this.formatKeyDisplay(char)
+
+      // blankの場合は親要素に背景を設定
+      if (char && char.toLowerCase() === 'blank') {
+        keyElement.classList.add('bg-gray-600', 'dark:bg-gray-800')
+        keyElement.classList.remove('bg-white', 'dark:bg-gray-700')
+      } else {
+        keyElement.classList.remove('bg-gray-600', 'dark:bg-gray-800')
+        keyElement.classList.add('bg-white', 'dark:bg-gray-700')
+      }
     }
   }
 
   // format_key_displayヘルパーのJavaScript版（2段表示対応）
   formatKeyDisplay(char) {
     if (!char || char === '-') return '<div class="text-xs text-gray-700 dark:text-gray-200">-</div>'
+
+    // blankの場合は✕マーク（背景は親要素で設定）
+    if (char.toLowerCase() === 'blank') {
+      return '<div class="text-base text-gray-300 dark:text-gray-400">✕</div>'
+    }
 
     // 特殊キーの表示名マッピング（1段表示）
     const specialKeys = {
@@ -123,13 +146,20 @@ export default class extends Controller {
       'del': 'Del',
       'layer1': 'Lyr1', 'lyr1': 'Lyr1',
       'layer2': 'Lyr2', 'lyr2': 'Lyr2',
+      'layer3': 'Lyr3', 'lyr3': 'Lyr3',
+      'layer4': 'Lyr4', 'lyr4': 'Lyr4',
+      'layer5': 'Lyr5', 'lyr5': 'Lyr5',
       'lower': 'Lower',
       'raise': 'Raise',
       'shift': 'Shift',
       'ctrl': 'Ctrl',
       'alt': 'Alt',
       'cmd': 'Cmd',
-      'caps': 'Caps'
+      'caps': 'Caps',
+      'fn': 'Fn',
+      'f1': 'F1', 'f2': 'F2', 'f3': 'F3', 'f4': 'F4',
+      'f5': 'F5', 'f6': 'F6', 'f7': 'F7', 'f8': 'F8',
+      'f9': 'F9', 'f10': 'F10', 'f11': 'F11', 'f12': 'F12'
     }
 
     const lowerChar = char.toLowerCase()

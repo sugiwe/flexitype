@@ -9,6 +9,11 @@ module ApplicationHelper
     # 文字列に変換
     char_str = char.to_s
 
+    # blankの場合は✕マーク（背景は親要素で設定）
+    if char_str.downcase == "blank"
+      return content_tag(:div, "✕", class: "text-base text-gray-300 dark:text-gray-400")
+    end
+
     # 特殊キーの表示名マッピング（1段表示）
     special_keys = {
       "spc" => "Spc",
@@ -29,8 +34,27 @@ module ApplicationHelper
       "lyr1" => "Lyr1",
       "layer2" => "Lyr2",
       "lyr2" => "Lyr2",
+      "layer3" => "Lyr3",
+      "lyr3" => "Lyr3",
+      "layer4" => "Lyr4",
+      "lyr4" => "Lyr4",
+      "layer5" => "Lyr5",
+      "lyr5" => "Lyr5",
       "lower" => "Lower",
-      "raise" => "Raise"
+      "raise" => "Raise",
+      "fn" => "Fn",
+      "f1" => "F1",
+      "f2" => "F2",
+      "f3" => "F3",
+      "f4" => "F4",
+      "f5" => "F5",
+      "f6" => "F6",
+      "f7" => "F7",
+      "f8" => "F8",
+      "f9" => "F9",
+      "f10" => "F10",
+      "f11" => "F11",
+      "f12" => "F12"
     }
 
     # 特殊キーの場合は1段表示

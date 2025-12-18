@@ -145,6 +145,32 @@
               .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.text-gray-700.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-lg.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=key
                 = key
 
+        / レイヤー切り替えキー
+        .mb-6
+          h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 レイヤー切り替え
+          .grid.gap-1.5 style="grid-template-columns: repeat(6, 3.5rem);"
+            - [['layer1', 'Lyr1'], ['layer2', 'Lyr2'], ['layer3', 'Lyr3'], ['layer4', 'Lyr4'], ['layer5', 'Lyr5'], ['lower', 'Lower'], ['raise', 'Raise']].each do |char, display|
+              .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.text-gray-700.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=char
+                = display
+
+        / ファンクションキー
+        .mb-6
+          h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 ファンクションキー
+          .grid.gap-1.5 style="grid-template-columns: repeat(13, 3.5rem);"
+            .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.text-gray-700.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char="fn"
+              | Fn
+            - (1..12).each do |num|
+              .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.text-gray-700.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char="f#{num}"
+                = "F#{num}"
+
+        / その他
+        .mb-6
+          h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 その他
+          .grid.gap-1.5 style="grid-template-columns: repeat(6, 3.5rem);"
+            - [['-', '-'], ['blank', '✕']].each do |char, display|
+              .key.border-2.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=char class=(char == 'blank' ? 'bg-gray-600 dark:bg-gray-800 border-gray-700 dark:border-gray-900 hover:border-gray-500 dark:hover:border-gray-700 text-gray-300 dark:text-gray-400' : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:border-green-400 dark:hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900 text-gray-700 dark:text-gray-200')
+                = display
+
   / 保存ボタン
   .mt-8.flex.justify-center.gap-4
     button.px-8.py-3.bg-blue-600.dark:bg-blue-700.text-white.text-lg.font-semibold.rounded-lg.hover:bg-blue-700.dark:hover:bg-blue-600.transition.shadow-lg type="button" data-action="click->keymap-editor#saveKeymap"
