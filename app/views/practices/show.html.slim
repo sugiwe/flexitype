@@ -114,30 +114,30 @@
               .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.text-gray-800.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-position=position
                 = format_key_display(char)
 
-      / 指ガイド
+      / 指ガイド（手の形を模したデザイン）
       .mt-8
         .flex.justify-center.gap-12
           / 左手ガイド
-          .flex.gap-1
-            .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.dark:border-gray-600.rounded.bg-red-100.dark:bg-red-900.transition data-finger="left-pinky"
+          .flex.gap-1.items-end
+            .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-b-0.border-gray-300.dark:border-gray-600.rounded-t-full.bg-red-100.dark:bg-red-900.transition.shadow-none data-finger="left-pinky"
               .text-xs.font-semibold.text-gray-800.dark:text-gray-200 小
-            .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.dark:border-gray-600.rounded.bg-yellow-100.dark:bg-yellow-900.transition data-finger="left-ring"
+            .finger-guide.w-12.h-18.flex.flex-col.items-center.justify-center.border-2.border-b-0.border-gray-300.dark:border-gray-600.rounded-t-full.bg-yellow-100.dark:bg-yellow-900.transition.shadow-none data-finger="left-ring"
               .text-xs.font-semibold.text-gray-800.dark:text-gray-200 薬
-            .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.dark:border-gray-600.rounded.bg-blue-100.dark:bg-blue-900.transition data-finger="left-middle"
+            .finger-guide.w-12.h-19.flex.flex-col.items-center.justify-center.border-2.border-b-0.border-gray-300.dark:border-gray-600.rounded-t-full.bg-blue-100.dark:bg-blue-900.transition.shadow-none data-finger="left-middle"
               .text-xs.font-semibold.text-gray-800.dark:text-gray-200 中
-            .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.dark:border-gray-600.rounded.bg-green-100.dark:bg-green-900.transition data-finger="left-index"
+            .finger-guide.w-12.h-18.flex.flex-col.items-center.justify-center.border-2.border-b-0.border-gray-300.dark:border-gray-600.rounded-t-full.bg-green-100.dark:bg-green-900.transition.shadow-none data-finger="left-index"
               .text-xs.font-semibold.text-gray-800.dark:text-gray-200 人
-            .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.dark:border-gray-600.rounded.bg-gray-100.dark:bg-gray-800.transition data-finger="left-thumb"
+            .finger-guide.w-12.h-8.flex.flex-col.items-center.justify-center.border-2.border-b-0.border-gray-300.dark:border-gray-600.rounded-t-full.bg-gray-100.dark:bg-gray-800.transition.shadow-none data-finger="left-thumb"
               .text-xs.font-semibold.text-gray-800.dark:text-gray-200 親
           / 右手ガイド
-          .flex.gap-1
-            .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.dark:border-gray-600.rounded.bg-gray-100.dark:bg-gray-800.transition data-finger="right-thumb"
+          .flex.gap-1.items-end
+            .finger-guide.w-12.h-8.flex.flex-col.items-center.justify-center.border-2.border-b-0.border-gray-300.dark:border-gray-600.rounded-t-full.bg-gray-100.dark:bg-gray-800.transition.shadow-none data-finger="right-thumb"
               .text-xs.font-semibold.text-gray-800.dark:text-gray-200 親
-            .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.dark:border-gray-600.rounded.bg-green-100.dark:bg-green-900.transition data-finger="right-index"
+            .finger-guide.w-12.h-18.flex.flex-col.items-center.justify-center.border-2.border-b-0.border-gray-300.dark:border-gray-600.rounded-t-full.bg-green-100.dark:bg-green-900.transition.shadow-none data-finger="right-index"
               .text-xs.font-semibold.text-gray-800.dark:text-gray-200 人
-            .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.dark:border-gray-600.rounded.bg-blue-100.dark:bg-blue-900.transition data-finger="right-middle"
+            .finger-guide.w-12.h-19.flex.flex-col.items-center.justify-center.border-2.border-b-0.border-gray-300.dark:border-gray-600.rounded-t-full.bg-blue-100.dark:bg-blue-900.transition.shadow-none data-finger="right-middle"
               .text-xs.font-semibold.text-gray-800.dark:text-gray-200 中
-            .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.dark:border-gray-600.rounded.bg-yellow-100.dark:bg-yellow-900.transition data-finger="right-ring"
+            .finger-guide.w-12.h-18.flex.flex-col.items-center.justify-center.border-2.border-b-0.border-gray-300.dark:border-gray-600.rounded-t-full.bg-yellow-100.dark:bg-yellow-900.transition.shadow-none data-finger="right-ring"
               .text-xs.font-semibold.text-gray-800.dark:text-gray-200 薬
-            .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-gray-300.dark:border-gray-600.rounded.bg-red-100.dark:bg-red-900.transition data-finger="right-pinky"
+            .finger-guide.w-12.h-12.flex.flex-col.items-center.justify-center.border-2.border-b-0.border-gray-300.dark:border-gray-600.rounded-t-full.bg-red-100.dark:bg-red-900.transition.shadow-none data-finger="right-pinky"
               .text-xs.font-semibold.text-gray-800.dark:text-gray-200 小

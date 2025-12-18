@@ -9,6 +9,11 @@ module ApplicationHelper
     # 文字列に変換
     char_str = char.to_s
 
+    # blankの場合は✕マーク（背景は親要素で設定）
+    if char_str.downcase == "blank"
+      return content_tag(:div, "✕", class: "text-base text-gray-300 dark:text-gray-400")
+    end
+
     # 特殊キーの表示名マッピング（1段表示）
     special_keys = {
       "spc" => "Spc",
@@ -22,6 +27,8 @@ module ApplicationHelper
       "ctrl" => "Ctrl",
       "alt" => "Alt",
       "cmd" => "Cmd",
+      "win" => "Win",
+      "menu" => "Menu",
       "caps" => "Caps",
       "esc" => "Esc",
       "del" => "Del",
@@ -29,28 +36,48 @@ module ApplicationHelper
       "lyr1" => "Lyr1",
       "layer2" => "Lyr2",
       "lyr2" => "Lyr2",
+      "layer3" => "Lyr3",
+      "lyr3" => "Lyr3",
+      "layer4" => "Lyr4",
+      "lyr4" => "Lyr4",
+      "layer5" => "Lyr5",
+      "lyr5" => "Lyr5",
       "lower" => "Lower",
-      "raise" => "Raise"
+      "raise" => "Raise",
+      "fn" => "Fn",
+      "f1" => "F1",
+      "f2" => "F2",
+      "f3" => "F3",
+      "f4" => "F4",
+      "f5" => "F5",
+      "f6" => "F6",
+      "f7" => "F7",
+      "f8" => "F8",
+      "f9" => "F9",
+      "f10" => "F10",
+      "f11" => "F11",
+      "f12" => "F12"
     }
 
     # 特殊キーの場合は1段表示
     if special_keys[char_str.downcase]
-      return content_tag(:div, special_keys[char_str.downcase], class: "text-xs")
+      return content_tag(:div, special_keys[char_str.downcase], class: "text-xs text-gray-700 dark:text-gray-200")
     end
 
     # "Q|q" や "!|1" 形式の場合は2段表示
+    # 上段: 小さめ・グレー、下段: 大きめ・太字・黒
     if char_str.include?("|")
       parts = char_str.split("|")
       upper = parts[0] || ""
       lower = parts[1] || ""
 
       return content_tag(:div, class: "flex flex-col items-center justify-center h-full") do
-        content_tag(:div, upper, class: "text-xs leading-none") +
-        content_tag(:div, lower, class: "text-xs leading-none mt-0.5")
+        content_tag(:div, upper, class: "text-xs text-gray-400 dark:text-gray-400 mb-1") +
+        content_tag(:div, lower, class: "text-base font-semibold text-gray-700 dark:text-gray-200")
       end
     end
 
     # 単一文字の場合
-    content_tag(:div, char_str, class: "text-xs")
+    content_tag(:div, char_str, class: "text-xs text-gray-700 dark:text-gray-200")
   end
 end

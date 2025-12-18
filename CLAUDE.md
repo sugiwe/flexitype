@@ -730,7 +730,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 🎯 現在の進捗状況
 
-**Day 17 完了（2025-12-17 時点）**
+**Day 18 完了（2025-12-18 時点）**
 
 ### 完了した機能
 
@@ -743,44 +743,67 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ 本番環境デプロイ（https://typnix.com）
 - ✅ セキュリティ強化（Brakeman 警告 0 件）
 - ✅ **練習ページの個別URL化（数値IDベース）** ← Day 17 で完了
-
 - ✅ **URL構造の全面的な整理** ← Day 17 で完了
 - ✅ **ユーザー名（username）機能の実装** ← Day 17 で完了
+- ✅ **キーマップ複数管理機能（KeymapSet）の基盤実装** ← Day 18 で完了
+- ✅ **キーボードタイプ選択UI（Phase 0）** ← Day 18 で完了
+- ✅ **UI/UX改善（キーマップ表示統一、指ガイドデザイン）** ← Day 18 で完了
 
-### 最近の更新（Day 17）
+### 最近の更新
 
-**1. 練習ページの個別URL化（数値IDベース）**
-- URL形式: `/practice?category=xxx&lesson=xxx` → `/practices/:id`
-- 全16レッスンに数値ID（1-16）を割り当て
-- Rails標準の`resources`ルーティングを使用
-- DB化を見据えた拡張性の高い設計
+**Day 18（2025-12-18）:**
+- **KeymapSet モデルの実装（複数キーマップ管理の基盤）**
+  - KeymapSet + KeymapLayer モデルの作成
+  - 既存の Keymap データを新構造に移行するマイグレーション
+  - RESTful なルーティング設計（`/my/keymaps`）
+  - データベース設計の変更により、将来的な機能拡張の基盤が整った
+- **キーマップ表示の統一（2段レイアウト）**
+  - デリミタを `/` から `|` に統一（`Q|q`, `!|1` 形式）
+  - Ruby（ApplicationHelper）と JavaScript の両方で統一実装
+  - ダークモード対応の強化
+- **キーボードタイプ選択UI（Phase 0）の実装**
+  - キーマップ設定画面にキーボードタイプ選択ドロップダウンを追加
+  - 現在は「4×6 - 分割型・オーソリニア」のみ選択可能
+  - 将来の拡張予告メッセージを表示
+  - 詳細設計は `CLAUDE_KEYBOARD_TYPE_DESIGN.md` に記載
+- **キーマップ設定 UI の改善**
+  - 文字割り当てセクションを 7 → 6 セクションに統合
+  - 「基本操作」セクションを新設（未設定、キーなし、スペース）
+  - Fn キーと F1-F12 の表示名を追加
+- **プロフィール導線の改善**
+  - サイドバーの「プロフィール」リンクを削除
+  - マイページに「自分のプロフィール」カードを追加（ID カード風アイコン）
+- **指ガイドのデザイン改善**
+  - 指ごとに異なる高さを設定（手の形を模した表示）
+  - 上部を完全な半円形に（`rounded-t-full`）
+  - 底辺で揃えて自然な手の形状を再現
 
-**2. URL構造の全面的な整理**
-- `/my`名前空間による個人ページの整理
-  - `/history` → `/my/history`
-  - `/keymaps/current/edit` → `/my/keymaps/1/edit`
-  - 新規: `/my`（マイページ）
-  - 新規: `/my/account/edit`（アカウント設定）
-- `My::ApplicationController`でDRY原則に従い認証ロジックを集約
-- RESTful設計（`resource :account`, `resources :keymaps`）
-
-**3. ユーザー名（username）機能の実装**
-- `/@username`形式のプロフィールページ
-- Gmail互換のバリデーション（ドット、ハイフン、アンダースコア対応）
-- 初回ログイン時にGmailアドレスから自動生成
-- アカウント設定画面でusername編集可能
-- プロフィールURLプレビュー機能
+**Day 17（2025-12-17）:**
+- **練習ページの個別URL化（数値IDベース）**
+  - URL形式: `/practice?category=xxx&lesson=xxx` → `/practices/:id`
+  - 全16レッスンに数値ID（1-16）を割り当て
+  - Rails標準の`resources`ルーティングを使用
+  - DB化を見据えた拡張性の高い設計
+- **URL構造の全面的な整理**
+  - `/my`名前空間による個人ページの整理
+  - `My::ApplicationController`でDRY原則に従い認証ロジックを集約
+  - RESTful設計（`resource :account`, `resources :keymaps`）
+- **ユーザー名（username）機能の実装**
+  - `/@username`形式のプロフィールページ
+  - Gmail互換のバリデーション
+  - 初回ログイン時にGmailアドレスから自動生成
 
 ### 次のステップ（Phase 7: ブラッシュアップ）
 
 **Week 1: 基盤整備**
-- Day 18: アクセス制御の実装（ログイン必須レッスンの制限）
-- Day 19: Googleツール導入（GTM + GA4 + プライバシーポリシー更新）
+- ✅ Day 18: KeymapSet モデルの基盤実装、UI/UX 改善
+- Day 19: キーマップ一覧ページの実装、新規作成・削除機能
+- Day 20: Google ツール導入（GTM + GA4 + プライバシーポリシー更新）
 
 **Week 2: 機能拡張**
-- Day 20: トップページ改修（練習増加 + タブ化）
-- Day 21-22: その他の改善（エラーページ、キーマップ設定など）
-- Day 23-24: バグ修正、パフォーマンス最適化
+- Day 21: トップページ改修（練習増加 + タブ化）
+- Day 22-23: その他の改善（エラーページ、アクセス制御など）
+- Day 24: バグ修正、パフォーマンス最適化
 - Day 25: 最終チェック、ドキュメント整備
 
 ### 技術的マイルストーン
@@ -789,76 +812,133 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 主要機能（練習、キーマップ設定、履歴）がすべて完成し、本番環境で稼働中
 - セキュリティ、レスポンシブ対応、ダークモードなど、プロダクション品質のアプリケーションとして完成度が高い状態
 - Day 17: 数値IDベースのURL設計により、将来的なDB化の基盤が整った
+- Day 18: KeymapSet モデルの実装により、複数キーマップ管理の基盤が完成
 
 ---
 
 ## 🗺 将来的な拡張計画
 
+### キーボードタイプ対応の拡張設計（Phase Y）
+
+**現状の課題:**
+- 現在は4x6（4行6列）の分割型配列が固定（特定キーボード専用）
+- キーボードの物理形状・キー数がViewとYAMLファイルにハードコーディング
+- 異なるキーボード（Corne、Lily58、5x6配列など）に対応できない
+- キーの位置表記（`L0-R0`形式）がキーボード固有
+
+**将来の目標:**
+- 複数のキーボードタイプに対応（Corne、Lily58、5x6配列など）
+- キーボードごとの物理配列情報をデータで管理
+- ユーザーがキーマップ作成時にキーボードタイプを選択
+- キーボードタイプに応じた練習画面・設定画面の自動生成
+
+**実装状況:**
+- ✅ **Phase 0: UI準備（Day 18完了）**
+  - キーマップ設定画面にキーボードタイプ選択ドロップダウンを追加
+  - デフォルトで「4×6 - 分割型・オーソリニア」が選択済み
+  - 将来の拡張予告メッセージを表示
+  - キーボードタイプは開発側が管理（ユーザーが自由に追加できない設計）
+
+- 🔜 **Phase 0.5: 準備（KeymapSet基盤整備後）**
+  - 現状のハードコーディングされたUIを動的生成に置き換える実験
+
+- 🔜 **Phase 1以降（将来実装）**
+  - KeyboardTypeモデルの作成
+  - JSONB型の`layout_data`カラムでキーボード情報を管理
+  - UI動的生成対応
+  - 複数キーボードタイプの追加
+
+**詳細設計:**
+- `CLAUDE_KEYBOARD_TYPE_DESIGN.md` に詳細な設計ドキュメントを記載
+- JSON形式でキーボードレイアウト情報を管理
+- 指の割り当て、オフセット、キーサイズなどを含む
+- 段階的な実装アプローチを定義
+
+---
+
 ### キーマップ機能の拡張設計（Phase X）
 
 **現状の課題:**
-- ユーザーごとに1つのキーマップのみ（`/my/keymaps/1`固定）
-- 複数のキーマップを管理できない
+- ユーザーごとに1つのキーマップのみ（6レイヤー × 約40キー = 約240レコード）
+- 複数のキーマップを管理できない（用途別に使い分けられない）
+- キーマップに名前や説明をつけられない
 - キーマップの公開・共有機能がない
 
 **将来の目標:**
 - 複数キーマップ管理（無課金2つ、課金5つまで）
+- キーマップに名前と説明を設定可能
 - キーマップの公開・共有機能
 - 他ユーザーのキーマップをフォーク（コピー）
 
-#### データベース設計（RESTful分割案）
+#### データベース設計
+
+**現状の階層構造:**
+```
+User (1ユーザー)
+  └─ Keymap (約240レコード) ← 実質1つのキーマップセット
+       ├─ Layer 0 の各キー配置
+       ├─ Layer 1 の各キー配置
+       └─ ... Layer 5まで
+```
+
+**拡張後の階層構造:**
+```
+User (1ユーザー)
+  ├─ KeymapSet (例: "プログラミング用")
+  │    └─ Keymap (約240レコード) ← 6レイヤー分
+  ├─ KeymapSet (例: "ゲーム用")
+  │    └─ Keymap (約240レコード)
+  └─ KeymapSet (例: "日常用")
+       └─ Keymap (約240レコード)
+```
 
 **KeymapSet モデル（キーマップセット）**
 ```ruby
 class KeymapSet < ApplicationRecord
   belongs_to :user
-  has_many :keymap_layers, dependent: :destroy
+  has_many :keymaps, dependent: :destroy  # 既存のKeymapモデルを再利用
 
   # カラム
-  - name: string (キーマップ名、例: "デフォルト", "プログラミング用")
-  - description: text (キーマップの説明、nullable)
-  - is_public: boolean (公開設定、デフォルト: false)
-  - share_token: string (公開用トークン、unique、インデックス)
-  - forked_from_id: integer (フォーク元のKeymap SetID、nullable)
+  - user_id: references users, not null
+  - name: string (max: 50, not null) ← キーマップ名
+  - description: text (max: 500, nullable) ← キーマップの説明
+  - is_public: boolean (default: false, not null) ← 公開設定
+  - forked_from_id: integer (nullable) ← フォーク元のKeymap Set ID
   - created_at, updated_at
-
-  # アソシエーション
-  - belongs_to :user
-  - has_many :keymap_layers, dependent: :destroy
 
   # バリデーション
   - validates :name, presence: true, length: { maximum: 50 }
-  - validates :description, length: { maximum: 500 }
+  - validates :description, length: { maximum: 500 }, allow_blank: true
   - validate :check_user_keymap_limit
 
   # スコープ
-  - scope :public_keymaps, -> { where(is_public: true) }
-
-  # メソッド
-  - generate_share_token: 公開時にトークンを生成
-  - fork_to(user): 別のユーザーにフォーク
+  - scope :published, -> { where(is_public: true) }
 end
 ```
 
-**KeymapLayer モデル（各レイヤーのキー配置）**
+**Keymap モデル（既存を拡張）**
 ```ruby
-class KeymapLayer < ApplicationRecord
-  belongs_to :keymap_set
+class Keymap < ApplicationRecord
+  belongs_to :user
+  belongs_to :keymap_set  # 必須（データ整合性重視）
 
-  # カラム
-  - keymap_set_id: references KeymapSet
-  - layer: integer (0-5)
-  - key_position: string (例: "L0-R0")
-  - character: string (max: 20)
+  # 既存のカラム
+  - user_id: references users, not null
+  - layer: integer (0-5, not null)
+  - key_position: string (例: "L0-R0", not null)
+  - character: string (max: 20, not null)
   - created_at, updated_at
 
-  # インデックス
-  - [keymap_set_id, layer, key_position], unique: true
+  # 追加カラム
+  - keymap_set_id: references keymap_sets, not null ← NEW!
 
-  # バリデーション
-  - validates :layer, presence: true, inclusion: { in: 0..5 }
-  - validates :key_position, presence: true
-  - validates :character, presence: true, length: { maximum: 20 }
+  # 既存のインデックス
+  - [user_id, layer, key_position], unique: true
+
+  # 追加インデックス
+  - [keymap_set_id, layer, key_position], unique: true ← NEW!
+
+  # 既存のバリデーション・メソッドはそのまま
 end
 ```
 
@@ -866,42 +946,64 @@ end
 
 **個人のキーマップ管理（認証必須、`/my`配下）**
 ```ruby
-GET    /my/keymaps          # キーマップ一覧
-GET    /my/keymaps/new      # 新規作成フォーム
-POST   /my/keymaps          # 新規作成
-GET    /my/keymaps/:id      # 詳細表示
-GET    /my/keymaps/:id/edit # 編集フォーム
-PATCH  /my/keymaps/:id      # 更新
-DELETE /my/keymaps/:id      # 削除
+GET    /my/keymaps                    # キーマップ一覧
+GET    /my/keymaps/new                # 新規作成フォーム
+POST   /my/keymaps                    # 新規作成（fork_from_idパラメータでフォーク対応）
+GET    /my/keymaps/:id                # 詳細表示（読み取り専用）
+GET    /my/keymaps/:id/edit           # 編集フォーム（名前・説明 + 6レイヤーのキー配置）
+PATCH  /my/keymaps/:id                # 更新
+DELETE /my/keymaps/:id                # 削除
 ```
 
 **公開キーマップ（認証不要、`/@username`配下）**
 ```ruby
-GET    /@:username/keymaps          # ユーザーの公開キーマップ一覧
-GET    /@:username/keymaps/:id      # 特定の公開キーマップ詳細
-POST   /@:username/keymaps/:id/fork # フォーク（要認証）
+GET    /@:username/keymaps            # ユーザーの公開キーマップ一覧
+GET    /@:username/keymaps/:id        # 特定の公開キーマップ詳細（読み取り専用）
+                                       # 「フォークする」ボタン → POST /my/keymaps?fork_from_id=:id
 ```
+
+**フォーク機能の設計:**
+```ruby
+# /@username/keymaps/:id のページに「フォークする」ボタンを設置
+# ボタンクリック → POST /my/keymaps (body: { fork_from_id: :id })
+# My::KeymapsController#create で fork_from_id があればコピー処理を実行
+
+def create
+  if params[:fork_from_id].present?
+    fork_keymap_set(params[:fork_from_id])  # 既存のキーマップをコピー
+  else
+    create_new_keymap_set                    # 通常の新規作成
+  end
+end
+```
+
+**設計のポイント:**
+- YAGNI原則に従い、`share_token` は削除（数値IDで十分）
+- 既存の Keymap モデルを再利用（新しい KeymapLayer モデルは作らない）
+- フォーク機能は RESTful に `POST /my/keymaps` で実装（パラメータでフォーク元を指定）
 
 #### 段階的な実装アプローチ
 
-**Phase 1: 現状維持（緊急修正のみ）**
-- 2025-12-17 完了
-- JavaScript URL修正（`/my/keymaps/1`に対応）
-- デフォルトに戻す機能（DELETE リクエストで全削除）
+**Phase 1: 基盤整備（Day 18 で実施）**
+- KeymapSet モデルの作成
+- Keymap モデルに `keymap_set_id` カラムを追加
+- 既存データの移行（各ユーザーに「デフォルト」という名前の KeymapSet を作成）
+- モデルのアソシエーションとバリデーションを実装
+- 開発環境で動作確認
 
-**Phase 2: 複数キーマップ対応**
-- KeymapSet + KeymapLayer モデルの作成
-- マイグレーション：既存Keymapデータを移行
+**Phase 2: 複数キーマップ対応（将来実装）**
 - `/my/keymaps` 一覧ページの実装
-- 新規作成・削除機能の実装
+- `/my/keymaps/new` 新規作成フォームの実装
+- `/my/keymaps/:id/edit` 編集フォームの実装（既存のUIを流用）
 - 無課金ユーザーは2つまで制限（`check_user_keymap_limit`バリデーション）
 - 将来の課金ユーザーは5つまで
 
-**Phase 3: 公開・共有機能**
-- `is_public`, `share_token` カラムの活用
+**Phase 3: 公開・共有機能（将来実装）**
+- `is_public` カラムの活用
 - 公開設定UI（トグルボタン）
-- `/@username/keymaps`での公開キーマップ一覧表示
-- フォーク機能の実装
+- `/@username/keymaps` での公開キーマップ一覧表示
+- `/@username/keymaps/:id` での公開キーマップ詳細表示
+- フォーク機能の実装（`POST /my/keymaps?fork_from_id=:id`）
 - フォーク元のリンク表示
 
 #### 機能要件
@@ -948,25 +1050,77 @@ POST   /@:username/keymaps/:id/fork # フォーク（要認証）
 
 #### 実装時の注意点
 
-**マイグレーション:**
-- 既存のKeymapデータをKeymapSetとKeymap Layerに移行
-- ユーザーごとに「デフォルト」という名前のKeymap Setを作成
-- データの整合性を保つため、トランザクション内で処理
+**Phase 1: マイグレーション（Day 18）完了**
+```ruby
+# 1つのマイグレーションで完結（データ整合性重視）
+def up
+  # 1. keymap_sets テーブルを作成
+  create_table :keymap_sets do |t|
+    t.references :user, null: false, foreign_key: true
+    t.string :name, null: false, limit: 50
+    t.text :description, limit: 500
+    t.boolean :is_public, default: false, null: false
+    t.integer :forked_from_id
+    t.timestamps
+  end
+  add_index :keymap_sets, [:user_id, :name]
 
-**制限の実装:**
-- `check_user_keymap_limit`バリデーションで、ユーザーのキーマップ数をチェック
+  # 2. keymaps テーブルに keymap_set_id を追加（まずは nullable）
+  add_reference :keymaps, :keymap_set, foreign_key: true
+
+  # 3. 既存データの移行
+  User.find_each do |user|
+    next unless user.keymaps.exists?
+
+    keymap_set = user.keymap_sets.create!(
+      name: "デフォルト",
+      description: "初期キーマップ",
+      is_public: false
+    )
+    user.keymaps.update_all(keymap_set_id: keymap_set.id)
+  end
+
+  # 4. keymap_set_id を NOT NULL に変更（データ移行完了後）
+  change_column_null :keymaps, :keymap_set_id, false
+
+  # 5. インデックスを追加
+  add_index :keymaps, [:keymap_set_id, :layer, :key_position], unique: true
+end
+```
+
+**設計のポイント:**
+- 3つのマイグレーションを1つにまとめることで、一時的な不整合状態を回避
+- データ移行完了後に `NOT NULL` 制約を追加することで、データ整合性を保証
+- `optional: true` を使わず、すべてのKeymapは必ずKeymap Setに属する設計
+
+**Phase 2: 制限の実装（将来）**
+- `check_user_keymap_limit` バリデーションで、ユーザーのキーマップ数をチェック
 - 無課金ユーザー: 2つまで
 - 課金ユーザー（将来）: 5つまで
 - 制限に達している場合は、新規作成ボタンを非表示にし、エラーメッセージを表示
 
-**公開設定:**
-- デフォルトは非公開（`is_public: false`）
-- 公開時に`share_token`を自動生成（SecureRandom.urlsafe_base64(16)など）
-- 公開URLは`/@username/keymaps/:id`形式
+**Phase 3: フォーク機能の実装（将来）**
+```ruby
+# フォーク処理の実装例
+def fork_keymap_set(original_id)
+  original = KeymapSet.published.find(original_id)
 
-**フォーク機能:**
-- フォーク時に、元のKeymap SetのKeymap Layerを全てコピー
-- `forked_from_id`に元のKeymap Set IDを保存
-- フォーク元のリンクを表示して、クレジットを明示
+  @keymap_set = original.dup
+  @keymap_set.user = current_user
+  @keymap_set.forked_from_id = original.id
+  @keymap_set.is_public = false
+  @keymap_set.save!
+
+  # 関連する Keymap もコピー
+  original.keymaps.each do |keymap|
+    @keymap_set.keymaps.create!(
+      user: current_user,
+      layer: keymap.layer,
+      key_position: keymap.key_position,
+      character: keymap.character
+    )
+  end
+end
+```
 
 ---

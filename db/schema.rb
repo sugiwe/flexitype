@@ -10,17 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_17_022209) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_17_205824) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "keymap_sets", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "forked_from_id"
+    t.boolean "is_public", default: false, null: false
+    t.string "name", limit: 50, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "name"], name: "index_keymap_sets_on_user_id_and_name"
+    t.index ["user_id"], name: "index_keymap_sets_on_user_id"
+  end
 
   create_table "keymaps", force: :cascade do |t|
     t.string "character", null: false
     t.datetime "created_at", null: false
     t.string "key_position", null: false
+    t.bigint "keymap_set_id", null: false
     t.integer "layer", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["keymap_set_id", "layer", "key_position"], name: "index_keymaps_on_keymap_set_and_layer_and_position", unique: true
+    t.index ["keymap_set_id"], name: "index_keymaps_on_keymap_set_id"
     t.index ["user_id", "layer", "key_position"], name: "index_keymaps_on_user_id_and_layer_and_key_position", unique: true
     t.index ["user_id"], name: "index_keymaps_on_user_id"
   end
@@ -57,6 +72,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_17_022209) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "keymap_sets", "users"
+  add_foreign_key "keymaps", "keymap_sets"
   add_foreign_key "keymaps", "users"
   add_foreign_key "typing_sessions", "users"
 end

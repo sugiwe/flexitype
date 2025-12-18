@@ -362,12 +362,26 @@ export default class extends Controller {
       const char = keyElement.dataset[`layer${layer}`] || '-'
       // 2段表示のHTMLを生成
       keyElement.innerHTML = this.formatKeyDisplay(char)
+
+      // blankの場合は親要素に背景を設定
+      if (char && char.toLowerCase() === 'blank') {
+        keyElement.classList.add('bg-gray-600', 'dark:bg-gray-800')
+        keyElement.classList.remove('bg-white', 'dark:bg-gray-700', 'bg-red-100', 'bg-yellow-100', 'bg-blue-100', 'bg-green-100', 'bg-gray-100')
+      } else {
+        keyElement.classList.remove('bg-gray-600', 'dark:bg-gray-800')
+        // 指の色は highlightKey メソッドで設定されるのでここでは削除のみ
+      }
     })
   }
 
   // format_key_displayヘルパーのJavaScript版（2段表示対応）
   formatKeyDisplay(char) {
-    if (!char) return '<div class="text-xs">-</div>'
+    if (!char) return '<div class="text-xs text-gray-700 dark:text-gray-200">-</div>'
+
+    // blankの場合は✕マーク（背景は親要素で設定）
+    if (char.toLowerCase() === 'blank') {
+      return '<div class="text-base text-gray-300 dark:text-gray-400">✕</div>'
+    }
 
     // 特殊キーの表示名マッピング（1段表示）
     const specialKeys = {
@@ -379,21 +393,29 @@ export default class extends Controller {
       'del': 'Del',
       'layer1': 'Lyr1', 'lyr1': 'Lyr1',
       'layer2': 'Lyr2', 'lyr2': 'Lyr2',
+      'layer3': 'Lyr3', 'lyr3': 'Lyr3',
+      'layer4': 'Lyr4', 'lyr4': 'Lyr4',
+      'layer5': 'Lyr5', 'lyr5': 'Lyr5',
       'lower': 'Lower',
       'raise': 'Raise',
       'shift': 'Shift',
       'ctrl': 'Ctrl',
       'alt': 'Alt',
       'cmd': 'Cmd',
-      'caps': 'Caps'
+      'caps': 'Caps',
+      'fn': 'Fn',
+      'f1': 'F1', 'f2': 'F2', 'f3': 'F3', 'f4': 'F4',
+      'f5': 'F5', 'f6': 'F6', 'f7': 'F7', 'f8': 'F8',
+      'f9': 'F9', 'f10': 'F10', 'f11': 'F11', 'f12': 'F12'
     }
 
     const lowerChar = char.toLowerCase()
     if (specialKeys[lowerChar]) {
-      return `<div class="text-xs">${specialKeys[lowerChar]}</div>`
+      return `<div class="text-xs text-gray-700 dark:text-gray-200">${specialKeys[lowerChar]}</div>`
     }
 
     // "Q|q" や "!|1" 形式の場合は2段表示
+    // 上段: 小さめ・グレー、下段: 大きめ・太字・黒
     if (char.includes('|')) {
       const parts = char.split('|')
       const upper = parts[0] || ''
@@ -401,14 +423,14 @@ export default class extends Controller {
 
       return `
         <div class="flex flex-col items-center justify-center h-full">
-          <div class="text-xs leading-none">${upper}</div>
-          <div class="text-xs leading-none mt-0.5">${lower}</div>
+          <div class="text-xs text-gray-400 dark:text-gray-400 mb-1">${upper}</div>
+          <div class="text-base font-semibold text-gray-700 dark:text-gray-200">${lower}</div>
         </div>
       `
     }
 
     // 単一文字の場合
-    return `<div class="text-xs">${char}</div>`
+    return `<div class="text-xs text-gray-700 dark:text-gray-200">${char}</div>`
   }
 
   // 次に打つべきキーをハイライト（レイヤー自動判定付き）
