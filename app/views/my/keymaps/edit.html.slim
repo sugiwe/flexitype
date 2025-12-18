@@ -1,9 +1,14 @@
 / ページヘッダー
 .mb-6
-  h2.text-3xl.font-bold.text-gray-800.dark:text-white キーマップ設定
+  .flex.justify-between.items-center
+    div
+      h2.text-3xl.font-bold.text-gray-800.dark:text-white = @keymap_set.name
+      - if @keymap_set.description.present?
+        p.text-gray-600.dark:text-gray-400.mt-2 = @keymap_set.description
+    = link_to "← 一覧に戻る", my_keymaps_path, class: "px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
 
 / メインエリア
-.bg-white.dark:bg-gray-800.rounded-lg.shadow-lg.p-8.transition-colors data-controller="keymap-editor" data-keymap-editor-existing-keymaps-value=@keymaps.to_json
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-lg.p-8.transition-colors data-controller="keymap-editor" data-keymap-editor-existing-keymaps-value=@keymaps.to_json data-keymap-editor-keymap-set-id-value=@keymap_set.id
   / 説明文
   .mb-6.p-4.bg-blue-50.dark:bg-blue-900.border-l-4.border-blue-500.dark:border-blue-400.rounded.transition-colors
     p.text-gray-800.dark:text-gray-100.font-semibold.mb-2 📍 キーマップ設定の目的

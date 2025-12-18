@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["selectedDisplay", "candidateGroup", "keyChar", "saveStatus"]
-  static values = { existingKeymaps: Object }
+  static values = { existingKeymaps: Object, keymapSetId: Number }
 
   connect() {
     console.log("Keymap editor controller connected")
@@ -216,7 +216,8 @@ export default class extends Controller {
 
     try {
       const csrfToken = document.querySelector("[name='csrf-token']").content
-      const response = await fetch("/my/keymaps/1", {
+      const keymapSetId = this.keymapSetIdValue
+      const response = await fetch(`/my/keymaps/${keymapSetId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -258,7 +259,8 @@ export default class extends Controller {
 
     try {
       const csrfToken = document.querySelector("[name='csrf-token']").content
-      const response = await fetch("/my/keymaps/1", {
+      const keymapSetId = this.keymapSetIdValue
+      const response = await fetch(`/my/keymaps/${keymapSetId}`, {
         method: "DELETE",
         headers: {
           "X-CSRF-Token": csrfToken

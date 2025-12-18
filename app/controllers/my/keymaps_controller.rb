@@ -1,17 +1,38 @@
 class My::KeymapsController < My::ApplicationController
   def index
-    # 全レイヤーのキーマップを取得
-    @keymaps = current_user.keymaps.group_by(&:layer)
+    # ユーザーのキーマップセット一覧を取得
+    @keymap_sets = current_user.keymap_sets.order(created_at: :desc)
+  end
+
+  def new
+    # 新規キーマップセット作成フォーム
+    @keymap_set = current_user.keymap_sets.build
+  end
+
+  def create
+    # 新規キーマップセットを作成
+    @keymap_set = current_user.keymap_sets.build(keymap_set_params)
+
+    if @keymap_set.save
+      redirect_to edit_my_keymap_path(@keymap_set), notice: "キーマップ「#{@keymap_set.name}」を作成しました。キー配置を設定してください。"
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def edit
+    # 編集対象のキーマップセットを取得
+    @keymap_set = current_user.keymap_sets.find(params[:id])
+
     # 編集画面を表示（デフォルトキーマップをベースにユーザーのキーマップをマージ）
     @keymaps = {}
     (0..5).each do |layer|
       # デフォルトキーマップを取得
       default_keymap = Keymap.default_keymap[layer] || {}
-      # ユーザーのキーマップを取得
-      user_keymap = Keymap.for_user_layer(current_user.id, layer)
+      # このキーマップセットのキーマップを取得
+      user_keymap = Keymap.where(keymap_set: @keymap_set, layer: layer)
+                          .pluck(:key_position, :character)
+                          .to_h
       # デフォルトにユーザーのキーマップをマージ（ユーザーの設定が優先）
       @keymaps[layer] = default_keymap.merge(user_keymap)
     end
@@ -19,16 +40,10 @@ class My::KeymapsController < My::ApplicationController
 
   def update
     # キーマップを一括保存
+    keymap_set = current_user.keymap_sets.find(params[:id])
     keymaps_params = keymap_params
 
     ActiveRecord::Base.transaction do
-      # ユーザーのKeymap Setを取得または作成
-      keymap_set = current_user.keymap_sets.first_or_create!(
-        name: "デフォルト",
-        description: "マイキーマップ",
-        is_public: false
-      )
-
       keymaps_params.each do |layer, keymap_hash|
         keymap_hash.each do |position, char|
           next if char.blank?
@@ -51,13 +66,25 @@ class My::KeymapsController < My::ApplicationController
   end
 
   def destroy
-    # ユーザーのキーマップセットを全削除（デフォルトに戻す）
+    # 特定のキーマップセットを削除
     # KeymapSetを削除すると、dependent: :destroyでKeymapも自動削除される
-    current_user.keymap_sets.destroy_all
-    head :ok
+    keymap_set = current_user.keymap_sets.find(params[:id])
+
+    # 削除可能かチェック（最も古いキーマップセットは削除不可）
+    unless keymap_set.deletable?
+      redirect_to my_keymaps_path, alert: "最初のキーマップは削除できません"
+      return
+    end
+
+    keymap_set.destroy!
+    redirect_to my_keymaps_path, notice: "キーマップ「#{keymap_set.name}」を削除しました"
   end
 
   private
+
+  def keymap_set_params
+    params.require(:keymap_set).permit(:name, :description)
+  end
 
   def keymap_params
     # keymapsパラメータを許可（ネストしたハッシュ形式）
