@@ -92,32 +92,8 @@
     / Googleログインボタン + ヘルプアイコン
     .flex.items-center.gap-2
       / Googleログインボタン（70%）
-      .flex-grow data-turbo="false"
-        #g_id_onload data-client_id=Rails.application.credentials.dig(:google, :client_id) data-callback="handleCredentialResponse" data-auto_prompt="false"
-        .g_id_signin data-type="standard" data-size="medium" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left"
-
-      javascript:
-        function handleCredentialResponse(response) {
-          fetch('/auth/google', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ credential: response.credential })
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              window.location.href = data.redirect_url;
-            } else {
-              alert('ログインに失敗しました: ' + (data.error || '不明なエラー'));
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            alert('ログインエラーが発生しました');
-          });
-        }
+      .flex-grow data-controller="google-signin" data-google-signin-client-id-value=Rails.application.credentials.dig(:google, :client_id)
+        .g_id_signin
 
       / ヘルプアイコン
       .relative data-controller="help-menu"
