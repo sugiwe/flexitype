@@ -13,6 +13,18 @@
     p.text-gray-700.dark:text-gray-200.text-sm
       | キーボードから設定したいキーをクリック → 下の候補から文字を選択 → 保存ボタンを押してください。
 
+  / キーボードタイプ選択
+  .mb-6
+    label.block.text-sm.font-semibold.text-gray-700.dark:text-gray-200.mb-2
+      | ⌨️ キーボードタイプ
+    .relative
+      select.w-full.px-4.py-3.pr-10.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.rounded-lg.text-gray-900.dark:text-gray-100.focus:border-blue-500.dark:focus:border-blue-400.focus:outline-none.transition.appearance-none.cursor-pointer
+        option value="split_4x6" selected=true 4×6 - 分割型・オーソリニア
+        option disabled=true 今後、他のキーボードタイプの対応を予定しています
+      .pointer-events-none.absolute.inset-y-0.right-0.flex.items-center.px-3.text-gray-500.dark:text-gray-400
+        svg.w-5.h-5 fill="currentColor" viewBox="0 0 20 20"
+          path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"
+
   / レイヤー切り替え
   .mb-8.text-center
     .inline-flex.gap-2.p-2.bg-gray-100.dark:bg-gray-700.rounded-lg.transition-colors
