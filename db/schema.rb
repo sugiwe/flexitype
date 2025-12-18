@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_17_205824) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_18_211331) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -36,7 +36,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_17_205824) do
     t.bigint "user_id", null: false
     t.index ["keymap_set_id", "layer", "key_position"], name: "index_keymaps_on_keymap_set_and_layer_and_position", unique: true
     t.index ["keymap_set_id"], name: "index_keymaps_on_keymap_set_id"
-    t.index ["user_id", "layer", "key_position"], name: "index_keymaps_on_user_id_and_layer_and_key_position", unique: true
     t.index ["user_id"], name: "index_keymaps_on_user_id"
   end
 
