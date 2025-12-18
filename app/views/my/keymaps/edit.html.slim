@@ -156,8 +156,8 @@
         / 特殊キー
         .mb-6
           h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 特殊キー
-          .grid.gap-1.5 style="grid-template-columns: repeat(9, 3.5rem);"
-            - [['ent', 'Ent'], ['tab', 'Tab'], ['bs', 'BS'], ['esc', 'Esc'], ['del', 'Del'], ['shift', 'Shift'], ['ctrl', 'Ctrl'], ['alt', 'Alt'], ['cmd', 'Cmd'], ['caps', 'Caps'], ['layer1', 'Lyr1'], ['layer2', 'Lyr2'], ['layer3', 'Lyr3'], ['layer4', 'Lyr4'], ['layer5', 'Lyr5'], ['lower', 'Lower'], ['raise', 'Raise']].each do |char, display|
+          .grid.gap-1.5 style="grid-template-columns: repeat(12, 3.5rem);"
+            - [['ent', 'Ent'], ['tab', 'Tab'], ['bs', 'BS'], ['esc', 'Esc'], ['del', 'Del'], ['shift', 'Shift'], ['ctrl', 'Ctrl'], ['alt', 'Alt'], ['cmd', 'Cmd'], ['win', 'Win'], ['menu', 'Menu'], ['caps', 'Caps'], ['layer1', 'Lyr1'], ['layer2', 'Lyr2'], ['layer3', 'Lyr3'], ['layer4', 'Lyr4'], ['layer5', 'Lyr5'], ['lower', 'Lower'], ['raise', 'Raise']].each do |char, display|
               .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.text-gray-700.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=char
                 = display
 

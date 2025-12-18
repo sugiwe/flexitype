@@ -27,6 +27,8 @@ module ApplicationHelper
       "ctrl" => "Ctrl",
       "alt" => "Alt",
       "cmd" => "Cmd",
+      "win" => "Win",
+      "menu" => "Menu",
       "caps" => "Caps",
       "esc" => "Esc",
       "del" => "Del",
