@@ -763,6 +763,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 500ページのカスタマイズ
 - ユーザーフレンドリーなメッセージ
 
+### 既知の問題（影響なし）
+
+#### Googleログインボタンのコンソール警告
+
+**警告内容:**
+```
+[GSI_LOGGER]: Failed to render button before calling initialize().
+```
+
+**現状:**
+- ✅ 機能的には全く問題なし（ログイン、ページ遷移、表示すべて正常）
+- ⚠️ Googleの内部処理で発生する警告（制御範囲外の可能性）
+- 📝 重複初期化防止は実装済み（`data-google-signin-initialized`フラグ）
+
+**対応状況:**
+- Stimulusコントローラー（google_signin_controller.js）で適切に初期化を管理
+- 警告自体はGoogle側の内部処理によるもので、完全な解消は困難
+- 機能に影響がないため、優先度は低い
+
+**将来的な対応案:**
+- GoogleのGISライブラリのアップデートを待つ
+- より詳細なデバッグ（Googleのドキュメント調査）
+- 代替実装の検討（必要に応じて）
+
+---
+
 ### 優先度: 低（将来的に検討）
 
 #### 6. 練習後のシェア機能
@@ -787,11 +813,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 🎯 現在の進捗状況
 
-**Day 18 完了（2025-12-18 時点）**
+**Day 19 完了（2025-12-19 時点）**
 
 ### 完了した機能
 
-- ✅ ユーザー認証（Google ログイン）
+- ✅ ユーザー認証（Google ログイン）**← Day 19 でバグ修正**
 - ✅ キーマップ登録・管理
 - ✅ タイピング練習（レッスンシステム、指ガイド、レイヤー自動判定）
 - ✅ 練習履歴・統計（自動クリーンアップ、レスポンシブ UI）
@@ -805,8 +831,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ **キーマップ複数管理機能（KeymapSet）の基盤実装** ← Day 18 で完了
 - ✅ **キーボードタイプ選択UI（Phase 0）** ← Day 18 で完了
 - ✅ **UI/UX改善（キーマップ表示統一、指ガイドデザイン）** ← Day 18 で完了
+- ✅ **Googleログイン機能の修正（Turbo対応・CSP競合解消）** ← Day 19 で完了
 
 ### 最近の更新
+
+**Day 19（2025-12-19）:**
+- **Googleログイン機能のバグ修正**
+  - Turboのページ遷移後にボタンが消える問題を解決
+  - CSPのnonce機能とGoogleログインの競合を解消
+  - CSRFトークン不足によるログイン失敗を修正
+- **Stimulusコントローラーの実装（google_signin_controller.js）**
+  - Turboのページ遷移後もGISを再初期化
+  - インラインJavaScriptを削除してCSP準拠
+  - 重複初期化防止フラグを実装
+- **CSP設定の調整**
+  - nonce生成を一時的に無効化（Googleログインとの競合を回避）
+  - `:unsafe_inline`を有効化してGoogleスクリプトを許可
+- **本番環境での動作確認**
+  - ローカル・本番環境の両方でログイン成功
+  - ページ遷移後もボタンが正常に表示
+  - レイアウトシフトなし
 
 **Day 18（2025-12-18）:**
 - **KeymapSet モデルの実装（複数キーマップ管理の基盤）**
@@ -854,8 +898,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Week 1: 基盤整備**
 - ✅ Day 18: KeymapSet モデルの基盤実装、UI/UX 改善
-- Day 19: キーマップ一覧ページの実装、新規作成・削除機能
-- Day 20: Google ツール導入（GTM + GA4 + プライバシーポリシー更新）
+- ✅ Day 19: Googleログイン機能のバグ修正（Turbo対応・CSP競合解消）
+- Day 20: キーマップ一覧ページの実装、新規作成・削除機能
+- Day 21: Google ツール導入（GTM + GA4 + プライバシーポリシー更新）
 
 **Week 2: 機能拡張**
 - Day 21: トップページ改修（練習増加 + タブ化）
