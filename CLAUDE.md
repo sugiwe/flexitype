@@ -730,7 +730,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 🎯 現在の進捗状況
 
-**Day 17 完了（2025-12-17 時点）**
+**Day 18 完了（2025-12-18 時点）**
 
 ### 完了した機能
 
@@ -743,33 +743,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ 本番環境デプロイ（https://typnix.com）
 - ✅ セキュリティ強化（Brakeman 警告 0 件）
 - ✅ **練習ページの個別URL化（数値IDベース）** ← Day 17 で完了
-
 - ✅ **URL構造の全面的な整理** ← Day 17 で完了
 - ✅ **ユーザー名（username）機能の実装** ← Day 17 で完了
+- ✅ **キーボードタイプ選択UI（Phase 0）** ← Day 18 で完了
 
-### 最近の更新（Day 17）
+### 最近の更新
 
-**1. 練習ページの個別URL化（数値IDベース）**
-- URL形式: `/practice?category=xxx&lesson=xxx` → `/practices/:id`
-- 全16レッスンに数値ID（1-16）を割り当て
-- Rails標準の`resources`ルーティングを使用
-- DB化を見据えた拡張性の高い設計
+**Day 18（2025-12-18）:**
+- **キーボードタイプ選択UI（Phase 0）の実装**
+  - キーマップ設定画面にキーボードタイプ選択ドロップダウンを追加
+  - 現在は「4×6 - 分割型・オーソリニア」のみ選択可能
+  - 将来の拡張予告メッセージを表示（disabled optionとして実装）
+  - カスタムドロップダウンアロー（SVG）でスッキリしたデザイン
+  - 詳細設計は `CLAUDE_KEYBOARD_TYPE_DESIGN.md` に記載
 
-**2. URL構造の全面的な整理**
-- `/my`名前空間による個人ページの整理
-  - `/history` → `/my/history`
-  - `/keymaps/current/edit` → `/my/keymaps/1/edit`
-  - 新規: `/my`（マイページ）
-  - 新規: `/my/account/edit`（アカウント設定）
-- `My::ApplicationController`でDRY原則に従い認証ロジックを集約
-- RESTful設計（`resource :account`, `resources :keymaps`）
-
-**3. ユーザー名（username）機能の実装**
-- `/@username`形式のプロフィールページ
-- Gmail互換のバリデーション（ドット、ハイフン、アンダースコア対応）
-- 初回ログイン時にGmailアドレスから自動生成
-- アカウント設定画面でusername編集可能
-- プロフィールURLプレビュー機能
+**Day 17（2025-12-17）:**
+- **練習ページの個別URL化（数値IDベース）**
+  - URL形式: `/practice?category=xxx&lesson=xxx` → `/practices/:id`
+  - 全16レッスンに数値ID（1-16）を割り当て
+  - Rails標準の`resources`ルーティングを使用
+  - DB化を見据えた拡張性の高い設計
+- **URL構造の全面的な整理**
+  - `/my`名前空間による個人ページの整理
+  - `My::ApplicationController`でDRY原則に従い認証ロジックを集約
+  - RESTful設計（`resource :account`, `resources :keymaps`）
+- **ユーザー名（username）機能の実装**
+  - `/@username`形式のプロフィールページ
+  - Gmail互換のバリデーション
+  - 初回ログイン時にGmailアドレスから自動生成
 
 ### 次のステップ（Phase 7: ブラッシュアップ）
 
@@ -793,6 +794,44 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ---
 
 ## 🗺 将来的な拡張計画
+
+### キーボードタイプ対応の拡張設計（Phase Y）
+
+**現状の課題:**
+- 現在は4x6（4行6列）の分割型配列が固定（特定キーボード専用）
+- キーボードの物理形状・キー数がViewとYAMLファイルにハードコーディング
+- 異なるキーボード（Corne、Lily58、5x6配列など）に対応できない
+- キーの位置表記（`L0-R0`形式）がキーボード固有
+
+**将来の目標:**
+- 複数のキーボードタイプに対応（Corne、Lily58、5x6配列など）
+- キーボードごとの物理配列情報をデータで管理
+- ユーザーがキーマップ作成時にキーボードタイプを選択
+- キーボードタイプに応じた練習画面・設定画面の自動生成
+
+**実装状況:**
+- ✅ **Phase 0: UI準備（Day 18完了）**
+  - キーマップ設定画面にキーボードタイプ選択ドロップダウンを追加
+  - デフォルトで「4×6 - 分割型・オーソリニア」が選択済み
+  - 将来の拡張予告メッセージを表示
+  - キーボードタイプは開発側が管理（ユーザーが自由に追加できない設計）
+
+- 🔜 **Phase 0.5: 準備（KeymapSet基盤整備後）**
+  - 現状のハードコーディングされたUIを動的生成に置き換える実験
+
+- 🔜 **Phase 1以降（将来実装）**
+  - KeyboardTypeモデルの作成
+  - JSONB型の`layout_data`カラムでキーボード情報を管理
+  - UI動的生成対応
+  - 複数キーボードタイプの追加
+
+**詳細設計:**
+- `CLAUDE_KEYBOARD_TYPE_DESIGN.md` に詳細な設計ドキュメントを記載
+- JSON形式でキーボードレイアウト情報を管理
+- 指の割り当て、オフセット、キーサイズなどを含む
+- 段階的な実装アプローチを定義
+
+---
 
 ### キーマップ機能の拡張設計（Phase X）
 
