@@ -612,6 +612,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Strong Parameters: 全コントローラで適切に実装
 - セキュリティチェック: Brakeman、bundler-audit で定期的に検査
 
+### Content Security Policy (CSP)
+
+**概要**: CSP はブラウザに「どのスクリプトやスタイルを読み込んでいいか」を指示するセキュリティ機能
+
+**設定ファイル**: `config/initializers/content_security_policy.rb`
+
+**重要な注意点**:
+- **Tailwind CSS は影響を受けない**: Tailwind のユーティリティクラス（`flex`, `grid` など）は外部 CSS なので問題なし
+- **インラインスタイル（`style=` 属性）は CSP でブロックされる**: セキュリティのため、`style=` 属性を使わず CSS クラスを使うべき
+- **nonce ディレクティブと `:unsafe_inline` の関係**: nonce を有効にすると `:unsafe_inline` が無効化される
+
+**開発時のルール**:
+1. **インラインスタイル（`style=` 属性）は使用禁止**
+   - ❌ `.grid style="grid-template-columns: repeat(6, 3.5rem);"`
+   - ✅ `.grid.keyboard-grid-6col`（`app/assets/stylesheets/application.css` にクラスを定義）
+
+2. **Tailwind のユーティリティクラスは自由に使える**
+   - ✅ `.flex.items-center.justify-center`
+   - ✅ `.grid.gap-1.5`
+
+3. **任意の値（arbitrary values）を使う場合は `class=` 属性で囲む**
+   - ❌ `.h-\[264px\]`（Slim でエスケープが必要で複雑）
+   - ✅ `class="h-[264px]"`（引用符で囲む）
+
+**トラブルシューティング**:
+- CSP 違反でスタイルが崩れた場合は、インラインスタイルを探して CSS クラスに移行する
+- ブラウザの開発者ツールの Console タブで CSP 違反のエラーを確認できる
+
 ---
 
 ## 🚀 デプロイ構成
@@ -668,23 +696,52 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### 優先度: 高（Phase 7 で実装予定）
 
-#### 1. アクセス制御の実装（Day 18 予定）
+#### 1. Googleツール系の導入（Day 18-19 で実装）
+
+**目的:**
+- アクセス解析によるユーザー行動の把握
+- 将来的な広告収益化の基盤整備
+- データドリブンな改善サイクルの確立
+
+**実装内容:**
+
+1. **Google Tag Manager（GTM）の導入**
+   - GTMコンテナスニペットを`<head>`と`<body>`に追加
+   - 環境変数で本番環境のみ有効化（`GTM_CONTAINER_ID`）
+   - 開発環境・ステージング環境でのテストデータ混入を防止
+
+2. **Google Analytics 4（GA4）の設定**
+   - GTM経由でGA4タグを設定（コード変更なし）
+   - ページビュー、イベント計測の設定
+   - ユーザー行動データの蓄積開始
+
+3. **プライバシーポリシーの更新**
+   - Cookieの使用について明記
+   - Google Analyticsによるデータ収集について説明
+   - Google AdSenseによる広告配信について説明（準備）
+   - データ収集の目的（アクセス解析、広告配信の最適化）
+   - ユーザーのオプトアウト方法（Googleアナリティクス オプトアウト アドオン）
+
+4. **Content Security Policy（CSP）の設定**
+   - Google関連ドメインを許可リストに追加
+   - `config/initializers/content_security_policy.rb`の設定
+   - **重要**: nonce ディレクティブを有効にすると `:unsafe_inline` が無効化される
+   - **インラインスタイル（`style=` 属性）は使用禁止**: CSP でブロックされるため、CSS クラスを使用すること
+
+5. **Google AdSense（将来実装）**
+   - 今回は審査申請のみ（審査には数日〜数週間）
+   - 審査通過後、GTM経由でタグを設定
+
+**実装しないもの（将来検討）:**
+- Cookie同意バナー（Phase 2として検討）
+- robots.txtとsitemap.xml（SEO強化時に実装）
+
+#### 2. アクセス制御の実装（Day 19-20 予定）
 - ログイン必須の練習ページへの非ログインユーザーのアクセスを制限
 - リダイレクト処理とフラッシュメッセージの実装
 - LessonLoader側で `requires_login` フラグを活用
 
-#### 3. Googleツール系の導入（Day 19 予定）
-- **Google Tag Manager（GTM）での一括管理**
-  - アナリティクス、アドセンス、将来的な他のタグも一元管理
-  - コード変更なしでタグを追加・変更できる
-- **GA4（Googleアナリティクス）の設定**
-  - ユーザー行動データの蓄積開始
-  - ページ別アクセス解析
-- **プライバシーポリシーの更新**
-  - Cookie使用、データ収集について明記
-- **Googleアドセンスの導入**（審査が必要、後回しでもOK）
-
-#### 3. トップページのデザイン改修（Day 20 予定）
+#### 3. トップページのデザイン改修（Day 21 予定）
 - 練習を増やす（現在16レッスン → 30+レッスン）
 - タブ分けによるカテゴリ整理
   - 基本練習（誰でも）

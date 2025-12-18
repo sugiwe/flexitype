@@ -1,5 +1,5 @@
 / ナビゲーションメニュー（スクロール可能エリア）
-nav.flex-1.p-4.overflow-y-auto
+nav.p-4
   ul.space-y-2
     li
       = link_to root_path, class: "flex items-center px-4 py-3 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900 hover:text-blue-600 dark:hover:text-blue-400 transition #{current_page?(root_path) ? 'bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-semibold' : ''}", data: { turbo: false } do

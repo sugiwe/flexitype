@@ -1,9 +1,9 @@
 / 左カラムサイドバー（300px）
 / モバイルでは初期非表示、右からスライド、ハンバーガーメニューで表示切り替え
 / モバイルブラウザのアドレスバー対応: dvh (dynamic viewport height) を使用
-aside.bg-white.dark:bg-gray-800.shadow-lg.flex.flex-col.fixed.top-0.z-40.md:left-0 class="w-[300px] right-0 translate-x-full md:translate-x-0 transition-transform duration-300" style="height: 100dvh;" data-sidebar-target="menu"
+aside.bg-white.dark:bg-gray-800.shadow-lg.flex.flex-col.fixed.top-0.z-40.md:left-0.h-screen-mobile class="w-[300px] right-0 translate-x-full md:translate-x-0 transition-transform duration-300" data-sidebar-target="menu"
   / 上部グループ（ロゴ + ナビゲーション）
-  .flex-1.flex.flex-col.overflow-hidden
+  .flex.flex-col.overflow-hidden.flex-1
     / ロゴエリア
     .p-6.border-b.border-gray-200.dark:border-gray-700.flex-shrink-0
       = link_to root_path, class: "flex flex-col gap-2", data: { turbo: false } do
@@ -12,13 +12,13 @@ aside.bg-white.dark:bg-gray-800.shadow-lg.flex.flex-col.fixed.top-0.z-40.md:left
         p.text-xs.text-gray-500.dark:text-gray-400 垂直配列タイピング練習アプリ
 
     / ナビゲーションメニュー（スクロール可能）
-    .flex-1.overflow-y-auto
+    .overflow-y-auto.flex-1
       = render "layouts/shared/sidebar_navigation"
 
   / 下部グループ（広告 + 認証）- 常に下部に固定
   .flex-shrink-0
     / 広告スペース（300x250px - レクタングル中）
-    .border-t.border-gray-200.dark:border-gray-700.flex.items-center.justify-center style="height: 264px;"
+    .border-t.border-gray-200.dark:border-gray-700.flex.items-center.justify-center class="h-[264px]"
       .w-full.bg-gray-200.dark:bg-gray-700.flex.items-center.justify-center.h-full
         .text-center
           p.text-xs.text-gray-400.dark:text-gray-500.font-semibold Ad Space
