@@ -25,3 +25,8 @@
 .keyboard-grid-14col {
   grid-template-columns: repeat(14, 3.5rem);
 }
+
+/* モバイルブラウザのアドレスバー対応（dvh） */
+.h-screen-mobile {
+  height: 100dvh; /* Dynamic Viewport Height - アドレスバーを除いた高さ */
+}
