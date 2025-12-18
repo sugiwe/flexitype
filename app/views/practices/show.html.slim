@@ -60,7 +60,7 @@
       .flex.justify-center.gap-12
         / 左手側
         .keyboard-half
-          .grid.gap-1.5 style="grid-template-columns: repeat(6, 3.5rem);"
+          .grid.gap-1.5.keyboard-grid-6col
             / 1行目
             - (0..5).each do |i|
               - position = "L0-R#{i}"
@@ -88,7 +88,7 @@
 
         / 右手側
         .keyboard-half
-          .grid.gap-1.5 style="grid-template-columns: repeat(6, 3.5rem);"
+          .grid.gap-1.5.keyboard-grid-6col
             / 1行目
             - (0..5).each do |i|
               - position = "R0-R#{i}"

@@ -4,3 +4,24 @@
  * Custom application styles can be added here.
  * Tailwind CSS is built separately via tailwindcss-rails gem.
  */
+
+/* キーボードグリッドレイアウト（CSP対応） */
+.keyboard-grid-6col {
+  grid-template-columns: repeat(6, 3.5rem);
+}
+
+.keyboard-grid-10col {
+  grid-template-columns: repeat(10, 3.5rem);
+}
+
+.keyboard-grid-12col {
+  grid-template-columns: repeat(12, 3.5rem);
+}
+
+.keyboard-grid-13col {
+  grid-template-columns: repeat(13, 3.5rem);
+}
+
+.keyboard-grid-14col {
+  grid-template-columns: repeat(14, 3.5rem);
+}

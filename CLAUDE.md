@@ -612,6 +612,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Strong Parameters: 全コントローラで適切に実装
 - セキュリティチェック: Brakeman、bundler-audit で定期的に検査
 
+### Content Security Policy (CSP)
+
+**概要**: CSP はブラウザに「どのスクリプトやスタイルを読み込んでいいか」を指示するセキュリティ機能
+
+**設定ファイル**: `config/initializers/content_security_policy.rb`
+
+**重要な注意点**:
+- **Tailwind CSS は影響を受けない**: Tailwind のユーティリティクラス（`flex`, `grid` など）は外部 CSS なので問題なし
+- **インラインスタイル（`style=` 属性）は CSP でブロックされる**: セキュリティのため、`style=` 属性を使わず CSS クラスを使うべき
+- **nonce ディレクティブと `:unsafe_inline` の関係**: nonce を有効にすると `:unsafe_inline` が無効化される
+
+**開発時のルール**:
+1. **インラインスタイル（`style=` 属性）は使用禁止**
+   - ❌ `.grid style="grid-template-columns: repeat(6, 3.5rem);"`
+   - ✅ `.grid.keyboard-grid-6col`（`app/assets/stylesheets/application.css` にクラスを定義）
+
+2. **Tailwind のユーティリティクラスは自由に使える**
+   - ✅ `.flex.items-center.justify-center`
+   - ✅ `.grid.gap-1.5`
+
+3. **任意の値（arbitrary values）を使う場合は `class=` 属性で囲む**
+   - ❌ `.h-\[264px\]`（Slim でエスケープが必要で複雑）
+   - ✅ `class="h-[264px]"`（引用符で囲む）
+
+**トラブルシューティング**:
+- CSP 違反でスタイルが崩れた場合は、インラインスタイルを探して CSS クラスに移行する
+- ブラウザの開発者ツールの Console タブで CSP 違反のエラーを確認できる
+
 ---
 
 ## 🚀 デプロイ構成
@@ -697,6 +725,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 4. **Content Security Policy（CSP）の設定**
    - Google関連ドメインを許可リストに追加
    - `config/initializers/content_security_policy.rb`の設定
+   - **重要**: nonce ディレクティブを有効にすると `:unsafe_inline` が無効化される
+   - **インラインスタイル（`style=` 属性）は使用禁止**: CSP でブロックされるため、CSS クラスを使用すること
 
 5. **Google AdSense（将来実装）**
    - 今回は審査申請のみ（審査には数日〜数週間）
