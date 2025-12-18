@@ -5,6 +5,25 @@
 
 / 設定メニュー
 .grid.grid-cols-1.md:grid-cols-2.gap-6
+  / 自分のプロフィール
+  = link_to profile_path(username: current_user.username), class: "block bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition border-2 border-transparent hover:border-blue-500" do
+    .flex.items-start
+      .flex-shrink-0.mr-4
+        / IDカード風アイコン（左に人物、右に3本線）
+        svg.h-12.w-12.text-orange-500 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          / 外枠（カード）
+          rect x="2" y="5" width="20" height="14" rx="2" stroke-width="1.5"
+          / 人物アイコン（左側）
+          circle cx="8" cy="10" r="2" stroke-width="1.5"
+          path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 16c0-1.5 1.5-3 3-3s3 1.5 3 3"
+          / 横線3本（右側・長さ統一・中央寄せ）
+          line x1="13" y1="9" x2="20" y2="9" stroke-width="1.5" stroke-linecap="round"
+          line x1="13" y1="12" x2="20" y2="12" stroke-width="1.5" stroke-linecap="round"
+          line x1="13" y1="15" x2="20" y2="15" stroke-width="1.5" stroke-linecap="round"
+      div
+        h3.text-xl.font-bold.text-gray-800.dark:text-white.mb-2 自分のプロフィール
+        p.text-gray-600.dark:text-gray-400 他の人から見たあなたのプロフィールページ
+
   / アカウント設定
   = link_to edit_my_account_path, class: "block bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition border-2 border-transparent hover:border-blue-500" do
     .flex.items-start
