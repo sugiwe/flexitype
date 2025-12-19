@@ -43,6 +43,7 @@ env:
   secret:
     - RAILS_MASTER_KEY
     - FLEXITYPE_DATABASE_PASSWORD
+    - ADMIN_EMAILS
     - ALLOWED_EMAILS
     - GTM_CONTAINER_ID
   clear:
