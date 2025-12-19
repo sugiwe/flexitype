@@ -17,3 +17,13 @@ nav.p-4
           svg.w-5.h-5.mr-3 fill="none" stroke="currentColor" viewBox="0 0 24 24"
             path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
           span 練習履歴
+
+    / 管理者メニュー（管理者のみ表示）
+    - if admin?
+      .border-t.border-gray-200.dark:border-gray-600.my-2
+
+      li
+        = link_to admin_root_path, class: "flex items-center px-4 py-3 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-900 hover:text-red-600 dark:hover:text-red-400 transition #{current_page?(admin_root_path) ? 'bg-red-50 dark:bg-red-900 text-red-600 dark:text-red-400 font-semibold' : ''}" do
+          svg.w-5.h-5.mr-3 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+          span 管理画面
