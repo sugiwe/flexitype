@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   # Public pages
   root "home#index"
   resources :practices, only: [ :show ]
+  get "about", to: "pages#about"
   get "terms", to: "pages#terms"
   get "privacy", to: "pages#privacy"
 

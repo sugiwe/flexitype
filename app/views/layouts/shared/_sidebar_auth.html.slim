@@ -63,6 +63,9 @@
           / ヘルプメニュードロップダウン（上方向）
           .absolute.bottom-full.right-0.mb-2.w-48.bg-white.dark:bg-gray-700.rounded-lg.shadow-lg.border.border-gray-200.dark:border-gray-600.hidden data-help-menu-target="dropdown"
             .py-2
+              = link_to about_path, class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition", data: { turbo: false } do
+                | Typnixについて
+              .border-t.border-gray-200.dark:border-gray-600.my-2
               = link_to terms_path, class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition", data: { turbo: false } do
                 | 利用規約
               = link_to privacy_path, class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition", data: { turbo: false } do
@@ -103,6 +106,9 @@
         / ヘルプメニュードロップダウン（上方向）
         .absolute.bottom-full.right-0.mb-2.w-48.bg-white.dark:bg-gray-700.rounded-lg.shadow-lg.border.border-gray-200.dark:border-gray-600.hidden data-help-menu-target="dropdown"
           .py-2
+            = link_to about_path, class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition", data: { turbo: false } do
+              | Typnixについて
+            .border-t.border-gray-200.dark:border-gray-600.my-2
             = link_to terms_path, class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition", data: { turbo: false } do
               | 利用規約
             = link_to privacy_path, class: "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition", data: { turbo: false } do
