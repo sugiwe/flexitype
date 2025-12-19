@@ -33,7 +33,7 @@
             div.flex-1
               h2.text-xl.font-semibold.text-gray-800.dark:text-white.mb-2 = keymap_set.name
               - if keymap_set.description.present?
-                p.text-sm.text-gray-600.dark:text-gray-400 = keymap_set.description
+                p.text-sm.text-gray-600.dark:text-gray-400 style="white-space: pre-line;" = keymap_set.description
               - else
                 p.text-sm.text-gray-500.dark:text-gray-500.italic 説明なし
             / 公開状態バッジ（将来実装）
