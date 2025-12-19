@@ -63,7 +63,7 @@ class User < ApplicationRecord
   def create_default_keymap_set
     keymap_sets.create!(
       name: "マイキーマップ",
-      description: "あなた専用のキーマップです",
+      description: "デフォルトキーマップ（Mac配列ベース）です。一般的なMacキーボードの配列を基にしています。このまま練習に使うことも、あなたの実際のキーボード配列に合わせて自由に編集することもできます。将来的には他のユーザーと共有できる機能も予定しています。",
       is_public: false
     )
   end
