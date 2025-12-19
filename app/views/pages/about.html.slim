@@ -1,0 +1,137 @@
+/ ページヘッダー
+.mb-6
+  h2.text-3xl.font-bold.text-gray-800.dark:text-white Typnixについて
+  p.text-sm.text-gray-600.dark:text-gray-400.mt-2 垂直配列キーボード特化のタイピング練習アプリ
+
+/ メインコンテンツ
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-8.space-y-8
+
+  / 1. Typnixとは
+  section
+    h3.text-2xl.font-bold.text-gray-800.dark:text-white.mb-4.flex.items-center
+      svg.w-6.h-6.mr-2.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      | Typnixとは
+    .text-gray-700.dark:text-gray-300.space-y-3
+      p
+        | Typnix（タイプニックス）は、<strong>垂直配列キーボード</strong>に特化したタイピング練習アプリです。
+      p
+        | 一般的なタイピング練習アプリは、従来のスタッガード配列（QWERTY配列など）を前提としており、分割型キーボードやオーソリニアキーボードには対応していません。
+      p
+        | Typnixでは、<strong>自分のキーボード配列を登録</strong>して、実際のキー位置に合わせた練習ができます。レイヤー機能にも対応しており、複雑なキーマップでも効率的に練習できます。
+
+  / 2. 主な機能
+  section
+    h3.text-2xl.font-bold.text-gray-800.dark:text-white.mb-4.flex.items-center
+      svg.w-6.h-6.mr-2.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+      | 主な機能
+    .space-y-4
+      .flex.items-start.gap-3
+        .shrink-0.mt-1
+          .w-2.h-2.bg-blue-600.dark:bg-blue-400.rounded-full
+        div
+          h4.font-semibold.text-gray-800.dark:text-white カスタムキーマップ登録
+          p.text-sm.text-gray-600.dark:text-gray-400 自分のキーボード配列を登録して、実際のキー位置で練習できます。ログインなしでもデフォルトキーマップで練習可能です。
+      .flex.items-start.gap-3
+        .shrink-0.mt-1
+          .w-2.h-2.bg-blue-600.dark:bg-blue-400.rounded-full
+        div
+          h4.font-semibold.text-gray-800.dark:text-white レイヤー機能対応
+          p.text-sm.text-gray-600.dark:text-gray-400 0〜5の6レイヤーに対応。複雑なキーマップでも、レイヤーごとに設定できます。
+      .flex.items-start.gap-3
+        .shrink-0.mt-1
+          .w-2.h-2.bg-blue-600.dark:bg-blue-400.rounded-full
+        div
+          h4.font-semibold.text-gray-800.dark:text-white リアルタイムガイド
+          p.text-sm.text-gray-600.dark:text-gray-400 次に打つべきキーをハイライト表示。レイヤー切り替えが必要な場合は、レイヤーボタンと目的のキーの両方を同時にハイライトします。
+      .flex.items-start.gap-3
+        .shrink-0.mt-1
+          .w-2.h-2.bg-blue-600.dark:bg-blue-400.rounded-full
+        div
+          h4.font-semibold.text-gray-800.dark:text-white 指ガイド機能
+          p.text-sm.text-gray-600.dark:text-gray-400 どの指で打つかを色分け表示。初心者でも正しい指使いを学べます。
+      .flex.items-start.gap-3
+        .shrink-0.mt-1
+          .w-2.h-2.bg-blue-600.dark:bg-blue-400.rounded-full
+        div
+          h4.font-semibold.text-gray-800.dark:text-white 練習履歴の記録
+          p.text-sm.text-gray-600.dark:text-gray-400 ログインユーザー向けに、正答率・所要時間・ミス数などの統計を記録します（無料ユーザーは50件まで）。
+      .flex.items-start.gap-3
+        .shrink-0.mt-1
+          .w-2.h-2.bg-blue-600.dark:bg-blue-400.rounded-full
+        div
+          h4.font-semibold.text-gray-800.dark:text-white ダークモード対応
+          p.text-sm.text-gray-600.dark:text-gray-400 Light/Dark/Systemの3つのテーマから選択できます。
+
+  / 3. 使い方
+  section
+    h3.text-2xl.font-bold.text-gray-800.dark:text-white.mb-4.flex.items-center
+      svg.w-6.h-6.mr-2.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+      | 使い方
+    .space-y-4
+      .flex.items-start.gap-3
+        .shrink-0.w-8.h-8.bg-blue-600.dark:bg-blue-700.text-white.rounded-full.flex.items-center.justify-center.font-bold
+          | 1
+        div
+          h4.font-semibold.text-gray-800.dark:text-white まずは練習してみる
+          p.text-sm.text-gray-600.dark:text-gray-400 ログインなしでも、デフォルトキーマップで練習できます。トップページからレッスンを選択して、すぐに始められます。
+      .flex.items-start.gap-3
+        .shrink-0.w-8.h-8.bg-blue-600.dark:bg-blue-700.text-white.rounded-full.flex.items-center.justify-center.font-bold
+          | 2
+        div
+          h4.font-semibold.text-gray-800.dark:text-white ログインする
+          p.text-sm.text-gray-600.dark:text-gray-400 Googleアカウントでログインすると、自分専用のキーマップを登録できます。練習履歴も記録されます。
+      .flex.items-start.gap-3
+        .shrink-0.w-8.h-8.bg-blue-600.dark:bg-blue-700.text-white.rounded-full.flex.items-center.justify-center.font-bold
+          | 3
+        div
+          h4.font-semibold.text-gray-800.dark:text-white キーマップを設定する
+          p.text-sm.text-gray-600.dark:text-gray-400 「キーマップ設定」ページで、自分のキーボード配列を登録します。上のキーボードから登録したいキーをクリック → 下の候補から文字を選択 → 保存ボタンを押します。
+      .flex.items-start.gap-3
+        .shrink-0.w-8.h-8.bg-blue-600.dark:bg-blue-700.text-white.rounded-full.flex.items-center.justify-center.font-bold
+          | 4
+        div
+          h4.font-semibold.text-gray-800.dark:text-white 練習を続ける
+          p.text-sm.text-gray-600.dark:text-gray-400 レッスンを選択して、自分のキーマップで練習します。統計を見ながら、苦手な部分を克服していきましょう。
+
+  / 4. 対応キーボード
+  section
+    h3.text-2xl.font-bold.text-gray-800.dark:text-white.mb-4.flex.items-center
+      svg.w-6.h-6.mr-2.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+      | 対応キーボード
+    .text-gray-700.dark:text-gray-300.space-y-3
+      p
+        | <strong>現在対応：</strong> 4×6 分割型・オーソリニア配列（Cornix など）
+      p.text-sm.text-gray-600.dark:text-gray-400
+        | 将来的には、Corne、Lily58、その他の分割型キーボードにも対応予定です。
+
+  / 5. 開発者について
+  section
+    h3.text-2xl.font-bold.text-gray-800.dark:text-white.mb-4.flex.items-center
+      svg.w-6.h-6.mr-2.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+      | 開発者について
+    .text-gray-700.dark:text-gray-300.space-y-3
+      p
+        | Typnixは、垂直配列キーボードユーザーである開発者が、自分自身のタイピング練習のために開発したアプリです。
+      p
+        | 市販のタイピング練習アプリが一般的なキーボードにしか対応していない問題を解決するために、Ruby/Railsの学習を兼ねて開発しました。
+      .flex.items-center.gap-4.mt-4
+        a.text-blue-600.dark:text-blue-400.hover:underline.flex.items-center.gap-1 href="https://github.com/sugiwe/flexitype" target="_blank" rel="noopener noreferrer"
+          svg.w-5.h-5 fill="currentColor" viewBox="0 0 24 24"
+            path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+          | GitHub（flexitype）
+        a.text-blue-600.dark:text-blue-400.hover:underline.flex.items-center.gap-1 href="https://x.com/sugiwe_no_te" target="_blank" rel="noopener noreferrer"
+          svg.w-5.h-5 fill="currentColor" viewBox="0 0 24 24"
+            path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+          | X（@sugiwe_no_te）
+
+/ 戻るリンク
+.mt-6
+  = link_to root_path, class: "text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1" do
+    svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+      path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"
+    | トップページに戻る
