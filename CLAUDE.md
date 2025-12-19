@@ -832,11 +832,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ **キーボードタイプ選択UI（Phase 0）** ← Day 18 で完了
 - ✅ **UI/UX改善（キーマップ表示統一、指ガイドデザイン）** ← Day 18 で完了
 - ✅ **Googleログイン機能の修正（Turbo対応・CSP競合解消）** ← Day 19 で完了
+- ✅ **キーマップ一覧・編集のUI改善とslug対応** ← Day 19 で完了
 
 ### 最近の更新
 
 **Day 19（2025-12-19）:**
-- **Googleログイン機能のバグ修正**
+- **Googleログイン機能のバグ修正（午前）**
   - Turboのページ遷移後にボタンが消える問題を解決
   - CSPのnonce機能とGoogleログインの競合を解消
   - CSRFトークン不足によるログイン失敗を修正
@@ -851,6 +852,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - ローカル・本番環境の両方でログイン成功
   - ページ遷移後もボタンが正常に表示
   - レイアウトシフトなし
+- **キーマップ複数管理のUI実装（午後）**
+  - slug対応とバグ修正
+    - 編集画面にslugフィールドを追加
+    - JavaScriptでslugを使うように修正
+    - 保存エラー（404）を解決
+  - キーマップ一覧ページのUI改善
+    - ページヘッダーを他ページと統一
+    - カードレイアウトを左右分割（GitHub風）
+    - ボタンスタイルの調整（radius、色、幅）
 
 **Day 18（2025-12-18）:**
 - **KeymapSet モデルの実装（複数キーマップ管理の基盤）**
@@ -898,13 +908,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Week 1: 基盤整備**
 - ✅ Day 18: KeymapSet モデルの基盤実装、UI/UX 改善
-- ✅ Day 19: Googleログイン機能のバグ修正（Turbo対応・CSP競合解消）
-- Day 20: キーマップ一覧ページの実装、新規作成・削除機能
-- Day 21: Google ツール導入（GTM + GA4 + プライバシーポリシー更新）
+- ✅ Day 19: Googleログイン機能のバグ修正 + キーマップUI改善（slug対応）
+- Day 20-21: Google ツール導入（GTM + GA4 + プライバシーポリシー更新）
 
 **Week 2: 機能拡張**
-- Day 21: トップページ改修（練習増加 + タブ化）
-- Day 22-23: その他の改善（エラーページ、アクセス制御など）
+- Day 22: トップページ改修（練習増加 + タブ化）
+- Day 23: キーマップ公開機能（Phase 3）の実装（任意）
 - Day 24: バグ修正、パフォーマンス最適化
 - Day 25: 最終チェック、ドキュメント整備
 
@@ -1101,12 +1110,141 @@ end
 - 将来の課金ユーザーは5つまで
 
 **Phase 3: 公開・共有機能（将来実装）**
-- `is_public` カラムの活用
-- 公開設定UI（トグルボタン）
-- `/@username/keymaps` での公開キーマップ一覧表示
-- `/@username/keymaps/:id` での公開キーマップ詳細表示
-- フォーク機能の実装（`POST /my/keymaps?fork_from_id=:id`）
-- フォーク元のリンク表示
+
+キーマップ公開機能は、既存の基盤（KeymapSet、slug、複数管理）をそのまま活用できるため、比較的シンプルに実装可能（2-3時間程度の作業量）。
+
+**3-1. 公開設定UI（簡単）**
+- 編集画面（`/my/keymaps/:slug/edit`）に公開/非公開トグルを追加
+  - `is_public` カラムは既に存在
+  - トグルボタンのUI実装（Tailwind CSS）
+  - 保存時に `is_public` を更新
+- 一覧ページ（`/my/keymaps`）に公開状態バッジを表示
+  - 既にコメントアウトで準備済み（index.html.slim:40-42）
+  - コメントを解除するだけ
+
+**3-2. 公開キーマップ表示ページ（中程度）**
+
+新規コントローラ `Public::KeymapsController` を作成:
+
+```ruby
+# app/controllers/public/keymaps_controller.rb
+class Public::KeymapsController < ApplicationController
+  def index
+    # /@username/keymaps - そのユーザーの公開キーマップ一覧
+    @user = User.find_by!(username: params[:username])
+    @keymap_sets = @user.keymap_sets.published.order(created_at: :desc)
+  end
+
+  def show
+    # /@username/keymaps/:slug - 公開キーマップ詳細（読み取り専用）
+    @user = User.find_by!(username: params[:username])
+    @keymap_set = @user.keymap_sets.published.find_by!(slug: params[:slug])
+
+    # キー配置を6レイヤー分読み込んで表示（edit画面と同じロジック）
+    @keymaps = {}
+    (0..5).each do |layer|
+      default_keymap = Keymap.default_keymap[layer] || {}
+      user_keymap = Keymap.where(keymap_set: @keymap_set, layer: layer)
+                          .pluck(:key_position, :character)
+                          .to_h
+      @keymaps[layer] = default_keymap.merge(user_keymap)
+    end
+  end
+end
+```
+
+ルーティング追加:
+```ruby
+# config/routes.rb
+# User profiles (public) セクションに追加
+get "/@:username/keymaps", to: "public/keymaps#index", as: :user_keymaps
+get "/@:username/keymaps/:slug", to: "public/keymaps#show", as: :user_keymap
+```
+
+ビュー実装:
+- `app/views/public/keymaps/index.html.slim`: 公開キーマップ一覧（`/my/keymaps/index.html.slim` を参考）
+- `app/views/public/keymaps/show.html.slim`: 公開キーマップ詳細（`/my/keymaps/edit.html.slim` を読み取り専用で再利用）
+
+**3-3. フォーク機能（中程度）**
+
+`My::KeymapsController#create` にフォーク処理を追加:
+
+```ruby
+# app/controllers/my/keymaps_controller.rb
+def create
+  # フォーク処理
+  if params[:fork_from_id].present?
+    fork_keymap_set(params[:fork_from_id])
+    return
+  end
+
+  # 通常の新規作成
+  @keymap_set = current_user.keymap_sets.build(keymap_set_params)
+  if @keymap_set.save
+    redirect_to edit_my_keymap_path(@keymap_set), notice: "キーマップ「#{@keymap_set.name}」を作成しました。"
+  else
+    render :new, status: :unprocessable_entity
+  end
+end
+
+private
+
+def fork_keymap_set(original_id)
+  original = KeymapSet.published.find(original_id)
+
+  # KeymapSetをコピー
+  @keymap_set = original.dup
+  @keymap_set.user = current_user
+  @keymap_set.forked_from_id = original.id
+  @keymap_set.is_public = false  # フォーク時は非公開
+  @keymap_set.slug = KeymapSet.generate_next_slug(current_user)  # 新しいslugを生成
+  @keymap_set.save!
+
+  # 関連するKeymapもコピー
+  original.keymaps.each do |keymap|
+    @keymap_set.keymaps.create!(
+      user: current_user,
+      layer: keymap.layer,
+      key_position: keymap.key_position,
+      character: keymap.character
+    )
+  end
+
+  redirect_to edit_my_keymap_path(@keymap_set), notice: "キーマップ「#{original.name}」をフォークしました。"
+end
+```
+
+公開キーマップ詳細ページに「フォークする」ボタンを追加:
+```slim
+/ app/views/public/keymaps/show.html.slim
+- if logged_in?
+  = button_to "このキーマップをフォークする", my_keymaps_path(fork_from_id: @keymap_set.id),
+    method: :post,
+    class: "px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
+- else
+  p.text-gray-500 ログインするとこのキーマップをフォークできます
+```
+
+**3-4. フォーク元の表示**
+
+編集画面でフォーク元を表示:
+```slim
+/ app/views/my/keymaps/edit.html.slim の基本情報セクションに追加
+- if @keymap_set.forked_from_id.present?
+  .mb-4.p-3.bg-blue-50.dark:bg-blue-900.rounded-lg
+    p.text-sm.text-blue-800.dark:text-blue-200
+      | このキーマップは
+      = link_to @keymap_set.forked_from.user.username, profile_path(@keymap_set.forked_from.user.username), class: "underline"
+      | さんの「
+      = @keymap_set.forked_from.name
+      | 」からフォークしました
+```
+
+**既存の基盤が活きるポイント:**
+- ✅ KeymapSet モデル: `is_public`, `forked_from_id`, `slug` カラムが既にある
+- ✅ slug ベースのURL: 既に実装済み
+- ✅ 複数キーマップ管理: 既に実装済み
+- ✅ レイヤー表示UI: edit画面のUIをそのまま読み取り専用で再利用可能
 
 #### 機能要件
 
