@@ -1,2 +1,74 @@
-h1 Keymaps#index
-p Find me in app/views/keymaps/index.html.slim
+/ ページヘッダー
+.mb-6
+  h2.text-3xl.font-bold.text-gray-800.dark:text-white キーマップ管理
+  p.text-sm.text-gray-600.dark:text-gray-400.mt-2 あなたのキーボード配列を登録・管理します
+
+- if @keymap_sets.count < 2
+  .mb-6
+    .flex.justify-end
+      = link_to new_my_keymap_path, class: "px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition" do
+        svg.w-5.h-5.inline-block.mr-2 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"
+        | 新規作成
+
+/ 制限メッセージ（2つに達している場合）
+- if @keymap_sets.count >= 2
+  .bg-yellow-50.dark:bg-yellow-900.border.border-yellow-200.dark:border-yellow-700.rounded-lg.p-4.mb-6
+    .flex.items-center.gap-2
+      svg.w-5.h-5.text-yellow-600.dark:text-yellow-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      p.text-sm.text-yellow-800.dark:text-yellow-300
+        | 無課金ユーザーはキーマップを2つまで作成できます。新しいキーマップを作成するには、既存のキーマップを削除してください。
+
+/ キーマップカード一覧
+.grid.gap-4
+  - @keymap_sets.each do |keymap_set|
+    .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.border.border-gray-200.dark:border-gray-700.p-6
+      / カード全体を左右に分割
+      .flex.gap-6
+        / 左側: キーマップ情報（可変幅）
+        .flex-1.min-w-0
+          / ヘッダー
+          .flex.items-start.gap-3.mb-3
+            div.flex-1
+              h2.text-xl.font-semibold.text-gray-800.dark:text-white.mb-2 = keymap_set.name
+              - if keymap_set.description.present?
+                p.text-sm.text-gray-600.dark:text-gray-400 style="white-space: pre-line;" = keymap_set.description
+              - else
+                p.text-sm.text-gray-500.dark:text-gray-500.italic 説明なし
+            / 公開状態バッジ（将来実装）
+            - if keymap_set.is_public
+              span.px-3.py-1.bg-green-100.dark:bg-green-900.text-green-800.dark:text-green-300.text-xs.font-medium.rounded-full.shrink-0
+                | 公開中
+
+          / メタ情報
+          .flex.items-center.gap-4.text-xs.text-gray-500.dark:text-gray-400
+            .flex.items-center.gap-1
+              svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+              span 4×6 - 分割型・オーソリニア
+            .flex.items-center.gap-1
+              svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              span #{keymap_set.keymaps.count} キー設定
+            .flex.items-center.gap-1
+              svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              span #{l(keymap_set.created_at, format: :short)}
+
+        / 右側: アクションボタン（固定幅、縦並び）
+        .flex.flex-col.gap-2.shrink-0 style="width: 140px;"
+          = link_to edit_my_keymap_path(keymap_set), class: "px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white text-center rounded hover:bg-blue-700 dark:hover:bg-blue-800 transition text-sm" do
+            svg.w-4.h-4.inline-block.mr-2 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            | 編集
+          - if keymap_set.deletable?
+            = button_to my_keymap_path(keymap_set), method: :delete, data: { turbo_confirm: "キーマップ「#{keymap_set.name}」を削除してもよろしいですか？" }, class: "w-full px-4 py-2 bg-gray-500 dark:bg-gray-600 text-white rounded hover:bg-gray-600 dark:hover:bg-gray-500 transition text-sm" do
+              svg.w-4.h-4.inline-block.mr-2 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              | 削除
+          - else
+            button.w-full.px-4.py-2.bg-gray-300.dark:bg-gray-700.text-gray-500.dark:text-gray-400.rounded.cursor-not-allowed.text-sm disabled=true
+              svg.w-4.h-4.inline-block.mr-2 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              | 削除不可

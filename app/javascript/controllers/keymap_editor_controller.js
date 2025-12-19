@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["selectedDisplay", "candidateGroup", "keyChar", "saveStatus"]
-  static values = { existingKeymaps: Object }
+  static values = { existingKeymaps: Object, keymapSetSlug: String }
 
   connect() {
     console.log("Keymap editor controller connected")
@@ -216,13 +216,26 @@ export default class extends Controller {
 
     try {
       const csrfToken = document.querySelector("[name='csrf-token']").content
-      const response = await fetch("/my/keymaps/1", {
+      const keymapSetSlug = this.keymapSetSlugValue
+
+      // 基本情報フォームから名前と説明を取得
+      const form = document.getElementById("basic-info-form")
+      const name = form.querySelector("[name='keymap_set[name]']").value
+      const description = form.querySelector("[name='keymap_set[description]']").value
+      const slug = form.querySelector("[name='keymap_set[slug]']").value
+
+      const response = await fetch(`/my/keymaps/${keymapSetSlug}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           "X-CSRF-Token": csrfToken
         },
         body: JSON.stringify({
+          keymap_set: {
+            name: name,
+            description: description,
+            slug: slug
+          },
           keymaps: this.keymaps
         })
       })
@@ -231,7 +244,8 @@ export default class extends Controller {
         const data = await response.json()
         console.log("Save successful:", data)
 
-        // 保存成功メッセージを表示
+        // 保存成功メッセージを表示（データから取得）
+        this.saveStatusTarget.textContent = `✓ ${data.message}`
         this.saveStatusTarget.style.display = "block"
         setTimeout(() => {
           this.saveStatusTarget.style.display = "none"
@@ -258,7 +272,8 @@ export default class extends Controller {
 
     try {
       const csrfToken = document.querySelector("[name='csrf-token']").content
-      const response = await fetch("/my/keymaps/1", {
+      const keymapSetSlug = this.keymapSetSlugValue
+      const response = await fetch(`/my/keymaps/${keymapSetSlug}`, {
         method: "DELETE",
         headers: {
           "X-CSRF-Token": csrfToken

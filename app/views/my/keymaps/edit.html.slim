@@ -1,9 +1,38 @@
 / ページヘッダー
 .mb-6
-  h2.text-3xl.font-bold.text-gray-800.dark:text-white キーマップ設定
+  .flex.justify-between.items-center
+    h2.text-3xl.font-bold.text-gray-800.dark:text-white キーマップ編集
+    = link_to "← 一覧に戻る", my_keymaps_path, class: "px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
+
+/ 基本情報編集
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6.mb-6
+  h3.text-lg.font-semibold.text-gray-800.dark:text-white.mb-4 基本情報
+  = form_with model: @keymap_set, url: my_keymap_path(@keymap_set), method: :patch, id: "basic-info-form", class: "space-y-4" do |f|
+    .grid.grid-cols-1.gap-4
+      / キーマップ名
+      div
+        = f.label :name, "キーマップ名", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+        = f.text_field :name, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent", required: true, maxlength: 50
+      / キーマップURL（slug）
+      div
+        = f.label :slug, "キーマップURL", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+        = f.text_field :slug, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono", required: true, maxlength: 50, pattern: "[a-z0-9\\-]+"
+        p.mt-1.text-sm.text-gray-500.dark:text-gray-400
+          | 現在のURL: /my/keymaps/#{@keymap_set.slug}
+        p.mt-1.text-sm.text-gray-500.dark:text-gray-400
+          | 小文字英数字とハイフンのみ使用できます（例: vim-layout, gaming-setup）
+      / キーマップ説明
+      div
+        = f.label :description, "説明（任意）", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+        = f.text_area :description, rows: 2, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent", maxlength: 500
+    / キーマップ設定は別のフォームなので、基本情報の保存は省略
+    / JavaScriptで自動保存またはキー配置保存時に一緒に保存
 
 / メインエリア
-.bg-white.dark:bg-gray-800.rounded-lg.shadow-lg.p-8.transition-colors data-controller="keymap-editor" data-keymap-editor-existing-keymaps-value=@keymaps.to_json
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-lg.p-8.transition-colors data-controller="keymap-editor" data-keymap-editor-existing-keymaps-value=@keymaps.to_json data-keymap-editor-keymap-set-slug-value=@keymap_set.slug
+  / セクション見出し
+  h3.text-lg.font-semibold.text-gray-800.dark:text-white.mb-6 キー配置
+
   / 説明文
   .mb-6.p-4.bg-blue-50.dark:bg-blue-900.border-l-4.border-blue-500.dark:border-blue-400.rounded.transition-colors
     p.text-gray-800.dark:text-gray-100.font-semibold.mb-2 📍 キーマップ設定の目的
@@ -174,10 +203,11 @@
   / 保存ボタン
   .mt-8.flex.justify-center.gap-4
     button.px-8.py-3.bg-blue-600.dark:bg-blue-700.text-white.text-lg.font-semibold.rounded-lg.hover:bg-blue-700.dark:hover:bg-blue-600.transition.shadow-lg type="button" data-action="click->keymap-editor#saveKeymap"
-      | すべてのレイヤーを保存
+      | 変更を保存
     button.px-8.py-3.bg-orange-500.dark:bg-orange-600.text-white.text-lg.font-semibold.rounded-lg.hover:bg-orange-600.dark:hover:bg-orange-500.transition.shadow-lg type="button" data-action="click->keymap-editor#resetToDefault"
-      | デフォルトに戻す
-    a.px-8.py-3.bg-gray-300.dark:bg-gray-700.text-gray-700.dark:text-gray-200.text-lg.font-semibold.rounded-lg.hover:bg-gray-400.dark:hover:bg-gray-600.transition href="/" data-turbo="false" キャンセル
+      | キー配置をリセット
+    = link_to my_keymaps_path, class: "px-8 py-3 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-lg font-semibold rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition" do
+      | キャンセル
 
   / 保存状態の表示
   .mt-4.text-center

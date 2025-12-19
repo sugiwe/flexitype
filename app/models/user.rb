@@ -3,6 +3,8 @@ class User < ApplicationRecord
   has_many :keymaps, dependent: :destroy
   has_many :typing_sessions, dependent: :destroy
 
+  after_create :create_default_keymap_set
+
   validates :google_uid, presence: true, uniqueness: true
   validates :email, presence: true, uniqueness: true, length: { maximum: 254 }
   validates :name, presence: true, length: { maximum: 30 }
@@ -53,5 +55,16 @@ class User < ApplicationRecord
   def cleanup_old_typing_sessions
     sessions = typing_sessions.order(created_at: :desc)
     sessions.offset(history_limit).destroy_all
+  end
+
+  private
+
+  # 初期キーマップセットを作成
+  def create_default_keymap_set
+    keymap_sets.create!(
+      name: "マイキーマップ",
+      description: "デフォルトキーマップ（Mac配列ベース）です。一般的なMacキーボードの配列を基にしています。このまま練習に使うことも、あなたの実際のキーボード配列に合わせて自由に編集することもできます。将来的には他のユーザーと共有できる機能も予定しています。",
+      is_public: false
+    )
   end
 end
