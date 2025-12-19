@@ -40,10 +40,25 @@ class My::KeymapsController < My::ApplicationController
   end
 
   def update
-    # キーマップを一括保存
+    # 基本情報のみの更新（form_withから）
+    if params[:keymap_set].present? && params[:keymaps].blank?
+      if @keymap_set.update(keymap_set_params)
+        redirect_to edit_my_keymap_path(@keymap_set), notice: "基本情報を更新しました"
+      else
+        render :edit, status: :unprocessable_entity
+      end
+      return
+    end
+
+    # キーマップを一括保存（JavaScriptから）
     keymaps_params = keymap_params
 
     ActiveRecord::Base.transaction do
+      # 基本情報も一緒に保存（name, descriptionが含まれていれば）
+      if params[:keymap_set].present?
+        @keymap_set.update!(keymap_set_params)
+      end
+
       keymaps_params.each do |layer, keymap_hash|
         keymap_hash.each do |position, char|
           next if char.blank?
@@ -59,7 +74,7 @@ class My::KeymapsController < My::ApplicationController
       end
     end
 
-    render json: { success: true, message: "キーマップを保存しました" }
+    render json: { success: true, message: "キーマップ「#{@keymap_set.name}」を保存しました" }
   rescue StandardError => e
     Rails.logger.error "Keymap save error: #{e.message}"
     render json: { success: false, error: e.message }, status: :unprocessable_entity
