@@ -6,6 +6,17 @@ class Admin::DashboardController < Admin::ApplicationController
     @total_keymap_sets = KeymapSet.count
     @total_lessons = LessonLoader.all_lessons_flat.count
 
+    # サブテキスト用の追加統計
+    @new_users_this_week = User.where("created_at >= ?", 1.week.ago).count
+    @sessions_today = TypingSession.where("completed_at >= ?", Time.current.beginning_of_day).count
+    @public_keymaps = KeymapSet.where(is_public: true).count
+    @lesson_categories_count = LessonLoader.all_lessons_flat.group_by { |lesson| lesson["category"] }.count
+
+    # アクティブユーザー統計
+    @active_users_7days = User.where("last_sign_in_at >= ?", 7.days.ago).count
+    @active_users_30days = User.where("last_sign_in_at >= ?", 30.days.ago).count
+    @sessions_this_week = TypingSession.where("completed_at >= ?", 1.week.ago).count
+
     # 最新10名のユーザー（最終ログイン日時の降順）
     @recent_users = User.order(last_sign_in_at: :desc).limit(10)
 
@@ -14,5 +25,13 @@ class Admin::DashboardController < Admin::ApplicationController
 
     # レッスンカテゴリー統計
     @lesson_categories = LessonLoader.all_lessons_flat.group_by { |lesson| lesson["category"] }
+
+    # 人気レッスンランキング（TOP 10）
+    @popular_lessons = TypingSession
+      .where.not(lesson_id: nil)
+      .group(:lesson_id, :lesson_name)
+      .select("lesson_id, lesson_name, COUNT(*) as practice_count, AVG(accuracy) as avg_accuracy")
+      .order("practice_count DESC")
+      .limit(10)
   end
 end
