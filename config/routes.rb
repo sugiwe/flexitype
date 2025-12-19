@@ -22,4 +22,10 @@ Rails.application.routes.draw do
     resources :history, only: [ :index, :create ]  # /my/history, POST /my/history
     resource :account, only: [ :edit, :update ]  # /my/account/edit, PATCH /my/account
   end
+
+  # Admin pages (authentication + admin permission required, /admin namespace)
+  namespace :admin do
+    root to: "dashboard#index"  # /admin
+    resources :users, only: [ :index, :show ]  # /admin/users, /admin/users/:id
+  end
 end

@@ -1,0 +1,325 @@
+/ 管理者ダッシュボード
+
+/ ページヘッダー
+.mb-6
+  h2.text-3xl.font-bold.text-gray-800.dark:text-white 管理者ダッシュボード
+  p.text-sm.text-gray-600.dark:text-gray-400.mt-2 ユーザーアクティビティとシステム統計
+
+/ 統計サマリーカード（4つ）
+.grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-4.gap-6.mb-8
+  / 総ユーザー数
+  .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
+    .flex.items-center.justify-between
+      div
+        p.text-sm.text-gray-600.dark:text-gray-400 総ユーザー数
+        p.text-3xl.font-bold.text-blue-600.dark:text-blue-400.mt-2 = @total_users
+        p.text-xs.text-gray-500.dark:text-gray-400.mt-1
+          | 今週の新規登録:
+          span.font-medium.ml-1 = "#{@new_users_this_week}名"
+      .w-12.h-12.bg-blue-100.dark:bg-blue-900.rounded-full.flex.items-center.justify-center
+        svg.w-6.h-6.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+
+  / 総練習回数
+  .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
+    .flex.items-center.justify-between
+      div
+        p.text-sm.text-gray-600.dark:text-gray-400 総練習回数
+        p.text-3xl.font-bold.text-green-600.dark:text-green-400.mt-2 = @total_typing_sessions
+        p.text-xs.text-gray-500.dark:text-gray-400.mt-1
+          | 今日の練習:
+          span.font-medium.ml-1 = "#{@sessions_today}回"
+      .w-12.h-12.bg-green-100.dark:bg-green-900.rounded-full.flex.items-center.justify-center
+        svg.w-6.h-6.text-green-600.dark:text-green-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+
+  / 総キーマップ数
+  .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
+    .flex.items-center.justify-between
+      div
+        p.text-sm.text-gray-600.dark:text-gray-400 総キーマップ数
+        p.text-3xl.font-bold.text-yellow-600.dark:text-yellow-400.mt-2 = @total_keymap_sets
+        p.text-xs.text-gray-500.dark:text-gray-400.mt-1
+          | 公開キーマップ:
+          span.font-medium.ml-1 = "#{@public_keymaps}個"
+      .w-12.h-12.bg-yellow-100.dark:bg-yellow-900.rounded-full.flex.items-center.justify-center
+        svg.w-6.h-6.text-yellow-600.dark:text-yellow-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+
+  / 総レッスン数
+  .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
+    .flex.items-center.justify-between
+      div
+        p.text-sm.text-gray-600.dark:text-gray-400 総レッスン数
+        p.text-3xl.font-bold.text-purple-600.dark:text-purple-400.mt-2 = @total_lessons
+        p.text-xs.text-gray-500.dark:text-gray-400.mt-1
+          | カテゴリー数:
+          span.font-medium.ml-1 = "#{@lesson_categories_count}個"
+      .w-12.h-12.bg-purple-100.dark:bg-purple-900.rounded-full.flex.items-center.justify-center
+        svg.w-6.h-6.text-purple-600.dark:text-purple-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+
+/ アクティブユーザー統計
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6.mb-8
+  h3.text-xl.font-semibold.text-gray-800.dark:text-white.mb-4 アクティブユーザー統計
+  .grid.grid-cols-1.md:grid-cols-3.gap-6
+    / 過去7日間のアクティブユーザー
+    .bg-gradient-to-br.from-blue-50.to-blue-100.dark:from-blue-900.dark:to-blue-800.rounded-lg.p-6
+      p.text-sm.text-blue-600.dark:text-blue-300.font-medium 過去7日間
+      p.text-4xl.font-bold.text-blue-700.dark:text-blue-200.mt-2 = @active_users_7days
+      p.text-xs.text-blue-600.dark:text-blue-300.mt-1
+        | 全体の
+        span.font-medium.ml-1 = @total_users > 0 ? "#{(@active_users_7days.to_f / @total_users * 100).round(1)}%" : "0%"
+
+    / 過去30日間のアクティブユーザー
+    .bg-gradient-to-br.from-green-50.to-green-100.dark:from-green-900.dark:to-green-800.rounded-lg.p-6
+      p.text-sm.text-green-600.dark:text-green-300.font-medium 過去30日間
+      p.text-4xl.font-bold.text-green-700.dark:text-green-200.mt-2 = @active_users_30days
+      p.text-xs.text-green-600.dark:text-green-300.mt-1
+        | 全体の
+        span.font-medium.ml-1 = @total_users > 0 ? "#{(@active_users_30days.to_f / @total_users * 100).round(1)}%" : "0%"
+
+    / 今週の練習回数
+    .bg-gradient-to-br.from-purple-50.to-purple-100.dark:from-purple-900.dark:to-purple-800.rounded-lg.p-6
+      p.text-sm.text-purple-600.dark:text-purple-300.font-medium 今週の練習回数
+      p.text-4xl.font-bold.text-purple-700.dark:text-purple-200.mt-2 = @sessions_this_week
+      p.text-xs.text-purple-600.dark:text-purple-300.mt-1
+        | 1日平均
+        span.font-medium.ml-1 = "#{(@sessions_this_week.to_f / 7).round(1)}回"
+
+/ レッスン統計（カテゴリー別）
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6.mb-8
+  h3.text-xl.font-semibold.text-gray-800.dark:text-white.mb-4 レッスン統計（カテゴリー別）
+  .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-4
+    - @lesson_categories.each do |category, lessons|
+      .bg-gray-50.dark:bg-gray-700.rounded-lg.p-4
+        p.text-sm.text-gray-600.dark:text-gray-400 = category
+        p.text-2xl.font-bold.text-gray-800.dark:text-white.mt-1
+          = lessons.count
+          span.text-sm.font-normal.text-gray-500.dark:text-gray-400.ml-1 レッスン
+
+/ 人気レッスンランキング（TOP 10）
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6.mb-8
+  h3.text-xl.font-semibold.text-gray-800.dark:text-white.mb-4 人気レッスンランキング（TOP 10）
+
+  - if @popular_lessons.any?
+    / PC: テーブル表示
+    .hidden.md:block.overflow-x-auto
+      table.min-w-full.divide-y.divide-gray-200.dark:divide-gray-600
+        thead.bg-gray-50.dark:bg-gray-700
+          tr
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 順位
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider レッスン名
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 練習回数
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 平均正答率
+        tbody.bg-white.dark:bg-gray-800.divide-y.divide-gray-200.dark:divide-gray-600
+          - @popular_lessons.each_with_index do |lesson, index|
+            tr.hover:bg-gray-50.dark:hover:bg-gray-700
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
+                - if index < 3
+                  span.inline-flex.items-center.justify-center.w-8.h-8.rounded-full class=(index == 0 ? "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200" : index == 1 ? "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300" : "bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200") = index + 1
+                - else
+                  span.inline-flex.items-center.justify-center.w-8.h-8.text-gray-600.dark:text-gray-400 = index + 1
+              td.px-4.py-3.text-sm.font-medium.text-gray-800.dark:text-gray-200 = lesson.lesson_name || "不明"
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
+                span.font-bold.text-green-600.dark:text-green-400 = lesson.practice_count
+                span.text-gray-500.dark:text-gray-400.ml-1 回
+              td.px-4.py-3.text-sm
+                - avg_accuracy = lesson.avg_accuracy&.round(1) || 0
+                - accuracy_class = avg_accuracy >= 90 ? "text-green-600 dark:text-green-400" : avg_accuracy >= 70 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"
+                span.font-medium class=accuracy_class = "#{avg_accuracy}%"
+
+    / モバイル: カード表示
+    .md:hidden.space-y-3
+      - @popular_lessons.each_with_index do |lesson, index|
+        .bg-gray-50.dark:bg-gray-700.rounded-lg.p-4
+          .flex.items-center.justify-between.mb-2
+            .flex.items-center.gap-3
+              - if index < 3
+                span.inline-flex.items-center.justify-center.w-10.h-10.rounded-full.text-lg.font-bold class=(index == 0 ? "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200" : index == 1 ? "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300" : "bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200") = index + 1
+              - else
+                span.inline-flex.items-center.justify-center.w-10.h-10.text-lg.font-bold.text-gray-600.dark:text-gray-400 = index + 1
+              p.font-medium.text-gray-800.dark:text-white = lesson.lesson_name || "不明"
+          .grid.grid-cols-2.gap-3.text-sm
+            div
+              p.text-gray-600.dark:text-gray-400.text-xs 練習回数
+              p.text-gray-800.dark:text-gray-200.font-bold.text-green-600.dark:text-green-400
+                = lesson.practice_count
+                span.text-gray-500.dark:text-gray-400.ml-1 回
+            div
+              p.text-gray-600.dark:text-gray-400.text-xs 平均正答率
+              - avg_accuracy = lesson.avg_accuracy&.round(1) || 0
+              - accuracy_class = avg_accuracy >= 90 ? "text-green-600 dark:text-green-400" : avg_accuracy >= 70 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"
+              p.font-bold class=accuracy_class = "#{avg_accuracy}%"
+
+  - else
+    .text-center.py-8.text-gray-500.dark:text-gray-400
+      p 練習履歴がまだありません
+
+/ ユーザー一覧テーブル（最新10名）
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6.mb-8
+  .flex.items-center.justify-between.mb-4
+    h3.text-xl.font-semibold.text-gray-800.dark:text-white 最近のユーザー
+    = link_to admin_users_path, class: "text-sm text-blue-600 dark:text-blue-400 hover:underline" do
+      | すべて見る →
+
+  - if @recent_users.any?
+    / PC: テーブル表示
+    .hidden.md:block.overflow-x-auto
+      table.min-w-full.divide-y.divide-gray-200.dark:divide-gray-600
+        thead.bg-gray-50.dark:bg-gray-700
+          tr
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider ID
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider ユーザー
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider メールアドレス
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 練習回数
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 最終ログイン
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider アクション
+        tbody.bg-white.dark:bg-gray-800.divide-y.divide-gray-200.dark:divide-gray-600
+          - @recent_users.each do |user|
+            tr.hover:bg-gray-50.dark:hover:bg-gray-700
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.id
+              td.px-4.py-3
+                .flex.items-center
+                  - if user.icon_url.present?
+                    img.w-8.h-8.rounded-full.mr-3 src=user.icon_url alt=user.name
+                  - else
+                    .w-8.h-8.rounded-full.bg-gray-300.dark:bg-gray-600.flex.items-center.justify-center.mr-3
+                      span.text-sm.font-medium.text-gray-600.dark:text-gray-300 = user.name[0].upcase
+                  span.text-sm.font-medium.text-gray-700.dark:text-gray-200 = user.name
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.email
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.typing_sessions.count
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
+                - if user.last_sign_in_at.present?
+                  = time_ago_in_words(user.last_sign_in_at)
+                  | 前
+                - else
+                  span.text-gray-400 未ログイン
+              td.px-4.py-3.text-sm
+                = link_to admin_user_path(user), class: "text-blue-600 dark:text-blue-400 hover:underline" do
+                  | 詳細
+
+    / モバイル: カード表示
+    .md:hidden.space-y-4
+      - @recent_users.each do |user|
+        .bg-gray-50.dark:bg-gray-700.rounded-lg.p-4
+          .flex.items-center.mb-3
+            - if user.icon_url.present?
+              img.w-10.h-10.rounded-full.mr-3 src=user.icon_url alt=user.name
+            - else
+              .w-10.h-10.rounded-full.bg-gray-300.dark:bg-gray-600.flex.items-center.justify-center.mr-3
+                span.text-base.font-medium.text-gray-600.dark:text-gray-300 = user.name[0].upcase
+            div
+              p.font-medium.text-gray-800.dark:text-white = user.name
+              p.text-xs.text-gray-600.dark:text-gray-400 = "ID: #{user.id}"
+          .space-y-2.text-sm
+            .flex.justify-between
+              span.text-gray-600.dark:text-gray-400 メール
+              span.text-gray-800.dark:text-gray-200.truncate.ml-2 = user.email
+            .flex.justify-between
+              span.text-gray-600.dark:text-gray-400 練習回数
+              span.text-gray-800.dark:text-gray-200 = user.typing_sessions.count
+            .flex.justify-between
+              span.text-gray-600.dark:text-gray-400 最終ログイン
+              span.text-gray-800.dark:text-gray-200
+                - if user.last_sign_in_at.present?
+                  = time_ago_in_words(user.last_sign_in_at)
+                  | 前
+                - else
+                  span.text-gray-400 未ログイン
+          .mt-3
+            = link_to admin_user_path(user), class: "text-blue-600 dark:text-blue-400 hover:underline text-sm" do
+              | 詳細を見る →
+
+  - else
+    .text-center.py-8.text-gray-500.dark:text-gray-400
+      p まだユーザーが登録されていません
+
+/ 最近の練習履歴（最新10件）
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
+  h3.text-xl.font-semibold.text-gray-800.dark:text-white.mb-4 最近の練習
+
+  - if @recent_sessions.any?
+    / PC: テーブル表示
+    .hidden.md:block.overflow-x-auto
+      table.min-w-full.divide-y.divide-gray-200.dark:divide-gray-600
+        thead.bg-gray-50.dark:bg-gray-700
+          tr
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 日時
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider ユーザー
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider レッスン
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 単語数
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 正答率
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 所要時間
+            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider ミス数
+        tbody.bg-white.dark:bg-gray-800.divide-y.divide-gray-200.dark:divide-gray-600
+          - @recent_sessions.each do |session|
+            tr.hover:bg-gray-50.dark:hover:bg-gray-700
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = session.completed_at.strftime("%Y/%m/%d %H:%M")
+              td.px-4.py-3
+                .flex.items-center
+                  - if session.user.icon_url.present?
+                    img.w-8.h-8.rounded-full.mr-3 src=session.user.icon_url alt=session.user.name
+                  - else
+                    .w-8.h-8.rounded-full.bg-gray-300.dark:bg-gray-600.flex.items-center.justify-center.mr-3
+                      span.text-sm.font-medium.text-gray-600.dark:text-gray-300 = session.user.name[0].upcase
+                  = link_to admin_user_path(session.user), class: "text-sm.font-medium.text-blue-600.dark:text-blue-400.hover:underline" do
+                    = session.user.name
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
+                - if session.lesson_name.present?
+                  = session.lesson_name
+                - else
+                  span.text-gray-400 不明
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = session.word_count
+              td.px-4.py-3.text-sm
+                - accuracy_class = session.accuracy >= 90 ? "text-green-600 dark:text-green-400" : session.accuracy >= 70 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"
+                span class=accuracy_class = "#{session.accuracy}%"
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
+                - if session.duration_seconds.present?
+                  = "#{session.duration_seconds}秒"
+                - else
+                  span.text-gray-400 不明
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = session.mistake_count
+
+    / モバイル: カード表示
+    .md:hidden.space-y-4
+      - @recent_sessions.each do |session|
+        .bg-gray-50.dark:bg-gray-700.rounded-lg.p-4
+          .flex.items-center.mb-3
+            - if session.user.icon_url.present?
+              img.w-10.h-10.rounded-full.mr-3 src=session.user.icon_url alt=session.user.name
+            - else
+              .w-10.h-10.rounded-full.bg-gray-300.dark:bg-gray-600.flex.items-center.justify-center.mr-3
+                span.text-base.font-medium.text-gray-600.dark:text-gray-300 = session.user.name[0].upcase
+            div
+              = link_to admin_user_path(session.user), class: "font-medium.text-gray-800.dark:text-white.hover:underline" do
+                = session.user.name
+              p.text-xs.text-gray-600.dark:text-gray-400.mt-1 = session.completed_at.strftime("%Y/%m/%d %H:%M")
+          .mb-3
+            p.text-sm.font-medium.text-gray-800.dark:text-white
+              - if session.lesson_name.present?
+                = session.lesson_name
+              - else
+                span.text-gray-400 不明
+          .grid.grid-cols-2.gap-3.text-sm
+            div
+              p.text-gray-600.dark:text-gray-400.text-xs 単語数
+              p.text-gray-800.dark:text-gray-200.font-medium = session.word_count
+            div
+              p.text-gray-600.dark:text-gray-400.text-xs 正答率
+              - accuracy_class = session.accuracy >= 90 ? "text-green-600 dark:text-green-400" : session.accuracy >= 70 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"
+              p.font-medium class=accuracy_class = "#{session.accuracy}%"
+            div
+              p.text-gray-600.dark:text-gray-400.text-xs 所要時間
+              p.text-gray-800.dark:text-gray-200.font-medium
+                - if session.duration_seconds.present?
+                  = "#{session.duration_seconds}秒"
+                - else
+                  span.text-gray-400 不明
+            div
+              p.text-gray-600.dark:text-gray-400.text-xs ミス数
+              p.text-gray-800.dark:text-gray-200.font-medium = session.mistake_count
+
+  - else
+    .text-center.py-8.text-gray-500.dark:text-gray-400
+      p 練習履歴がまだありません

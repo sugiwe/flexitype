@@ -21,7 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - 機能追加: `feature/機能名` (例: `feature/google-authentication-setup`)
   - バグ修正: `bugfix/バグ内容` (例: `bugfix/login-button-display`)
   - リファクタリング: `refactor/対象` (例: `refactor/sessions-controller`)
-- 作業完了後は、main ブランチにマージしてからブランチを削除
+- 作業完了後は、リモートにプッシュし PR を作成、人間の開発者が PR をマージし main ブランチに pull したのを確認してからブランチを削除
 - コミットメッセージは日本語で、変更内容を明確に記述
 
 ### コミット運用
@@ -89,18 +89,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **デザイン先行**: Tailwind CSS を使うことで、デザインをコードで直接書ける
 - **手戻り削減**: 仕様が明確な場合、後でモデルを追加しても大きな変更が少ない
 
-#### 実装手順
-
-1. ルーティングとコントローラのアクションを最小限で用意
-2. ビューファイルにレイアウトとダミーデータを使った完成形を作成
-3. ブラウザで表示を確認しながらデザインを調整
-4. 必要に応じてモデルやロジックを追加し、ダミーデータを実データに置き換える
-
-#### 注意点
-
-- ダミーデータはビュー内にハードコードするが、後でモデルから取得するように置き換える
-- 仕様が不明確な場合は、先にデータ構造を検討する従来のアプローチも併用する
-
 ---
 
 ## 🎯 プロジェクト概要
@@ -148,497 +136,85 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### データ管理
 
-- キーマップ: DB に保存 (ユーザーごと)
-- 練習履歴: DB に保存（実装済み）
+- キーマップ: DB に保存 (ユーザーごと、KeymapSet)
+- 練習履歴: DB に保存（TypingSession）
 - 単語リスト: YAML ファイル管理 (`config/typing_words.yml`、`config/lessons/`)
 - UI 設定: LocalStorage (テーマ選択、デスクトップバナー表示状態など)
 
 ---
 
-## 💡 機能仕様
+## 💡 実装済み機能
 
-### 1. ユーザー認証（実装済み）
+**詳細は `CLAUDE_FEATURES.md` に記載。**
+実装が完了したら適宜 `CLAUDE_FEATURES.md` を更新していく。
 
-- Google ログインのみ
-- Google Identity Services + `google-id-token` gem
-- セッション管理でログイン状態を保持
-- メール許可リスト制（環境変数 `ALLOWED_EMAILS` で管理）
+### 主要機能の概要
 
-**User モデル:**
-
-```ruby
-# カラム
-- google_uid (string, unique, not null)
-- email (string, unique, not null, max: 254)
-- name (string, not null, max: 30)
-- icon_url (string, max: 4096)
-- history_limit (integer, default: 50, not null)
-
-# アソシエーション
-- has_many :keymaps, dependent: :destroy
-- has_many :typing_sessions, dependent: :destroy
-
-# クラスメソッド
-- from_google(payload): Google認証からユーザーを作成/取得
-- email_allowed?(email): メール許可リストチェック
-
-# インスタンスメソッド
-- cleanup_old_typing_sessions: 古い履歴を削除
-```
-
-**認証フロー:**
-
-1. フロントエンドで Google Identity Services を使用して ID トークンを取得
-2. ID トークンを Rails サーバーに送信（POST `/auth/google`）
-3. サーバー側で ID トークンを検証
-4. メール許可リストをチェック
-5. ユーザーを作成またはログイン処理
+1. ✅ **ユーザー認証**（Google Identity Services、メール許可リスト制）
+2. ✅ **キーマップ管理**（複数管理、KeymapSet、slug 対応、6 レイヤー）
+3. ✅ **タイピング練習**（レッスンシステム、指ガイド、レイヤー自動判定、2 段表示）
+4. ✅ **練習履歴・統計**（自動クリーンアップ、レスポンシブ UI、ページネーション）
+5. ✅ **管理者ダッシュボード**（ユーザー統計、人気レッスンランキング、詳細: `CLAUDE_ADMIN_DASHBOARD.md`）
+6. ✅ **レスポンシブ対応**（モバイル・PC 両対応、ハンバーガーメニュー）
+7. ✅ **ダークモード**（Light/Dark/System、LocalStorage 永続化）
+8. ✅ **URL 構造整理**（RESTful 設計、`/my`名前空間、`/@username`プロフィール）
+9. ✅ **ユーザー名機能**（`/@username`形式、Gmail 互換バリデーション）
+10. ✅ **SEO/SNS 対応**（OGP、Twitter Card）
+11. ✅ **セキュリティ強化**（Brakeman 0 警告、CSP 設定、Strong Parameters）
+12. ✅ **本番環境デプロイ**（https://typnix.com、SSL/TLS、Kamal）
 
 ---
 
-### 2. キーマップ登録・管理（実装済み）
+## 🗺️ URL 構造
 
-#### デフォルトキーマップとカスタマイズ
+### 設計方針
 
-- **ログアウト状態でもタイピング練習可能**: デフォルトキーマップで動作
-- **キーマップ未設定ユーザーもデフォルトで使える**: 初期状態でもすぐに練習開始できる
-- **ログイン後にカスタマイズ可能**: 自分専用のキーマップを登録・保存できる
-- デフォルトキーマップ: QWERTY 配列ベースの標準的なキーマップをアプリ側に持つ
-- キーマップ読み込み優先順位:
-  1. ログイン中 & ユーザーのキーマップ登録済み → ユーザーのカスタムキーマップ
-  2. それ以外 → デフォルトキーマップ
+- 個人ページは `/my` 名前空間に統一
+- ユーザープロフィールは `/@username` 形式で公開
+- 管理者ページは `/admin` 名前空間
 
-#### 物理配列
+### URL 一覧
 
-- Cornix 固定 (6 列 ×3-4 行、左右分割)
-- 将来的に他のキーボードに対応する可能性も考慮した設計
+#### 公開ページ（認証不要）
 
-#### レイヤー
+- `/` - トップページ（レッスン一覧）
+- `/practices/:id` - 練習ページ（数値 ID ベース）
+- `/@:username` - ユーザープロフィール
+- `/terms` - 利用規約
+- `/privacy` - プライバシーポリシー
+- `/about` - About ページ
 
-- 0〜5 の 6 レイヤーに対応
-- 各レイヤーごとに異なるキーマップを登録可能
+#### 個人ページ（認証必要、`/my`配下）
 
-#### 登録 UI
+- `/my` - マイページ（設定ダッシュボード）
+- `/my/account/edit` - アカウント設定（username 編集）
+- `/my/keymaps` - キーマップ一覧
+- `/my/keymaps/:slug/edit` - キーマップ編集
+- `/my/history` - 練習履歴
 
-**2 段階選択方式:**
+#### 管理者ページ（認証+管理者権限必須、`/admin`配下）
 
-1. 上側: 物理キーボード配列（登録先を選択）
-2. 下側: 入力候補ボタン（登録元を選択）
+- `/admin` - 管理者ダッシュボード
+- `/admin/users` - ユーザー一覧
+- `/admin/users/:id` - ユーザー詳細
 
-**入力候補の整理:**
+#### 認証
 
-- 文字・数字タブ: アルファベット（A/a）、数字・記号ペア（!/1）
-- 記号・特殊キータブ: 記号ペア（\_/-）、特殊キー（Space, Enter など）、矢印キー
-- 2 段表示で Shift ペアを表現
-
-**操作フロー:**
-
-1. 上のキーボードからキーをクリック → 緑枠でハイライト
-2. 下の候補から文字をクリック → 割り当て完了
-3. レイヤーごとに切り替えて設定
-4. 保存ボタンで DB に保存（ユーザーに紐づく）
-
-**Keymap モデル:**
-
-```ruby
-# カラム
-- user_id (references users, not null)
-- layer (integer, 0-5, not null)
-- key_position (string, 例: "L0-R0", not null)
-- character (string, max: 20, not null)
-
-# インデックス
-- [user_id, layer, key_position], unique: true
-
-# クラスメソッド
-- for_user_layer(user_id, layer): 特定レイヤーのキーマップをハッシュで取得
-- bulk_upsert(user_id, layer, keymap_hash): キーマップの一括更新
-```
-
----
-
-### 3. タイピング練習（実装済み）
-
-#### レッスンシステム
-
-- **10 カテゴリ、20+レッスン** を用意
-- カテゴリ: 単語練習、文章練習、記号練習、プログラミング、日本語入力など
-- YAML ファイルで管理 (`config/lessons/`)
-- LessonLoader サービスクラスでレッスン情報と練習項目を取得
-
-#### 練習フロー
-
-1. 画面上に 1 単語ずつ表示
-2. キー入力ごとに正誤を判定
-3. BackSpace で修正可能
-4. 正しい入力が完了したら次の単語へ
-5. 1 セッション = 20 単語（レッスンにより異なる）
-6. セッション完了画面で統計表示（正答率、所要時間、ミス数）
-
-#### 判定ロジック
-
-- 入力文字と正解文字を 1 文字ずつ比較
-- 間違えた文字は入力をロック（BackSpace で修正）
-- 正しい入力後、次の文字へフォーカス移動
-
----
-
-### 4. キーボード表示・ガイド機能（実装済み）
-
-#### 描画方法
-
-- CSS Grid + margin 調整でカラムスタッガードを再現
-- 将来的に SVG 化も検討
-
-#### 左右分割表示
-
-- 視覚的に左右のキーボードが分かれている表示
-
-#### ハイライト機能
-
-- 次に打つべきキーをリアルタイムでハイライト
-- レイヤー切り替えが必要な場合:
-  - レイヤーボタン (例: 左親指) + 目的の文字キーの 2 箇所を同時にハイライト
-  - 例: "1" を打つ場合 → レイヤー 1 ボタン + レイヤー 1 の"1"の位置
-
-#### 指ガイド機能
-
-- **指ごとの色分け:**
-  - 小指（左右）: 赤色（`bg-red-100` / `bg-red-300`）
-  - 薬指（左右）: 黄色（`bg-yellow-100` / `bg-yellow-300`）
-  - 中指（左右）: 青色（`bg-blue-100` / `bg-blue-300`）
-  - 人差し指（左右）: 緑色（`bg-green-100` / `bg-green-300`）
-  - 親指（左右）: グレー（`bg-gray-100` / `bg-gray-300`）
-- **キーの色付け:**
-  - 各キーに指ごとの薄い色を常時表示
-  - 次に打つべきキーは、その指の色が濃くなる
-  - リングエフェクト（`ring-2`）で控えめに強調
-- **指ガイド表示:**
-  - キーボード下部に左右それぞれ 5 本指のガイドを表示
-  - 各指に「小・薬・中・人・親」のラベル
-  - 次に使う指のガイドも濃い色に変化
-
-#### レイヤー自動判定
-
-- アプリが次に打つ文字を解析
-- ユーザーのキーマップから「どのレイヤーに配置されているか」を自動判定
-- 該当レイヤーのキーマップ表示に自動切り替え
-- Layer 0 を最優先として検索し、全 6 レイヤーから文字を検索
-- レイヤーボタン + 目的の文字キーの 2 箇所を同時にハイライト
-
-#### 2 段表示機能
-
-- キーに 2 段表示（通常時|Shift 時）を表示
-- デリミタ: `|`（例: `Q|q`, `!|1`, `?|/`）
-- Ruby 版（ApplicationHelper）と JavaScript 版（typing_controller.js）で統一実装
-- 特殊キー（Spc, BS, Ent, Lyr1 など）は 1 段表示
-
----
-
-### 5. 練習履歴・統計（実装済み）
-
-#### 概要
-
-- ログインユーザー向け機能
-- 無料ユーザーは 50 件の履歴を保持（自動クリーンアップ）
-- 将来の課金ユーザー向けに拡張可能な設計
-
-#### データベース設計
-
-**TypingSession モデル:**
-
-```ruby
-# カラム
-- user_id (references users, not null)
-- category (string)
-- lesson_id (string)
-- lesson_name (string)
-- word_count (integer, default: 0, not null)
-- correct_count (integer, default: 0, not null)
-- mistake_count (integer, default: 0, not null)
-- accuracy (decimal, precision: 5, scale: 2)
-- duration_seconds (integer)
-- completed_at (datetime)
-
-# インデックス
-- [user_id, completed_at], order: { completed_at: :desc }
-- [user_id, created_at], order: { created_at: :desc }
-
-# スコープ
-- recent: order(completed_at: :desc)
-
-# コールバック
-- after_create :cleanup_old_sessions
-```
-
-#### 自動クリーンアップ
-
-- TypingSession 作成後、after_create コールバックで実行
-- history_limit を超えた古い履歴を自動削除
-- パフォーマンスを考慮したインデックス設計
-
-#### 履歴一覧ページ（/history）
-
-- **レスポンシブ UI**
-  - PC: テーブル形式（日時、レッスン、単語数、正答率、所要時間、ミス数）
-  - モバイル: カード形式（同じ情報をコンパクトに表示）
-- **ミニ統計**
-  - 総練習回数（青色アイコン）
-  - 平均正答率（緑色アイコン）
-- **正答率の色分け**
-  - 90%以上: 緑色
-  - 70%以上: 黄色
-  - それ以下: 赤色
-- **ページネーション**: Kaminari gem、1 ページ 20 件
-- **空状態 UI**: 履歴なし時の誘導メッセージ
-
-#### 自動保存機能
-
-- タイピング練習終了時に自動的に履歴を保存
-- typing_controller.js で JSON API を呼び出し（POST `/history`）
-- ログインユーザーのみ保存（loggedInValue で判定）
-- CSRF 対策、エラーハンドリング
-
-#### 将来の拡張
-
-- 統計グラフ（正答率の推移など）
-- 詳細な統計ページ（/history/stats）
-- WPM（Words Per Minute）の記録
-
----
-
-## 📦 データモデル
-
-### User
-
-```ruby
-# カラム
-- id (primary key)
-- google_uid (string, unique, indexed)
-- email (string, max: 254, unique)
-- name (string, max: 30)
-- icon_url (string, max: 4096)
-- history_limit (integer, default: 50)
-- created_at, updated_at
-
-# アソシエーション
-- has_many :keymaps, dependent: :destroy
-- has_many :typing_sessions, dependent: :destroy
-
-# メソッド
-- self.from_google(payload): Google認証からユーザーを作成/取得
-- self.email_allowed?(email): メール許可リストチェック
-- cleanup_old_typing_sessions: 古い履歴を削除
-```
-
-### Keymap
-
-```ruby
-# カラム
-- id (primary key)
-- user_id (references User)
-- layer (integer, 0-5)
-- key_position (string, 例: "L0-R0")
-- character (string, max: 20)
-- created_at, updated_at
-
-# インデックス
-- [user_id, layer, key_position], unique: true
-
-# スコープ・メソッド
-- for_user_layer(user_id, layer): 特定レイヤーのキーマップをハッシュで取得
-- bulk_upsert(user_id, layer, keymap_hash): キーマップの一括更新
-```
-
-### TypingSession
-
-```ruby
-# カラム
-- id (primary key)
-- user_id (references User, not null)
-- category (string)
-- lesson_id (string)
-- lesson_name (string)
-- word_count (integer, default: 0, not null)
-- correct_count (integer, default: 0, not null)
-- mistake_count (integer, default: 0, not null)
-- accuracy (decimal, precision: 5, scale: 2)
-- duration_seconds (integer)
-- completed_at (datetime)
-- created_at, updated_at
-
-# インデックス
-- [user_id, completed_at], order: { completed_at: :desc }
-- [user_id, created_at], order: { created_at: :desc }
-
-# スコープ
-- recent: order(completed_at: :desc)
-
-# コールバック
-- after_create :cleanup_old_sessions
-```
-
----
-
-## 📅 開発スケジュール (25 日間)
-
-### Phase 1: 基盤構築 (Day 1-3) ✅
-
-- Day 1: 構想・仕様策定
-- Day 2: Rails 新規作成、Git 初期化、Tailwind CSS・Slim 導入、Google 認証基本実装
-- Day 3: Google Cloud Console 設定完了、認証動作確認
-
-### Phase 2: コア機能実装 (Day 4-8) ✅
-
-- Day 4-5: タイピング練習画面とタイピング判定ロジック実装
-  - キーボード描画 (CSS Grid で Cornix の分割型配列を再現)
-  - 単語表示エリアと入力フォームのレイアウト
-  - Stimulus コントローラで入力判定、BackSpace 対応
-  - 単語データの YAML ファイル作成と読み込み
-  - 指ガイド機能の実装（指ごとの色分け、ハイライト）
-  - ミスタイプ時の入力ロック機能
-- Day 6-7: キーマップ登録・保存機能
-  - キーマップ登録画面の View 作成（2 段階選択方式）
-  - Keymap モデル実装と DB 保存
-  - デフォルトキーマップシステム（YAML）
-  - タイピング練習画面への動的反映
-- Day 8: 統合テスト・調整
-  - レイヤー自動切り替え機能（全レイヤー自動判定、2 箇所同時ハイライト）
-  - 2 段表示機能（Q|q 形式、デリミタ統一）
-  - UI/UX 改善（自動フォーカス、ハイライト抑制）
-
-### Phase 3: UX 向上・UI 改善 (Day 9-12) ✅
-
-- Day 9: セッション完了画面とレッスン選択システム
-  - セッション完了画面（統計表示：正答率、所要時間、ミス数）
-  - レッスン選択システム（10 カテゴリ・20+レッスン）
-  - LessonLoader サービスクラスの実装
-- Day 10: レイアウトの全面的リデザイン
-  - 左カラムサイドバー方式への変更
-  - ナビゲーション、ユーザー情報、広告スペース
-  - サービス名を「Typnix」に統一
-- Day 11: ダークモード機能の実装
-  - Tailwind CSS v4 でのクラスベースダークモード
-  - Light/Dark/System の 3 つのテーマ選択
-  - LocalStorage で設定を永続化
-- Day 12: ベータ版リリース準備とリファクタリング
-  - ベータ版制限 UI 実装
-  - 利用規約・プライバシーポリシーページ
-  - ヘルプメニュー・ユーザーメニュー実装
-  - レイアウトファイルリファクタリング（application.html.slim を 205 行 →45 行に削減）
-
-### Phase 4: デプロイ (Day 13-14) ✅
-
-- Day 13: VPS 初回デプロイ
-  - さくら VPS（Ubuntu 22.04）の初期設定
-  - Docker のインストールと設定
-  - PostgreSQL 14 のインストール
-  - Kamal デプロイ設定
-  - http://153.120.65.157 で外部アクセス可能に
-- Day 14: 独自ドメイン・Full SSL 設定
-  - DNS A レコード設定（typnix.com → VPS IP）
-  - SSL/TLS 暗号化モードを「Full」に設定
-  - Let's Encrypt で自動 SSL 証明書取得
-  - https://typnix.com で公開開始
-
-### Phase 5: セキュリティ・レスポンシブ対応 (Day 15) ✅
-
-- Day 15: セキュリティ強化とレスポンシブ対応の完成
-  - 包括的なセキュリティチェックリストの作成（50+項目）
-  - KeymapsController に Strong Parameters 実装
-  - Brakeman: 0 警告達成
-  - モバイル・PC 両対応のレスポンシブ UI
-  - ハンバーガーメニュー方式（モバイル）
-  - モバイルブラウザのアドレスバー対応（100dvh 使用）
-  - OGP 設定（SNS シェア対応）
-
-### Phase 6: 履歴機能 (Day 16) ✅
-
-- Day 16: タイピング練習履歴機能の実装
-  - TypingSession モデル作成
-  - 自動クリーンアップ機能（50 件制限）
-  - 履歴一覧ページ（レスポンシブ対応）
-  - ミニ統計表示（総回数、平均正答率）
-  - 本番環境デプロイ成功
-  - KeymapsController セキュリティ改善（Brakeman 警告 0 件達成）
-
-### Phase 7: ブラッシュアップ (Day 17-25)
-
-- バグ修正
-- UI/UX 改善
-- パフォーマンス最適化
-- エラーページ（404/500）の整備
-- ログ・モニタリング体制の確立
-- 統計機能の拡張（任意）
-
----
-
-## 🎨 UI/UX 設計方針
-
-### レイアウト
-
-**左カラムサイドバー方式（実装済み）**
-
-- 左サイドバー: 300px 固定幅
-  - ロゴエリア
-  - ナビゲーションメニュー
-  - 広告スペース（300x250px）
-  - ユーザー情報・認証エリア
-- 右メインコンテンツ: 可変幅
-  - ページごとのコンテンツ
-  - レスポンシブ対応（デスクトップ優先）
-
-### カラースキーム
-
-- シンプルで視認性の高い配色
-- ハイライト色: アクセントカラー (例: 青・緑系)
-- エラー表示: 赤系
-- ダークモード対応（全ページ）
-
-### アニメーション
-
-- キー押下時の視覚フィードバック (CSS transition)
-- レイヤー切り替え時のスムーズな表示変更
-- テーマ切り替えアニメーション
+- `POST /auth/google` - Google 認証
+- `DELETE /logout` - ログアウト
 
 ---
 
 ## 🔒 セキュリティ・認証
 
-- CSRF 対策: Rails 標準の CSRF 保護
-- 環境変数管理: `credentials.yml.enc`（Google Client ID/Secret）
-- メール許可リスト: 環境変数 `ALLOWED_EMAILS`（カンマ区切り）
-- ID トークン検証: `google-id-token` gem
-- Strong Parameters: 全コントローラで適切に実装
-- セキュリティチェック: Brakeman、bundler-audit で定期的に検査
-
-### Content Security Policy (CSP)
-
-**概要**: CSP はブラウザに「どのスクリプトやスタイルを読み込んでいいか」を指示するセキュリティ機能
-
-**設定ファイル**: `config/initializers/content_security_policy.rb`
-
-**重要な注意点**:
-- **Tailwind CSS は影響を受けない**: Tailwind のユーティリティクラス（`flex`, `grid` など）は外部 CSS なので問題なし
-- **インラインスタイル（`style=` 属性）は CSP でブロックされる**: セキュリティのため、`style=` 属性を使わず CSS クラスを使うべき
-- **nonce ディレクティブと `:unsafe_inline` の関係**: nonce を有効にすると `:unsafe_inline` が無効化される
-
-**開発時のルール**:
-1. **インラインスタイル（`style=` 属性）は使用禁止**
-   - ❌ `.grid style="grid-template-columns: repeat(6, 3.5rem);"`
-   - ✅ `.grid.keyboard-grid-6col`（`app/assets/stylesheets/application.css` にクラスを定義）
-
-2. **Tailwind のユーティリティクラスは自由に使える**
-   - ✅ `.flex.items-center.justify-center`
-   - ✅ `.grid.gap-1.5`
-
-3. **任意の値（arbitrary values）を使う場合は `class=` 属性で囲む**
-   - ❌ `.h-\[264px\]`（Slim でエスケープが必要で複雑）
-   - ✅ `class="h-[264px]"`（引用符で囲む）
-
-**トラブルシューティング**:
-- CSP 違反でスタイルが崩れた場合は、インラインスタイルを探して CSS クラスに移行する
-- ブラウザの開発者ツールの Console タブで CSP 違反のエラーを確認できる
+- **CSRF 対策**: Rails 標準の CSRF 保護
+- **環境変数管理**: `credentials.yml.enc`（Google Client ID/Secret）、`.kamal/secrets`（ALLOWED_EMAILS, ADMIN_EMAILS）
+- **ID トークン検証**: `google-id-token` gem
+- **Strong Parameters**: 全コントローラで適切に実装
+- **セキュリティチェック**: Brakeman 0 警告、bundler-audit で定期的に検査
+- **Content Security Policy (CSP)**: `config/initializers/content_security_policy.rb`
+  - Google ログインとの競合を解消（nonce 無効化、`:unsafe_inline`有効化）
+  - インラインスタイル（`style=`属性）は使用禁止
 
 ---
 
@@ -654,1009 +230,187 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ドメイン: typnix.com
 - DNS: Cloudflare 経由
 - SSL/TLS: Let's Encrypt (Kamal で自動設定、90 日ごとに自動更新)
-- エンドツーエンド暗号化（ブラウザ →Cloudflare→VPS）
+- エンドツーエンド暗号化（ブラウザ → Cloudflare → VPS）
 
 ---
 
-## 🗺️ URL構造設計（✅ Day 17 で整理完了）
+## 📦 主要データモデル
 
-### 設計方針
+詳細は各モデルファイルおよび `CLAUDE_FEATURES.md` を参照。
 
-**個人ページは `/my` 名前空間に統一**
-- 認証が必要なユーザー個人のページは `/my/*` にまとめる
-- 将来的な機能拡張（複数キーマップ、カスタムレッスン、アカウント設定など）を見据えた設計
-- ユーザープロフィールは `/@username` 形式で公開
-
-### URL一覧
-
-#### 公開ページ（認証不要）
-- `/` - トップページ（レッスン一覧）
-- `/practices/:id` - 練習ページ（例: `/practices/1`, `/practices/7`）
-- `/@:username` - ユーザープロフィール（例: `/@john`, `/@alice`）
-- `/terms` - 利用規約
-- `/privacy` - プライバシーポリシー
-
-#### 個人ページ（認証必要、`/my` 名前空間）
-- `/my` - マイページ（設定ダッシュボード）
-- `/my/account/edit` - アカウント設定（username編集）
-- `/my/keymaps/1/edit` - キーマップ編集（現在はID=1固定、将来的に複数対応）
-- `/my/history` - 練習履歴
-
-#### 認証
-- POST `/auth/google` - Google認証
-- DELETE `/logout` - ログアウト
-
-### 将来的な拡張
-- `/my/keymaps` - キーマップ一覧（複数対応）
-- `/my/lessons` - カスタムレッスン管理
+- **User**: Google 認証、履歴制限、ログイン追跡（last_sign_in_at, sign_in_count）
+- **KeymapSet**: キーマップセット（名前、説明、公開設定、slug、keyboard_type）
+- **Keymap**: キー配置（レイヤー、位置、文字、keymap_set_id）
+- **TypingSession**: 練習履歴（正答率、所要時間、ミス数、completed_at）
 
 ---
 
-## 🔧 管理者ダッシュボード設計（Day 20 実装予定）
+## 📅 開発スケジュール
 
-### 概要
+### Phase 1-6: 完了（Day 1-16）
 
-**目的:**
-- ベータテストユーザーの活動状況を開発者が監視できるようにする
-- ユーザー数、練習回数、キーマップ数などの統計情報をダッシュボードで一覧表示
-- 個別のユーザー詳細ページで、各ユーザーの練習履歴やキーマップを確認
+- **Phase 1**: 基盤構築（Day 1-3）
+  - Rails 新規作成、Google 認証基本実装
+- **Phase 2**: コア機能実装（Day 4-8）
+  - タイピング練習、キーマップ登録・保存
+- **Phase 3**: UX 向上・UI 改善（Day 9-12）
+  - レッスンシステム、ダークモード、ベータ版 UI
+- **Phase 4**: デプロイ（Day 13-14）
+  - VPS 初回デプロイ、独自ドメイン・SSL 設定
+- **Phase 5**: セキュリティ・レスポンシブ対応（Day 15）
+  - Brakeman 0 警告、モバイル対応、OGP 設定
+- **Phase 6**: 履歴機能（Day 16）
+  - TypingSession モデル、自動クリーンアップ、履歴一覧ページ
 
-**アクセス制御:**
-- 開発者（管理者）のみアクセス可能
-- 環境変数 `ADMIN_EMAILS` でメールアドレスをカンマ区切りで管理
-- `Admin::ApplicationController` で `before_action :require_admin!` を実装
+### Phase 7: ブラッシュアップ（Day 17-25、進行中）
 
-### URL構造
-
-```ruby
-# 管理者ページ（認証 + 管理者権限必須、/admin 名前空間）
-GET /admin                      # 管理者ダッシュボード（統計概要 + ユーザー一覧）
-GET /admin/users                # ユーザー一覧（ページネーション付き）
-GET /admin/users/:id            # ユーザー詳細（練習履歴、キーマップ、詳細統計）
-GET /admin/keymaps              # キーマップ一覧（将来実装）
-GET /admin/typing_sessions      # 練習履歴一覧（将来実装）
-```
-
-### ダッシュボード構成要素
-
-#### 1. 統計サマリーカード（4つ）
-
-- **総ユーザー数**
-  - アイコン: ユーザーアイコン（青色）
-  - 数値: `User.count`
-  - サブテキスト: 「今週の新規登録: X名」（将来実装）
-
-- **総練習回数**
-  - アイコン: キーボードアイコン（緑色）
-  - 数値: `TypingSession.count`
-  - サブテキスト: 「今日の練習: X回」（将来実装）
-
-- **総キーマップ数**
-  - アイコン: レイヤーアイコン（黄色）
-  - 数値: `KeymapSet.count`
-  - サブテキスト: 「公開キーマップ: X個」（`KeymapSet.where(is_public: true).count`、将来実装）
-
-- **総レッスン数**
-  - アイコン: ドキュメントアイコン（紫色）
-  - 数値: `LessonLoader.all.count`（YAMLファイルから取得）
-  - サブテキスト: 「カテゴリー数: X個」
-
-#### 2. ユーザー一覧テーブル（最新10名）
-
-**表示項目:**
-- ID（数値）
-- アバター画像（`icon_url` または頭文字アイコン）
-- 名前（`name`）
-- ユーザー名（`username`、`/@username`へのリンク）
-- メールアドレス（`email`）
-- 練習回数（`typing_sessions.count`）
-- キーマップ数（`keymap_sets.count`）
-- 最終ログイン（`last_sign_in_at`、「X分前」形式）
-- アクション（「詳細を見る」ボタン → `/admin/users/:id`）
-
-**並び順:**
-- 最終ログイン日時の降順（`order(last_sign_in_at: :desc)`）
-
-**ページネーション:**
-- Kaminari gem、1ページ20件
-- ダッシュボードは最新10名のみ表示
-- 「すべて見る」ボタン → `/admin/users`
-
-#### 3. レッスン統計（カテゴリー別）
-
-**表示項目:**
-- カテゴリー名（例: 「基礎練習」「プログラミング」「文章練習」）
-- 各カテゴリーのレッスン数
-- 各カテゴリーの総練習回数（将来実装）
-
-**人気レッスンランキング（将来実装）:**
-- レッスン名
-- 総練習回数（`TypingSession.group(:lesson_id).count`）
-- 平均正答率
-
-#### 4. 追加統計（将来実装）
-
-- アクティブユーザー（過去7日間にログインしたユーザー数）
-- 今週の練習回数
-- 平均正答率（全ユーザー）
-
-### ユーザー詳細ページ（`/admin/users/:id`）
-
-**表示項目:**
-- ユーザー基本情報
-  - アバター画像
-  - 名前、ユーザー名、メールアドレス
-  - 登録日時、最終ログイン日時
-  - ログイン回数
-- 統計情報
-  - 総練習回数
-  - 平均正答率
-  - 総キーマップ数
-- 練習履歴一覧（ページネーション付き）
-  - 日時、レッスン名、正答率、所要時間、ミス数
-- キーマップ一覧
-  - 名前、説明、公開設定、作成日時
-
-### アクセス制御の実装
-
-#### 環境変数設定
-
-```bash
-# .env または config/credentials.yml.enc
-ADMIN_EMAILS=developer@example.com,admin@example.com
-```
-
-#### Admin::ApplicationController
-
-```ruby
-class Admin::ApplicationController < ApplicationController
-  before_action :require_admin!
-
-  private
-
-  def require_admin!
-    admin_emails = ENV['ADMIN_EMAILS']&.split(',')&.map(&:strip) || []
-    unless logged_in? && admin_emails.include?(current_user.email)
-      redirect_to root_path, alert: "管理者権限が必要です"
-    end
-  end
-end
-```
-
-#### ApplicationHelper にヘルパーメソッド追加
-
-```ruby
-def admin?
-  return false unless logged_in?
-  admin_emails = ENV['ADMIN_EMAILS']&.split(',')&.map(&:strip) || []
-  admin_emails.include?(current_user.email)
-end
-```
-
-### ログイン追跡機能
-
-#### User モデルに追加カラム
-
-```ruby
-# マイグレーション
-class AddLoginTrackingToUsers < ActiveRecord::Migration[8.1]
-  def change
-    add_column :users, :last_sign_in_at, :datetime
-    add_column :users, :current_sign_in_at, :datetime
-    add_column :users, :sign_in_count, :integer, default: 0, null: false
-
-    add_index :users, :last_sign_in_at
-  end
-end
-```
-
-#### SessionsController#create を更新
-
-```ruby
-def create
-  # ... Google認証処理 ...
-
-  # ログイン情報を更新
-  @user.update!(
-    last_sign_in_at: @user.current_sign_in_at,
-    current_sign_in_at: Time.current,
-    sign_in_count: @user.sign_in_count + 1
-  )
-
-  # ... セッション設定 ...
-end
-```
-
-### サイドバーメニューへの追加
-
-管理者のみに表示される専用メニュー項目を追加（赤色テーマ）:
-
-```slim
-/ app/views/layouts/shared/_sidebar_menu.html.slim
-/ 通常メニューの後に、区切り線と管理者メニューを追加
-
-- if admin?
-  .border-t.border-gray-200.dark:border-gray-600.my-2
-
-  li
-    = link_to admin_root_path, class: "flex items-center px-4 py-3 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-900 hover:text-red-600 dark:hover:text-red-400 transition #{current_page?(admin_root_path) ? 'bg-red-50 dark:bg-red-900 text-red-600 dark:text-red-400 font-semibold' : ''}" do
-      svg.w-5.h-5.mr-3 fill="none" stroke="currentColor" viewBox="0 0 24 24"
-        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-      span 管理画面
-```
-
-**デザイン方針:**
-- 通常メニュー: 青色（`bg-blue-50`, `text-blue-600`）
-- 管理者メニュー: 赤色（`bg-red-50`, `text-red-600`）
-- 色は控えめ（harsh にならないよう注意）
-- 区切り線で視覚的に分離
-
-### ルーティング
-
-```ruby
-# config/routes.rb
-namespace :admin do
-  root to: "dashboard#index"
-  resources :users, only: [:index, :show]
-  resources :keymaps, only: [:index]  # 将来実装
-  resources :typing_sessions, only: [:index]  # 将来実装
-end
-```
-
-### パフォーマンス最適化
-
-**N+1クエリ対策:**
-```ruby
-# ユーザー一覧でのカウント取得
-@users = User.includes(:keymap_sets, :typing_sessions)
-             .select("users.*,
-                      (SELECT COUNT(*) FROM keymap_sets WHERE keymap_sets.user_id = users.id) as keymap_sets_count,
-                      (SELECT COUNT(*) FROM typing_sessions WHERE typing_sessions.user_id = users.id) as typing_sessions_count")
-             .order(last_sign_in_at: :desc)
-             .page(params[:page])
-             .per(20)
-```
-
-### 実装段階
-
-**Phase 1: 基盤整備（Day 20 午前）**
-- Admin 名前空間の作成
-- Admin::ApplicationController の実装
-- ログイン追跡カラムの追加（マイグレーション）
-- SessionsController の更新
-- 環境変数 `ADMIN_EMAILS` の設定
-- `admin?` ヘルパーメソッドの実装
-
-**Phase 2: ダッシュボード実装（Day 20 午後）**
-- `/admin` ルートとダッシュボードコントローラの作成
-- 4つの統計サマリーカードの実装
-- ユーザー一覧テーブル（最新10名）の実装
-- レッスン統計（カテゴリー別）の実装
-- サイドバーへの管理者メニュー追加
-
-**Phase 3: 詳細ページ実装（Day 20 夜 または Day 21）**
-- `/admin/users` 一覧ページ（ページネーション付き）
-- `/admin/users/:id` 詳細ページ
-  - ユーザー基本情報
-  - 統計情報
-  - 練習履歴一覧
-  - キーマップ一覧
-- 人気レッスンランキング（将来実装）
-
-### 将来的な拡張
-
-**グラフ機能（Chart.js）:**
-- ユーザー登録数の推移（日別・週別）
-- 練習回数の推移
-- 平均正答率の推移
-
-**CSV エクスポート:**
-- ユーザーデータのエクスポート
-- 練習履歴のエクスポート
-
-**高度なフィルタリング:**
-- ユーザー検索（名前、メールアドレス）
-- 期間フィルター（登録日時、最終ログイン日時）
-- アクティビティフィルター（練習回数でソート）
-
-### レッスンのDB化について
-
-**現状:**
-- レッスンデータは YAML ファイル管理（`config/lessons/`）
-- 開発者が手動で追加・編集
-- Git 管理されており、変更履歴が追跡可能
-
-**DB化を検討する理由:**
-- 管理画面からレッスンの追加・編集ができるようになる
-- 練習回数などの統計をレッスンと直接紐づけられる
-- レッスンごとの詳細な分析が可能になる
-
-**方針:**
-- 今回の管理者ダッシュボード実装では、YAML のまま維持
-- DB 化は別の独立したタスクとして、将来的に実装
-- 理由:
-  - レッスンは開発者が管理するもので、ユーザーが作成するものではない
-  - YAML 管理の方がデプロイ時にシンプル（Git で管理可能）
-  - 現状でも `lesson_id` を `typing_sessions` に保存しているため、統計は取得可能
-  - DB 化は大きな変更となるため、管理者ダッシュボード実装とは切り分ける
-
-**将来的にDB化する場合の設計メモ:**
-- Lesson モデル、Category モデルの作成
-- YAML データを DB に移行するマイグレーション
-- 管理画面からのレッスン CRUD 機能
-- レッスンバージョン管理（変更履歴）
+- ✅ **Day 17**: URL 構造整理、ユーザー名機能（`/@username`）
+- ✅ **Day 18**: KeymapSet 基盤実装、UI/UX 改善（詳細: `CLAUDE_KEYMAP_EXPANSION.md`）
+- ✅ **Day 19**: Google ログイン修正、キーマップ UI 改善（slug 対応）
+- ✅ **Day 20**: 管理者ダッシュボード実装（詳細: `CLAUDE_ADMIN_DASHBOARD.md`）
+- 🔜 **Day 21-22**: Google ツール導入（GTM + GA4 + プライバシーポリシー更新）
+- 🔜 **Day 23**: トップページ改修（練習増加 + タブ化）
+- 🔜 **Day 24**: バグ修正、パフォーマンス最適化
+- 🔜 **Day 25**: 最終チェック、ドキュメント整備
 
 ---
 
-## 📝 今後の予定タスク
+## 🎯 現在の進捗状況（Day 20 完了時点）
+
+### 完了した主要マイルストーン
+
+- ✅ **Phase 1-6**: 基盤構築〜履歴機能（Day 1-16）
+- ✅ **Day 17**: URL 構造整理、ユーザー名機能
+- ✅ **Day 18**: KeymapSet 基盤実装（Phase 1）、UI/UX 改善
+- ✅ **Day 19**: Google ログイン修正（Turbo 対応・CSP 競合解消）、キーマップ UI 改善
+- ✅ **Day 20**: 管理者ダッシュボード実装（Phase 1-3 完了）、日本語ロケール対応
+
+### 技術的マイルストーン
+
+- Day 14: **独自ドメインデプロイ完了**（当初目標 25 日に対し 11 日前倒し）
+- Day 15: **セキュリティ強化**（Brakeman 警告 0 件達成）
+- Day 16: **履歴機能実装**（自動クリーンアップ）
+- Day 17: **URL 構造整理**（RESTful 設計、数値 ID ベース）
+- Day 18: **KeymapSet 基盤実装**（複数キーマップ管理の基礎完成）
+- Day 19: **Google ログインバグ修正**（Turbo 対応、CSP 競合解消）
+- Day 20: **管理者ダッシュボード実装**（統計、人気レッスンランキング）
+
+### 次のステップ（Phase 7: 残タスク）
+
+- 🔜 **Day 21-22**: Google ツール導入（GTM + GA4 + プライバシーポリシー更新）
+- 🔜 **Day 23**: トップページ改修（練習増加 + タブ化）
+- 🔜 **Day 24**: バグ修正、パフォーマンス最適化
+- 🔜 **Day 25**: 最終チェック、ドキュメント整備
+
+---
+
+## 📝 設計ドキュメント
+
+### 実装完了
+
+- **`CLAUDE_FEATURES.md`** - 実装済み機能の詳細仕様（随時更新）
+- **`CLAUDE_ADMIN_DASHBOARD.md`** - 管理者ダッシュボード設計（✅ Day 20 完了）
+- **`CLAUDE_KEYMAP_EXPANSION.md`** - キーマップ拡張設計（✅ Phase 1 完了、Phase 2-3 は将来実装）
+
+### 将来実装
+
+- **`CLAUDE_KEYBOARD_TYPE_DESIGN.md`** - キーボードタイプ対応設計（Phase 0 完了、Phase 1 以降は将来実装）
+- **`CLAUDE_WHITELIST_DESIGN.md`** - ホワイトリスト管理設計（保留中）
+
+---
+
+## 今後の予定タスク
 
 ### 優先度: 高（Phase 7 で実装予定）
 
-#### 1. Googleツール系の導入（Day 18-19 で実装）
+#### 1. Google ツール導入（Day 21-22 予定）
 
-**目的:**
-- アクセス解析によるユーザー行動の把握
-- 将来的な広告収益化の基盤整備
-- データドリブンな改善サイクルの確立
+- Google Tag Manager（GTM）の導入
+- Google Analytics 4（GA4）の設定
+- プライバシーポリシーの更新（Cookie 使用、データ収集について明記）
 
-**実装内容:**
+#### 2. トップページ改修（Day 23 予定）
 
-1. **Google Tag Manager（GTM）の導入**
-   - GTMコンテナスニペットを`<head>`と`<body>`に追加
-   - 環境変数で本番環境のみ有効化（`GTM_CONTAINER_ID`）
-   - 開発環境・ステージング環境でのテストデータ混入を防止
-
-2. **Google Analytics 4（GA4）の設定**
-   - GTM経由でGA4タグを設定（コード変更なし）
-   - ページビュー、イベント計測の設定
-   - ユーザー行動データの蓄積開始
-
-3. **プライバシーポリシーの更新**
-   - Cookieの使用について明記
-   - Google Analyticsによるデータ収集について説明
-   - Google AdSenseによる広告配信について説明（準備）
-   - データ収集の目的（アクセス解析、広告配信の最適化）
-   - ユーザーのオプトアウト方法（Googleアナリティクス オプトアウト アドオン）
-
-4. **Content Security Policy（CSP）の設定**
-   - Google関連ドメインを許可リストに追加
-   - `config/initializers/content_security_policy.rb`の設定
-   - **重要**: nonce ディレクティブを有効にすると `:unsafe_inline` が無効化される
-   - **インラインスタイル（`style=` 属性）は使用禁止**: CSP でブロックされるため、CSS クラスを使用すること
-
-5. **Google AdSense（将来実装）**
-   - 今回は審査申請のみ（審査には数日〜数週間）
-   - 審査通過後、GTM経由でタグを設定
-
-**実装しないもの（将来検討）:**
-- Cookie同意バナー（Phase 2として検討）
-- robots.txtとsitemap.xml（SEO強化時に実装）
-
-#### 2. アクセス制御の実装（Day 19-20 予定）
-- ログイン必須の練習ページへの非ログインユーザーのアクセスを制限
-- リダイレクト処理とフラッシュメッセージの実装
-- LessonLoader側で `requires_login` フラグを活用
-
-#### 3. トップページのデザイン改修（Day 21 予定）
-- 練習を増やす（現在16レッスン → 30+レッスン）
-- タブ分けによるカテゴリ整理
-  - 基本練習（誰でも）
-  - 単語練習（誰でも）
-  - プログラミング（ログイン必要）
-  - 文章練習（ログイン必要）
-  - カスタム（ログイン必要）
+- 練習増加（現在 16 レッスン → 30+レッスン）
+- タブ分けによるカテゴリ整理（基本練習、単語練習、プログラミング、文章練習、カスタム）
 
 ### 優先度: 中（余裕があれば実装）
 
-#### 4. キーマップ設定の充実
+#### 3. キーマップ設定の充実
+
 - ファンクションキー（F1-F12）の追加
 - 修飾キー組み合わせ（Ctrl+C など）
-- マウスキー
-- マクロ
+- マウスキー、マクロ
 
-#### 5. エラーページの整備
-- 404ページのカスタマイズ
-- 500ページのカスタマイズ
-- ユーザーフレンドリーなメッセージ
+#### 4. エラーページの整備
 
-### 既知の問題（影響なし）
+- 404 ページのカスタマイズ
+- 500 ページのカスタマイズ
 
-#### Googleログインボタンのコンソール警告
+### 優先度: 低（将来的に検討）
+
+#### 5. キーマップ公開機能（Phase 3）
+
+- 詳細: `CLAUDE_KEYMAP_EXPANSION.md`
+
+#### 6. キーボードタイプ対応（Phase 1 以降）
+
+- 詳細: `CLAUDE_KEYBOARD_TYPE_DESIGN.md`
+
+#### 7. その他の拡張案（MVP 後）
+
+- 練習後のシェア機能
+- 統計グラフ（正答率の推移など）
+- WPM（Words Per Minute）の記録
+- ランキング機能
+- 言語切り替え（多言語対応）
+
+---
+
+## 既知の問題（影響なし）
+
+### Google ログインボタンのコンソール警告
 
 **警告内容:**
+
 ```
 [GSI_LOGGER]: Failed to render button before calling initialize().
 ```
 
 **現状:**
+
 - ✅ 機能的には全く問題なし（ログイン、ページ遷移、表示すべて正常）
-- ⚠️ Googleの内部処理で発生する警告（制御範囲外の可能性）
+- ⚠️ Google の内部処理で発生する警告（制御範囲外の可能性）
 - 📝 重複初期化防止は実装済み（`data-google-signin-initialized`フラグ）
 
 **対応状況:**
-- Stimulusコントローラー（google_signin_controller.js）で適切に初期化を管理
-- 警告自体はGoogle側の内部処理によるもので、完全な解消は困難
+
+- Stimulus コントローラー（google_signin_controller.js）で適切に初期化を管理
+- 警告自体は Google 側の内部処理によるもので、完全な解消は困難
 - 機能に影響がないため、優先度は低い
 
-**将来的な対応案:**
-- GoogleのGISライブラリのアップデートを待つ
-- より詳細なデバッグ（Googleのドキュメント調査）
-- 代替実装の検討（必要に応じて）
+---
+
+## プロジェクトの成果
+
+**達成状況:**
+
+- ✅ 25 日間で独自ドメインへのデプロイ完了（Day 14 で達成、11 日前倒し）
+- ✅ 主要機能（練習、キーマップ設定、履歴、管理者ダッシュボード）がすべて完成
+- ✅ セキュリティ、レスポンシブ対応、ダークモードなど、プロダクション品質のアプリケーション
+- ✅ 本番環境で稼働中（https://typnix.com）
+- ✅ Brakeman 0 警告達成
+- ✅ 数値 ID ベースの URL 設計により、将来的な DB 化の基盤が整った
+- ✅ KeymapSet モデルの実装により、複数キーマップ管理の基盤が完成
+
+**技術的な成長:**
+
+- Rails 8.1.1 の最新機能を活用
+- Hotwire（Turbo + Stimulus）による快適な UX
+- Kamal によるモダンなデプロイフロー
+- セキュリティベストプラクティスの実践
 
 ---
 
-### 優先度: 低（将来的に検討）
-
-#### 6. 練習後のシェア機能
-- **クライアントサイド生成を推奨**（画像ストレージ不要）
-  - HTML Canvas APIで画像を生成
-  - 背景画像（SVGまたはPNG）+ テキスト描画
-  - `canvas.toDataURL()`でBlobを生成してダウンロード
-  - Twitter/X シェアはテキスト + URLのみ
-
-#### 7. その他の拡張案（MVP 後）
-- 他のキーボード配列対応 (Corne, Lily58 など)
-- QMK/VIA の JSON ファイルインポート機能
-- タイマー・WPM 表示
-- ランキング機能
-- キーボード描画の SVG 化
-- 言語切り替え（多言語対応）
-- カスタムテーマ（GitHub 風など）の追加
-- 統計グラフ（正答率の推移など）
-- 詳細な統計ページ（/history/stats）
-
----
-
-## 🎯 現在の進捗状況
-
-**Day 19 完了（2025-12-19 時点）**
-
-### 完了した機能
-
-- ✅ ユーザー認証（Google ログイン）**← Day 19 でバグ修正**
-- ✅ キーマップ登録・管理
-- ✅ タイピング練習（レッスンシステム、指ガイド、レイヤー自動判定）
-- ✅ 練習履歴・統計（自動クリーンアップ、レスポンシブ UI）
-- ✅ ダークモード
-- ✅ レスポンシブ対応（モバイル・PC 両対応）
-- ✅ 本番環境デプロイ（https://typnix.com）
-- ✅ セキュリティ強化（Brakeman 警告 0 件）
-- ✅ **練習ページの個別URL化（数値IDベース）** ← Day 17 で完了
-- ✅ **URL構造の全面的な整理** ← Day 17 で完了
-- ✅ **ユーザー名（username）機能の実装** ← Day 17 で完了
-- ✅ **キーマップ複数管理機能（KeymapSet）の基盤実装** ← Day 18 で完了
-- ✅ **キーボードタイプ選択UI（Phase 0）** ← Day 18 で完了
-- ✅ **UI/UX改善（キーマップ表示統一、指ガイドデザイン）** ← Day 18 で完了
-- ✅ **Googleログイン機能の修正（Turbo対応・CSP競合解消）** ← Day 19 で完了
-- ✅ **キーマップ一覧・編集のUI改善とslug対応** ← Day 19 で完了
-
-### 最近の更新
-
-**Day 19（2025-12-19）:**
-- **Googleログイン機能のバグ修正（午前）**
-  - Turboのページ遷移後にボタンが消える問題を解決
-  - CSPのnonce機能とGoogleログインの競合を解消
-  - CSRFトークン不足によるログイン失敗を修正
-- **Stimulusコントローラーの実装（google_signin_controller.js）**
-  - Turboのページ遷移後もGISを再初期化
-  - インラインJavaScriptを削除してCSP準拠
-  - 重複初期化防止フラグを実装
-- **CSP設定の調整**
-  - nonce生成を一時的に無効化（Googleログインとの競合を回避）
-  - `:unsafe_inline`を有効化してGoogleスクリプトを許可
-- **本番環境での動作確認**
-  - ローカル・本番環境の両方でログイン成功
-  - ページ遷移後もボタンが正常に表示
-  - レイアウトシフトなし
-- **キーマップ複数管理のUI実装（午後）**
-  - slug対応とバグ修正
-    - 編集画面にslugフィールドを追加
-    - JavaScriptでslugを使うように修正
-    - 保存エラー（404）を解決
-  - キーマップ一覧ページのUI改善
-    - ページヘッダーを他ページと統一
-    - カードレイアウトを左右分割（GitHub風）
-    - ボタンスタイルの調整（radius、色、幅）
-
-**Day 18（2025-12-18）:**
-- **KeymapSet モデルの実装（複数キーマップ管理の基盤）**
-  - KeymapSet + KeymapLayer モデルの作成
-  - 既存の Keymap データを新構造に移行するマイグレーション
-  - RESTful なルーティング設計（`/my/keymaps`）
-  - データベース設計の変更により、将来的な機能拡張の基盤が整った
-- **キーマップ表示の統一（2段レイアウト）**
-  - デリミタを `/` から `|` に統一（`Q|q`, `!|1` 形式）
-  - Ruby（ApplicationHelper）と JavaScript の両方で統一実装
-  - ダークモード対応の強化
-- **キーボードタイプ選択UI（Phase 0）の実装**
-  - キーマップ設定画面にキーボードタイプ選択ドロップダウンを追加
-  - 現在は「4×6 - 分割型・オーソリニア」のみ選択可能
-  - 将来の拡張予告メッセージを表示
-  - 詳細設計は `CLAUDE_KEYBOARD_TYPE_DESIGN.md` に記載
-- **キーマップ設定 UI の改善**
-  - 文字割り当てセクションを 7 → 6 セクションに統合
-  - 「基本操作」セクションを新設（未設定、キーなし、スペース）
-  - Fn キーと F1-F12 の表示名を追加
-- **プロフィール導線の改善**
-  - サイドバーの「プロフィール」リンクを削除
-  - マイページに「自分のプロフィール」カードを追加（ID カード風アイコン）
-- **指ガイドのデザイン改善**
-  - 指ごとに異なる高さを設定（手の形を模した表示）
-  - 上部を完全な半円形に（`rounded-t-full`）
-  - 底辺で揃えて自然な手の形状を再現
-
-**Day 17（2025-12-17）:**
-- **練習ページの個別URL化（数値IDベース）**
-  - URL形式: `/practice?category=xxx&lesson=xxx` → `/practices/:id`
-  - 全16レッスンに数値ID（1-16）を割り当て
-  - Rails標準の`resources`ルーティングを使用
-  - DB化を見据えた拡張性の高い設計
-- **URL構造の全面的な整理**
-  - `/my`名前空間による個人ページの整理
-  - `My::ApplicationController`でDRY原則に従い認証ロジックを集約
-  - RESTful設計（`resource :account`, `resources :keymaps`）
-- **ユーザー名（username）機能の実装**
-  - `/@username`形式のプロフィールページ
-  - Gmail互換のバリデーション
-  - 初回ログイン時にGmailアドレスから自動生成
-
-### 次のステップ（Phase 7: ブラッシュアップ）
-
-**Week 1: 基盤整備**
-- ✅ Day 18: KeymapSet モデルの基盤実装、UI/UX 改善
-- ✅ Day 19: Googleログイン機能のバグ修正 + キーマップUI改善（slug対応）
-- Day 20-21: Google ツール導入（GTM + GA4 + プライバシーポリシー更新）
-
-**Week 2: 機能拡張**
-- Day 22: トップページ改修（練習増加 + タブ化）
-- Day 23: キーマップ公開機能（Phase 3）の実装（任意）
-- Day 24: バグ修正、パフォーマンス最適化
-- Day 25: 最終チェック、ドキュメント整備
-
-### 技術的マイルストーン
-
-- 25 日間で独自ドメインへのデプロイ完了という目標に対し、Day 14 で達成
-- 主要機能（練習、キーマップ設定、履歴）がすべて完成し、本番環境で稼働中
-- セキュリティ、レスポンシブ対応、ダークモードなど、プロダクション品質のアプリケーションとして完成度が高い状態
-- Day 17: 数値IDベースのURL設計により、将来的なDB化の基盤が整った
-- Day 18: KeymapSet モデルの実装により、複数キーマップ管理の基盤が完成
-
----
-
-## 🗺 将来的な拡張計画
-
-### キーボードタイプ対応の拡張設計（Phase Y）
-
-**現状の課題:**
-- 現在は4x6（4行6列）の分割型配列が固定（特定キーボード専用）
-- キーボードの物理形状・キー数がViewとYAMLファイルにハードコーディング
-- 異なるキーボード（Corne、Lily58、5x6配列など）に対応できない
-- キーの位置表記（`L0-R0`形式）がキーボード固有
-
-**将来の目標:**
-- 複数のキーボードタイプに対応（Corne、Lily58、5x6配列など）
-- キーボードごとの物理配列情報をデータで管理
-- ユーザーがキーマップ作成時にキーボードタイプを選択
-- キーボードタイプに応じた練習画面・設定画面の自動生成
-
-**実装状況:**
-- ✅ **Phase 0: UI準備（Day 18完了）**
-  - キーマップ設定画面にキーボードタイプ選択ドロップダウンを追加
-  - デフォルトで「4×6 - 分割型・オーソリニア」が選択済み
-  - 将来の拡張予告メッセージを表示
-  - キーボードタイプは開発側が管理（ユーザーが自由に追加できない設計）
-
-- 🔜 **Phase 0.5: 準備（KeymapSet基盤整備後）**
-  - 現状のハードコーディングされたUIを動的生成に置き換える実験
-
-- 🔜 **Phase 1以降（将来実装）**
-  - KeyboardTypeモデルの作成
-  - JSONB型の`layout_data`カラムでキーボード情報を管理
-  - UI動的生成対応
-  - 複数キーボードタイプの追加
-
-**詳細設計:**
-- `CLAUDE_KEYBOARD_TYPE_DESIGN.md` に詳細な設計ドキュメントを記載
-- JSON形式でキーボードレイアウト情報を管理
-- 指の割り当て、オフセット、キーサイズなどを含む
-- 段階的な実装アプローチを定義
-
----
-
-### キーマップ機能の拡張設計（Phase X）
-
-**現状の課題:**
-- ユーザーごとに1つのキーマップのみ（6レイヤー × 約40キー = 約240レコード）
-- 複数のキーマップを管理できない（用途別に使い分けられない）
-- キーマップに名前や説明をつけられない
-- キーマップの公開・共有機能がない
-
-**将来の目標:**
-- 複数キーマップ管理（無課金2つ、課金5つまで）
-- キーマップに名前と説明を設定可能
-- キーマップの公開・共有機能
-- 他ユーザーのキーマップをフォーク（コピー）
-
-#### データベース設計
-
-**現状の階層構造:**
-```
-User (1ユーザー)
-  └─ Keymap (約240レコード) ← 実質1つのキーマップセット
-       ├─ Layer 0 の各キー配置
-       ├─ Layer 1 の各キー配置
-       └─ ... Layer 5まで
-```
-
-**拡張後の階層構造:**
-```
-User (1ユーザー)
-  ├─ KeymapSet (例: "プログラミング用")
-  │    └─ Keymap (約240レコード) ← 6レイヤー分
-  ├─ KeymapSet (例: "ゲーム用")
-  │    └─ Keymap (約240レコード)
-  └─ KeymapSet (例: "日常用")
-       └─ Keymap (約240レコード)
-```
-
-**KeymapSet モデル（キーマップセット）**
-```ruby
-class KeymapSet < ApplicationRecord
-  belongs_to :user
-  has_many :keymaps, dependent: :destroy  # 既存のKeymapモデルを再利用
-
-  # カラム
-  - user_id: references users, not null
-  - name: string (max: 50, not null) ← キーマップ名
-  - description: text (max: 500, nullable) ← キーマップの説明
-  - is_public: boolean (default: false, not null) ← 公開設定
-  - forked_from_id: integer (nullable) ← フォーク元のKeymap Set ID
-  - created_at, updated_at
-
-  # バリデーション
-  - validates :name, presence: true, length: { maximum: 50 }
-  - validates :description, length: { maximum: 500 }, allow_blank: true
-  - validate :check_user_keymap_limit
-
-  # スコープ
-  - scope :published, -> { where(is_public: true) }
-end
-```
-
-**Keymap モデル（既存を拡張）**
-```ruby
-class Keymap < ApplicationRecord
-  belongs_to :user
-  belongs_to :keymap_set  # 必須（データ整合性重視）
-
-  # 既存のカラム
-  - user_id: references users, not null
-  - layer: integer (0-5, not null)
-  - key_position: string (例: "L0-R0", not null)
-  - character: string (max: 20, not null)
-  - created_at, updated_at
-
-  # 追加カラム
-  - keymap_set_id: references keymap_sets, not null ← NEW!
-
-  # 既存のインデックス
-  - [user_id, layer, key_position], unique: true
-
-  # 追加インデックス
-  - [keymap_set_id, layer, key_position], unique: true ← NEW!
-
-  # 既存のバリデーション・メソッドはそのまま
-end
-```
-
-#### URL設計
-
-**個人のキーマップ管理（認証必須、`/my`配下）**
-```ruby
-GET    /my/keymaps                    # キーマップ一覧
-GET    /my/keymaps/new                # 新規作成フォーム
-POST   /my/keymaps                    # 新規作成（fork_from_idパラメータでフォーク対応）
-GET    /my/keymaps/:id                # 詳細表示（読み取り専用）
-GET    /my/keymaps/:id/edit           # 編集フォーム（名前・説明 + 6レイヤーのキー配置）
-PATCH  /my/keymaps/:id                # 更新
-DELETE /my/keymaps/:id                # 削除
-```
-
-**公開キーマップ（認証不要、`/@username`配下）**
-```ruby
-GET    /@:username/keymaps            # ユーザーの公開キーマップ一覧
-GET    /@:username/keymaps/:id        # 特定の公開キーマップ詳細（読み取り専用）
-                                       # 「フォークする」ボタン → POST /my/keymaps?fork_from_id=:id
-```
-
-**フォーク機能の設計:**
-```ruby
-# /@username/keymaps/:id のページに「フォークする」ボタンを設置
-# ボタンクリック → POST /my/keymaps (body: { fork_from_id: :id })
-# My::KeymapsController#create で fork_from_id があればコピー処理を実行
-
-def create
-  if params[:fork_from_id].present?
-    fork_keymap_set(params[:fork_from_id])  # 既存のキーマップをコピー
-  else
-    create_new_keymap_set                    # 通常の新規作成
-  end
-end
-```
-
-**設計のポイント:**
-- YAGNI原則に従い、`share_token` は削除（数値IDで十分）
-- 既存の Keymap モデルを再利用（新しい KeymapLayer モデルは作らない）
-- フォーク機能は RESTful に `POST /my/keymaps` で実装（パラメータでフォーク元を指定）
-
-#### 段階的な実装アプローチ
-
-**Phase 1: 基盤整備（Day 18 で実施）**
-- KeymapSet モデルの作成
-- Keymap モデルに `keymap_set_id` カラムを追加
-- 既存データの移行（各ユーザーに「デフォルト」という名前の KeymapSet を作成）
-- モデルのアソシエーションとバリデーションを実装
-- 開発環境で動作確認
-
-**Phase 2: 複数キーマップ対応（将来実装）**
-- `/my/keymaps` 一覧ページの実装
-- `/my/keymaps/new` 新規作成フォームの実装
-- `/my/keymaps/:id/edit` 編集フォームの実装（既存のUIを流用）
-- 無課金ユーザーは2つまで制限（`check_user_keymap_limit`バリデーション）
-- 将来の課金ユーザーは5つまで
-
-**Phase 3: 公開・共有機能（将来実装）**
-
-キーマップ公開機能は、既存の基盤（KeymapSet、slug、複数管理）をそのまま活用できるため、比較的シンプルに実装可能（2-3時間程度の作業量）。
-
-**3-1. 公開設定UI（簡単）**
-- 編集画面（`/my/keymaps/:slug/edit`）に公開/非公開トグルを追加
-  - `is_public` カラムは既に存在
-  - トグルボタンのUI実装（Tailwind CSS）
-  - 保存時に `is_public` を更新
-- 一覧ページ（`/my/keymaps`）に公開状態バッジを表示
-  - 既にコメントアウトで準備済み（index.html.slim:40-42）
-  - コメントを解除するだけ
-
-**3-2. 公開キーマップ表示ページ（中程度）**
-
-新規コントローラ `Public::KeymapsController` を作成:
-
-```ruby
-# app/controllers/public/keymaps_controller.rb
-class Public::KeymapsController < ApplicationController
-  def index
-    # /@username/keymaps - そのユーザーの公開キーマップ一覧
-    @user = User.find_by!(username: params[:username])
-    @keymap_sets = @user.keymap_sets.published.order(created_at: :desc)
-  end
-
-  def show
-    # /@username/keymaps/:slug - 公開キーマップ詳細（読み取り専用）
-    @user = User.find_by!(username: params[:username])
-    @keymap_set = @user.keymap_sets.published.find_by!(slug: params[:slug])
-
-    # キー配置を6レイヤー分読み込んで表示（edit画面と同じロジック）
-    @keymaps = {}
-    (0..5).each do |layer|
-      default_keymap = Keymap.default_keymap[layer] || {}
-      user_keymap = Keymap.where(keymap_set: @keymap_set, layer: layer)
-                          .pluck(:key_position, :character)
-                          .to_h
-      @keymaps[layer] = default_keymap.merge(user_keymap)
-    end
-  end
-end
-```
-
-ルーティング追加:
-```ruby
-# config/routes.rb
-# User profiles (public) セクションに追加
-get "/@:username/keymaps", to: "public/keymaps#index", as: :user_keymaps
-get "/@:username/keymaps/:slug", to: "public/keymaps#show", as: :user_keymap
-```
-
-ビュー実装:
-- `app/views/public/keymaps/index.html.slim`: 公開キーマップ一覧（`/my/keymaps/index.html.slim` を参考）
-- `app/views/public/keymaps/show.html.slim`: 公開キーマップ詳細（`/my/keymaps/edit.html.slim` を読み取り専用で再利用）
-
-**3-3. フォーク機能（中程度）**
-
-`My::KeymapsController#create` にフォーク処理を追加:
-
-```ruby
-# app/controllers/my/keymaps_controller.rb
-def create
-  # フォーク処理
-  if params[:fork_from_id].present?
-    fork_keymap_set(params[:fork_from_id])
-    return
-  end
-
-  # 通常の新規作成
-  @keymap_set = current_user.keymap_sets.build(keymap_set_params)
-  if @keymap_set.save
-    redirect_to edit_my_keymap_path(@keymap_set), notice: "キーマップ「#{@keymap_set.name}」を作成しました。"
-  else
-    render :new, status: :unprocessable_entity
-  end
-end
-
-private
-
-def fork_keymap_set(original_id)
-  original = KeymapSet.published.find(original_id)
-
-  # KeymapSetをコピー
-  @keymap_set = original.dup
-  @keymap_set.user = current_user
-  @keymap_set.forked_from_id = original.id
-  @keymap_set.is_public = false  # フォーク時は非公開
-  @keymap_set.slug = KeymapSet.generate_next_slug(current_user)  # 新しいslugを生成
-  @keymap_set.save!
-
-  # 関連するKeymapもコピー
-  original.keymaps.each do |keymap|
-    @keymap_set.keymaps.create!(
-      user: current_user,
-      layer: keymap.layer,
-      key_position: keymap.key_position,
-      character: keymap.character
-    )
-  end
-
-  redirect_to edit_my_keymap_path(@keymap_set), notice: "キーマップ「#{original.name}」をフォークしました。"
-end
-```
-
-公開キーマップ詳細ページに「フォークする」ボタンを追加:
-```slim
-/ app/views/public/keymaps/show.html.slim
-- if logged_in?
-  = button_to "このキーマップをフォークする", my_keymaps_path(fork_from_id: @keymap_set.id),
-    method: :post,
-    class: "px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
-- else
-  p.text-gray-500 ログインするとこのキーマップをフォークできます
-```
-
-**3-4. フォーク元の表示**
-
-編集画面でフォーク元を表示:
-```slim
-/ app/views/my/keymaps/edit.html.slim の基本情報セクションに追加
-- if @keymap_set.forked_from_id.present?
-  .mb-4.p-3.bg-blue-50.dark:bg-blue-900.rounded-lg
-    p.text-sm.text-blue-800.dark:text-blue-200
-      | このキーマップは
-      = link_to @keymap_set.forked_from.user.username, profile_path(@keymap_set.forked_from.user.username), class: "underline"
-      | さんの「
-      = @keymap_set.forked_from.name
-      | 」からフォークしました
-```
-
-**既存の基盤が活きるポイント:**
-- ✅ KeymapSet モデル: `is_public`, `forked_from_id`, `slug` カラムが既にある
-- ✅ slug ベースのURL: 既に実装済み
-- ✅ 複数キーマップ管理: 既に実装済み
-- ✅ レイヤー表示UI: edit画面のUIをそのまま読み取り専用で再利用可能
-
-#### 機能要件
-
-**キーマップ一覧（`/my/keymaps`）**
-- キーマップの一覧をカード形式で表示
-- 各カード: 名前、説明、作成日時、公開状態
-- 新規作成ボタン（制限に達している場合は非表示）
-- 編集・削除ボタン
-
-**キーマップ詳細・編集（`/my/keymaps/:id/edit`）**
-- 名前・説明の編集
-- 6レイヤーのキー配置編集（現在の実装と同じUI）
-- 公開設定トグル
-- 保存・キャンセルボタン
-
-**公開キーマップ一覧（`/@username/keymaps`）**
-- ユーザーの公開キーマップのみ表示
-- 各カード: 名前、説明、作成日時
-- フォークボタン（要ログイン）
-
-**公開キーマップ詳細（`/@username/keymaps/:id`）**
-- キーマップの詳細表示（読み取り専用）
-- 6レイヤーのキー配置を視覚的に表示
-- フォークボタン（自分のキーマップとしてコピー）
-- フォーク元の表示（フォークされたキーマップの場合）
-
-#### 設計の利点
-
-**RESTful設計:**
-- KeymapSetとKeymap Layerの分離により、Railsの標準的なリソース設計に従う
-- ルーティングがシンプルで拡張しやすい
-- コントローラのアクションも標準的なCRUD操作
-
-**拡張性:**
-- 課金機能追加時に、キーマップ数制限を柔軟に変更可能
-- 将来的にキーマップのテンプレート機能なども追加しやすい
-- フォーク機能により、コミュニティ的な要素を強化
-
-**ユーザビリティ:**
-- 用途別にキーマップを使い分けられる（プログラミング、ゲーム、日常など）
-- 他のユーザーの設定を参考にできる
-- `/@username/keymaps`により、プロフィールと統一感のあるURL設計
-
-#### 実装時の注意点
-
-**Phase 1: マイグレーション（Day 18）完了**
-```ruby
-# 1つのマイグレーションで完結（データ整合性重視）
-def up
-  # 1. keymap_sets テーブルを作成
-  create_table :keymap_sets do |t|
-    t.references :user, null: false, foreign_key: true
-    t.string :name, null: false, limit: 50
-    t.text :description, limit: 500
-    t.boolean :is_public, default: false, null: false
-    t.integer :forked_from_id
-    t.timestamps
-  end
-  add_index :keymap_sets, [:user_id, :name]
-
-  # 2. keymaps テーブルに keymap_set_id を追加（まずは nullable）
-  add_reference :keymaps, :keymap_set, foreign_key: true
-
-  # 3. 既存データの移行
-  User.find_each do |user|
-    next unless user.keymaps.exists?
-
-    keymap_set = user.keymap_sets.create!(
-      name: "デフォルト",
-      description: "初期キーマップ",
-      is_public: false
-    )
-    user.keymaps.update_all(keymap_set_id: keymap_set.id)
-  end
-
-  # 4. keymap_set_id を NOT NULL に変更（データ移行完了後）
-  change_column_null :keymaps, :keymap_set_id, false
-
-  # 5. インデックスを追加
-  add_index :keymaps, [:keymap_set_id, :layer, :key_position], unique: true
-end
-```
-
-**設計のポイント:**
-- 3つのマイグレーションを1つにまとめることで、一時的な不整合状態を回避
-- データ移行完了後に `NOT NULL` 制約を追加することで、データ整合性を保証
-- `optional: true` を使わず、すべてのKeymapは必ずKeymap Setに属する設計
-
-**Phase 2: 制限の実装（将来）**
-- `check_user_keymap_limit` バリデーションで、ユーザーのキーマップ数をチェック
-- 無課金ユーザー: 2つまで
-- 課金ユーザー（将来）: 5つまで
-- 制限に達している場合は、新規作成ボタンを非表示にし、エラーメッセージを表示
-
-**Phase 3: フォーク機能の実装（将来）**
-```ruby
-# フォーク処理の実装例
-def fork_keymap_set(original_id)
-  original = KeymapSet.published.find(original_id)
-
-  @keymap_set = original.dup
-  @keymap_set.user = current_user
-  @keymap_set.forked_from_id = original.id
-  @keymap_set.is_public = false
-  @keymap_set.save!
-
-  # 関連する Keymap もコピー
-  original.keymaps.each do |keymap|
-    @keymap_set.keymaps.create!(
-      user: current_user,
-      layer: keymap.layer,
-      key_position: keymap.key_position,
-      character: keymap.character
-    )
-  end
-end
-```
-
----
+このドキュメントは、プロジェクトの「インデックス」的な役割を果たします。
+詳細な仕様や設計は、各専用ドキュメント（`CLAUDE_FEATURES.md`、`CLAUDE_ADMIN_DASHBOARD.md` など）を参照してください。

@@ -16,6 +16,14 @@ class SessionsController < ApplicationController
       end
 
       user = User.from_google(payload)
+
+      # ログイン情報を更新
+      user.update!(
+        last_sign_in_at: user.current_sign_in_at,
+        current_sign_in_at: Time.current,
+        sign_in_count: user.sign_in_count + 1
+      )
+
       session[:user_id] = user.id
 
       render json: { success: true, redirect_url: root_path }

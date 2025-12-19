@@ -1,4 +1,12 @@
 module ApplicationHelper
+  # 管理者かどうかを判定する
+  # @return [Boolean] 管理者の場合true
+  def admin?
+    return false unless logged_in?
+    admin_emails = ENV["ADMIN_EMAILS"]&.split(",")&.map(&:strip) || []
+    admin_emails.include?(current_user.email)
+  end
+
   # キーマップの文字を表示用に整形する（2段表示対応）
   # @param char [String] キーマップの文字（例: "q", "Q/q", "!/1", "spc", "bs"）
   # @return [String] 表示用のHTML文字列
