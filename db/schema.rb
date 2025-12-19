@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_18_211331) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_18_220732) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,9 +20,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_18_211331) do
     t.integer "forked_from_id"
     t.boolean "is_public", default: false, null: false
     t.string "name", limit: 50, null: false
+    t.string "slug", limit: 50, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["slug"], name: "index_keymap_sets_on_slug"
     t.index ["user_id", "name"], name: "index_keymap_sets_on_user_id_and_name"
+    t.index ["user_id", "slug"], name: "index_keymap_sets_on_user_id_and_slug", unique: true
     t.index ["user_id"], name: "index_keymap_sets_on_user_id"
   end
 

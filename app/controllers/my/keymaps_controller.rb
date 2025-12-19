@@ -9,6 +9,8 @@ class My::KeymapsController < My::ApplicationController
   def new
     # 新規キーマップセット作成フォーム
     @keymap_set = current_user.keymap_sets.build
+    # 提案slugを生成（keymap-1, keymap-2...）
+    @keymap_set.slug = KeymapSet.generate_next_slug(current_user)
   end
 
   def create
@@ -80,11 +82,11 @@ class My::KeymapsController < My::ApplicationController
   private
 
   def set_keymap_set
-    @keymap_set = current_user.keymap_sets.find(params[:id])
+    @keymap_set = current_user.keymap_sets.find_by!(slug: params[:slug])
   end
 
   def keymap_set_params
-    params.require(:keymap_set).permit(:name, :description)
+    params.require(:keymap_set).permit(:name, :description, :slug)
   end
 
   def keymap_params

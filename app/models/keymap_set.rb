@@ -4,8 +4,12 @@ class KeymapSet < ApplicationRecord
 
   validates :name, presence: true, length: { maximum: 50 }
   validates :description, length: { maximum: 500 }, allow_blank: true
+  validates :slug, presence: true, length: { maximum: 50 },
+                   uniqueness: { scope: :user_id },
+                   format: { with: /\A[a-z0-9\-]+\z/, message: "は小文字英数字とハイフンのみ使用できます" }
   validate :check_user_keymap_limit, on: :create
 
+  before_validation :generate_slug, if: -> { slug.blank? }
   after_create :copy_default_keymap
 
   scope :published, -> { where(is_public: true) }
@@ -18,6 +22,11 @@ class KeymapSet < ApplicationRecord
   # 削除可能かどうか
   def deletable?
     !oldest_for_user?
+  end
+
+  # URL生成時にslugを使用
+  def to_param
+    slug
   end
 
   private
@@ -47,5 +56,23 @@ class KeymapSet < ApplicationRecord
         )
       end
     end
+  end
+
+  # slugを自動生成（keymap-{counter}形式、重複時はカウンターを増やす）
+  def generate_slug
+    self.slug = self.class.generate_next_slug(user)
+  end
+
+  # 次に使えるslugを生成（クラスメソッド）
+  def self.generate_next_slug(user)
+    counter = 1
+    candidate_slug = "keymap-#{counter}"
+
+    while user.keymap_sets.exists?(slug: candidate_slug)
+      counter += 1
+      candidate_slug = "keymap-#{counter}"
+    end
+
+    candidate_slug
   end
 end
