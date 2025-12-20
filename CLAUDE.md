@@ -267,8 +267,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ **Day 17**: URL 構造整理、ユーザー名機能（`/@username`）
 - ✅ **Day 18**: KeymapSet 基盤実装、UI/UX 改善（詳細: `CLAUDE_KEYMAP_EXPANSION.md`）
 - ✅ **Day 19**: Google ログイン修正、キーマップ UI 改善（slug 対応）
-- ✅ **Day 20**: 管理者ダッシュボード実装（詳細: `CLAUDE_ADMIN_DASHBOARD.md`）
-- 🔜 **Day 21-22**: Google ツール導入（GTM + GA4 + プライバシーポリシー更新）
+- ✅ **Day 20**: 管理者ダッシュボード実装 + Google AdSense 審査リクエスト（詳細: `CLAUDE_ADMIN_DASHBOARD.md`, `CLAUDE_ADSENSE.md`）
+- 🔜 **Day 21-22**: Google Analytics 確認（GTMは導入済み）
 - 🔜 **Day 23**: トップページ改修（練習増加 + タブ化）
 - 🔜 **Day 24**: バグ修正、パフォーマンス最適化
 - 🔜 **Day 25**: 最終チェック、ドキュメント整備
@@ -283,7 +283,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ **Day 17**: URL 構造整理、ユーザー名機能
 - ✅ **Day 18**: KeymapSet 基盤実装（Phase 1）、UI/UX 改善
 - ✅ **Day 19**: Google ログイン修正（Turbo 対応・CSP 競合解消）、キーマップ UI 改善
-- ✅ **Day 20**: 管理者ダッシュボード実装（Phase 1-3 完了）、日本語ロケール対応
+- ✅ **Day 20**: 管理者ダッシュボード実装（Phase 1-3 完了）、Google AdSense 審査リクエスト
 
 ### 技術的マイルストーン
 
@@ -293,11 +293,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Day 17: **URL 構造整理**（RESTful 設計、数値 ID ベース）
 - Day 18: **KeymapSet 基盤実装**（複数キーマップ管理の基礎完成）
 - Day 19: **Google ログインバグ修正**（Turbo 対応、CSP 競合解消）
-- Day 20: **管理者ダッシュボード実装**（統計、人気レッスンランキング）
+- Day 20: **管理者ダッシュボード実装 + Google AdSense 審査リクエスト**
 
 ### 次のステップ（Phase 7: 残タスク）
 
-- 🔜 **Day 21-22**: Google ツール導入（GTM + GA4 + プライバシーポリシー更新）
+- ⏳ **AdSense 審査**: 1〜2週間（審査通過後に広告配置を実装）
+- 🔜 **Day 21-22**: Google Analytics 確認
 - 🔜 **Day 23**: トップページ改修（練習増加 + タブ化）
 - 🔜 **Day 24**: バグ修正、パフォーマンス最適化
 - 🔜 **Day 25**: 最終チェック、ドキュメント整備
@@ -311,6 +312,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **`CLAUDE_FEATURES.md`** - 実装済み機能の詳細仕様（随時更新）
 - **`CLAUDE_ADMIN_DASHBOARD.md`** - 管理者ダッシュボード設計（✅ Day 20 完了）
 - **`CLAUDE_KEYMAP_EXPANSION.md`** - キーマップ拡張設計（✅ Phase 1 完了、Phase 2-3 は将来実装）
+- **`CLAUDE_ADSENSE.md`** - Google AdSense 導入設計（✅ Day 20 サイト所有権確認完了、審査中）
 
 ### 将来実装
 
@@ -323,41 +325,49 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### 優先度: 高（Phase 7 で実装予定）
 
-#### 1. Google ツール導入（Day 21-22 予定）
+#### 1. Google AdSense 審査（進行中）
 
-- Google Tag Manager（GTM）の導入
-- Google Analytics 4（GA4）の設定
-- プライバシーポリシーの更新（Cookie 使用、データ収集について明記）
+- ✅ サイト所有権確認完了（Day 20）
+- ✅ 審査リクエスト完了（Day 20）
+- 審査期間: 1〜2週間
+- 審査通過後: ディスプレイ広告（300x250）をサイドバーに配置
+- 詳細: `CLAUDE_ADSENSE.md`
 
-#### 2. トップページ改修（Day 23 予定）
+#### 2. Google Analytics 確認（Day 21-22 予定）
+
+- Google Tag Manager（GTM）は導入済み（Day 19）
+- Google Analytics 4（GA4）の設定確認
+- プライバシーポリシーは既に対応済み（Cookie使用について明記）
+
+#### 3. トップページ改修（Day 23 予定）
 
 - 練習増加（現在 16 レッスン → 30+レッスン）
 - タブ分けによるカテゴリ整理（基本練習、単語練習、プログラミング、文章練習、カスタム）
 
 ### 優先度: 中（余裕があれば実装）
 
-#### 3. キーマップ設定の充実
+#### 4. キーマップ設定の充実
 
 - ファンクションキー（F1-F12）の追加
 - 修飾キー組み合わせ（Ctrl+C など）
 - マウスキー、マクロ
 
-#### 4. エラーページの整備
+#### 5. エラーページの整備
 
 - 404 ページのカスタマイズ
 - 500 ページのカスタマイズ
 
 ### 優先度: 低（将来的に検討）
 
-#### 5. キーマップ公開機能（Phase 3）
+#### 6. キーマップ公開機能（Phase 3）
 
 - 詳細: `CLAUDE_KEYMAP_EXPANSION.md`
 
-#### 6. キーボードタイプ対応（Phase 1 以降）
+#### 7. キーボードタイプ対応（Phase 1 以降）
 
 - 詳細: `CLAUDE_KEYBOARD_TYPE_DESIGN.md`
 
-#### 7. その他の拡張案（MVP 後）
+#### 8. その他の拡張案（MVP 後）
 
 - 練習後のシェア機能
 - 統計グラフ（正答率の推移など）
