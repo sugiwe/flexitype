@@ -1,4 +1,4 @@
-class PracticesController < ApplicationController
+class LessonsController < ApplicationController
   def show
     # URLパラメータから数値IDを取得
     lesson_id = params[:id]

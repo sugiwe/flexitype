@@ -1,4 +1,4 @@
-class TypingSession < ApplicationRecord
+class LessonRecord < ApplicationRecord
   belongs_to :user
 
   # バリデーション
@@ -9,14 +9,14 @@ class TypingSession < ApplicationRecord
   validates :duration_seconds, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
   # 作成後、古い履歴を自動削除
-  after_create :cleanup_old_sessions
+  after_create :cleanup_old_records
 
   # スコープ: 完了日時降順
   scope :recent, -> { order(completed_at: :desc) }
 
   private
 
-  def cleanup_old_sessions
-    user.cleanup_old_typing_sessions
+  def cleanup_old_records
+    user.cleanup_old_lesson_records
   end
 end

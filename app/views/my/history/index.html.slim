@@ -29,7 +29,7 @@
 
 / 履歴一覧
 .bg-white.dark:bg-gray-800.rounded-lg.shadow.transition-colors
-  - if @sessions.any?
+  - if @lesson_records.any?
     / テーブル（PC）
     .hidden.md:block
       table.w-full
@@ -42,72 +42,72 @@
             th.px-6.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 所要時間
             th.px-6.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider ミス数
         tbody.divide-y.divide-gray-200.dark:divide-gray-700
-          - @sessions.each do |session|
+          - @lesson_records.each do |record|
             tr.hover:bg-gray-50.dark:hover:bg-gray-700.transition-colors
               td.px-6.py-4.whitespace-nowrap.text-sm.text-gray-900.dark:text-gray-100
-                = l(session.completed_at, format: :short)
+                = l(record.completed_at, format: :short)
               td.px-6.py-4.text-sm
-                .font-medium.text-gray-900.dark:text-gray-100 = session.lesson_name
-                .text-xs.text-gray-500.dark:text-gray-400 = session.category
+                .font-medium.text-gray-900.dark:text-gray-100 = record.lesson_name
+                .text-xs.text-gray-500.dark:text-gray-400 = record.category
               td.px-6.py-4.whitespace-nowrap.text-center.text-sm.text-gray-900.dark:text-gray-100
-                = session.word_count
+                = record.word_count
               td.px-6.py-4.whitespace-nowrap.text-center
-                - if session.accuracy && session.accuracy >= 90
+                - if record.accuracy && record.accuracy >= 90
                   span.inline-flex.px-2.py-1.text-sm.font-semibold.rounded-full.bg-green-100.dark:bg-green-900.text-green-800.dark:text-green-200
-                    = "#{session.accuracy}%"
-                - elsif session.accuracy && session.accuracy >= 70
+                    = "#{record.accuracy}%"
+                - elsif record.accuracy && record.accuracy >= 70
                   span.inline-flex.px-2.py-1.text-sm.font-semibold.rounded-full.bg-yellow-100.dark:bg-yellow-900.text-yellow-800.dark:text-yellow-200
-                    = "#{session.accuracy}%"
+                    = "#{record.accuracy}%"
                 - else
                   span.inline-flex.px-2.py-1.text-sm.font-semibold.rounded-full.bg-red-100.dark:bg-red-900.text-red-800.dark:text-red-200
-                    = "#{session.accuracy}%"
+                    = "#{record.accuracy}%"
               td.px-6.py-4.whitespace-nowrap.text-center.text-sm.text-gray-900.dark:text-gray-100
-                - if session.duration_seconds
-                  - minutes = session.duration_seconds / 60
-                  - seconds = session.duration_seconds % 60
+                - if record.duration_seconds
+                  - minutes = record.duration_seconds / 60
+                  - seconds = record.duration_seconds % 60
                   = "#{minutes}:#{seconds.to_s.rjust(2, '0')}"
                 - else
                   | -
               td.px-6.py-4.whitespace-nowrap.text-center.text-sm.text-gray-900.dark:text-gray-100
-                = session.mistake_count
+                = record.mistake_count
 
     / カード（モバイル）
     .md:hidden.divide-y.divide-gray-200.dark:divide-gray-700
-      - @sessions.each do |session|
+      - @lesson_records.each do |record|
         .p-4
           .flex.justify-between.items-start.mb-2
             div
-              .font-medium.text-gray-900.dark:text-gray-100 = session.lesson_name
-              .text-xs.text-gray-500.dark:text-gray-400.mt-1 = l(session.completed_at, format: :short)
-            - if session.accuracy && session.accuracy >= 90
+              .font-medium.text-gray-900.dark:text-gray-100 = record.lesson_name
+              .text-xs.text-gray-500.dark:text-gray-400.mt-1 = l(record.completed_at, format: :short)
+            - if record.accuracy && record.accuracy >= 90
               span.inline-flex.px-2.py-1.text-sm.font-semibold.rounded-full.bg-green-100.dark:bg-green-900.text-green-800.dark:text-green-200
-                = "#{session.accuracy}%"
-            - elsif session.accuracy && session.accuracy >= 70
+                = "#{record.accuracy}%"
+            - elsif record.accuracy && record.accuracy >= 70
               span.inline-flex.px-2.py-1.text-sm.font-semibold.rounded-full.bg-yellow-100.dark:bg-yellow-900.text-yellow-800.dark:text-yellow-200
-                = "#{session.accuracy}%"
+                = "#{record.accuracy}%"
             - else
               span.inline-flex.px-2.py-1.text-sm.font-semibold.rounded-full.bg-red-100.dark:bg-red-900.text-red-800.dark:text-red-200
-                = "#{session.accuracy}%"
+                = "#{record.accuracy}%"
           .grid.grid-cols-3.gap-2.text-sm.text-gray-600.dark:text-gray-400
             div
               span.text-xs 単語数
-              .font-medium.text-gray-900.dark:text-gray-100.mt-1 = session.word_count
+              .font-medium.text-gray-900.dark:text-gray-100.mt-1 = record.word_count
             div
               span.text-xs 所要時間
               .font-medium.text-gray-900.dark:text-gray-100.mt-1
-                - if session.duration_seconds
-                  - minutes = session.duration_seconds / 60
-                  - seconds = session.duration_seconds % 60
+                - if record.duration_seconds
+                  - minutes = record.duration_seconds / 60
+                  - seconds = record.duration_seconds % 60
                   = "#{minutes}:#{seconds.to_s.rjust(2, '0')}"
                 - else
                   | -
             div
               span.text-xs ミス数
-              .font-medium.text-gray-900.dark:text-gray-100.mt-1 = session.mistake_count
+              .font-medium.text-gray-900.dark:text-gray-100.mt-1 = record.mistake_count
 
     / ページネーション
     .px-6.py-4.border-t.border-gray-200.dark:border-gray-700
-      = paginate @sessions
+      = paginate @lesson_records
 
   - else
     / 履歴なし

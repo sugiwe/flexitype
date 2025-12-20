@@ -56,7 +56,7 @@
     .flex.items-center.justify-between
       div
         p.text-sm.text-gray-600.dark:text-gray-400 総練習回数
-        p.text-3xl.font-bold.text-green-600.dark:text-green-400.mt-2 = @total_sessions
+        p.text-3xl.font-bold.text-green-600.dark:text-green-400.mt-2 = @total_records
       .w-12.h-12.bg-green-100.dark:bg-green-900.rounded-full.flex.items-center.justify-center
         svg.w-6.h-6.text-green-600.dark:text-green-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
           path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
@@ -111,7 +111,7 @@
 .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
   h3.text-xl.font-semibold.text-gray-800.dark:text-white.mb-4 練習履歴
 
-  - if @typing_sessions.any?
+  - if @lesson_records.any?
     / PC: テーブル表示
     .hidden.md:block.overflow-x-auto
       table.min-w-full.divide-y.divide-gray-200.dark:divide-gray-600
@@ -124,57 +124,57 @@
             th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 所要時間
             th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider ミス数
         tbody.bg-white.dark:bg-gray-800.divide-y.divide-gray-200.dark:divide-gray-600
-          - @typing_sessions.each do |session|
+          - @lesson_records.each do |record|
             tr.hover:bg-gray-50.dark:hover:bg-gray-700
-              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = session.completed_at.strftime("%Y/%m/%d %H:%M")
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = record.completed_at.strftime("%Y/%m/%d %H:%M")
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
-                - if session.lesson_name.present?
-                  = session.lesson_name
+                - if record.lesson_name.present?
+                  = record.lesson_name
                 - else
                   span.text-gray-400 不明
-              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = session.word_count
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = record.word_count
               td.px-4.py-3.text-sm
-                - accuracy_class = session.accuracy >= 90 ? "text-green-600 dark:text-green-400" : session.accuracy >= 70 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"
-                span class=accuracy_class = "#{session.accuracy}%"
+                - accuracy_class = record.accuracy >= 90 ? "text-green-600 dark:text-green-400" : record.accuracy >= 70 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"
+                span class=accuracy_class = "#{record.accuracy}%"
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
-                - if session.duration_seconds.present?
-                  = "#{session.duration_seconds}秒"
+                - if record.duration_seconds.present?
+                  = "#{record.duration_seconds}秒"
                 - else
                   span.text-gray-400 不明
-              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = session.mistake_count
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = record.mistake_count
 
     / モバイル: カード表示
     .md:hidden.space-y-4
-      - @typing_sessions.each do |session|
+      - @lesson_records.each do |record|
         .bg-gray-50.dark:bg-gray-700.rounded-lg.p-4
           .flex.justify-between.items-start.mb-3
             div
               p.font-medium.text-gray-800.dark:text-white
-                - if session.lesson_name.present?
-                  = session.lesson_name
+                - if record.lesson_name.present?
+                  = record.lesson_name
                 - else
                   span.text-gray-400 不明
-              p.text-xs.text-gray-600.dark:text-gray-400.mt-1 = session.completed_at.strftime("%Y/%m/%d %H:%M")
-            - accuracy_class = session.accuracy >= 90 ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" : session.accuracy >= 70 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-            span.px-2.py-1.text-xs.font-medium.rounded class=accuracy_class = "#{session.accuracy}%"
+              p.text-xs.text-gray-600.dark:text-gray-400.mt-1 = record.completed_at.strftime("%Y/%m/%d %H:%M")
+            - accuracy_class = record.accuracy >= 90 ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" : record.accuracy >= 70 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+            span.px-2.py-1.text-xs.font-medium.rounded class=accuracy_class = "#{record.accuracy}%"
           .grid.grid-cols-3.gap-2.text-sm
             div
               p.text-gray-600.dark:text-gray-400.text-xs 単語数
-              p.text-gray-800.dark:text-gray-200.font-medium = session.word_count
+              p.text-gray-800.dark:text-gray-200.font-medium = record.word_count
             div
               p.text-gray-600.dark:text-gray-400.text-xs 所要時間
               p.text-gray-800.dark:text-gray-200.font-medium
-                - if session.duration_seconds.present?
-                  = "#{session.duration_seconds}秒"
+                - if record.duration_seconds.present?
+                  = "#{record.duration_seconds}秒"
                 - else
                   span.text-gray-400 不明
             div
               p.text-gray-600.dark:text-gray-400.text-xs ミス数
-              p.text-gray-800.dark:text-gray-200.font-medium = session.mistake_count
+              p.text-gray-800.dark:text-gray-200.font-medium = record.mistake_count
 
     / ページネーション
     .mt-6
-      = paginate @typing_sessions
+      = paginate @lesson_records
 
   - else
     p.text-gray-500.dark:text-gray-400.text-sm 練習履歴がまだありません

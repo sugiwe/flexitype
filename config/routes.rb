@@ -7,7 +7,11 @@ Rails.application.routes.draw do
 
   # Public pages
   root "home#index"
-  resources :practices, only: [ :show ]
+  resources :lessons, only: [ :show ]
+
+  # 旧URLからのリダイレクト（301 Moved Permanently）
+  get "/practices/:id", to: redirect("/lessons/%{id}", status: 301)
+
   get "about", to: "pages#about"
   get "terms", to: "pages#terms"
   get "privacy", to: "pages#privacy"
