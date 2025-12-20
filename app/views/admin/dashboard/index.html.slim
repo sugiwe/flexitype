@@ -25,10 +25,10 @@
     .flex.items-center.justify-between
       div
         p.text-sm.text-gray-600.dark:text-gray-400 総練習回数
-        p.text-3xl.font-bold.text-green-600.dark:text-green-400.mt-2 = @total_typing_sessions
+        p.text-3xl.font-bold.text-green-600.dark:text-green-400.mt-2 = @total_lesson_records
         p.text-xs.text-gray-500.dark:text-gray-400.mt-1
           | 今日の練習:
-          span.font-medium.ml-1 = "#{@sessions_today}回"
+          span.font-medium.ml-1 = "#{@records_today}回"
       .w-12.h-12.bg-green-100.dark:bg-green-900.rounded-full.flex.items-center.justify-center
         svg.w-6.h-6.text-green-600.dark:text-green-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
           path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
@@ -82,10 +82,10 @@
     / 今週の練習回数
     .bg-gradient-to-br.from-purple-50.to-purple-100.dark:from-purple-900.dark:to-purple-800.rounded-lg.p-6
       p.text-sm.text-purple-600.dark:text-purple-300.font-medium 今週の練習回数
-      p.text-4xl.font-bold.text-purple-700.dark:text-purple-200.mt-2 = @sessions_this_week
+      p.text-4xl.font-bold.text-purple-700.dark:text-purple-200.mt-2 = @records_this_week
       p.text-xs.text-purple-600.dark:text-purple-300.mt-1
         | 1日平均
-        span.font-medium.ml-1 = "#{(@sessions_this_week.to_f / 7).round(1)}回"
+        span.font-medium.ml-1 = "#{(@records_this_week.to_f / 7).round(1)}回"
 
 / レッスン統計（カテゴリー別）
 .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6.mb-8
@@ -122,7 +122,7 @@
                   span.inline-flex.items-center.justify-center.w-8.h-8.text-gray-600.dark:text-gray-400 = index + 1
               td.px-4.py-3.text-sm.font-medium.text-gray-800.dark:text-gray-200 = lesson.lesson_name || "不明"
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
-                span.font-bold.text-green-600.dark:text-green-400 = lesson.practice_count
+                span.font-bold.text-green-600.dark:text-green-400 = lesson.lesson_count
                 span.text-gray-500.dark:text-gray-400.ml-1 回
               td.px-4.py-3.text-sm
                 - avg_accuracy = lesson.avg_accuracy&.round(1) || 0
@@ -144,7 +144,7 @@
             div
               p.text-gray-600.dark:text-gray-400.text-xs 練習回数
               p.text-gray-800.dark:text-gray-200.font-bold.text-green-600.dark:text-green-400
-                = lesson.practice_count
+                = lesson.lesson_count
                 span.text-gray-500.dark:text-gray-400.ml-1 回
             div
               p.text-gray-600.dark:text-gray-400.text-xs 平均正答率
@@ -188,7 +188,7 @@
                       span.text-sm.font-medium.text-gray-600.dark:text-gray-300 = user.name[0].upcase
                   span.text-sm.font-medium.text-gray-700.dark:text-gray-200 = user.name
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.email
-              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.typing_sessions.count
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.lesson_records.count
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
                 - if user.last_sign_in_at.present?
                   = time_ago_in_words(user.last_sign_in_at)
@@ -218,7 +218,7 @@
               span.text-gray-800.dark:text-gray-200.truncate.ml-2 = user.email
             .flex.justify-between
               span.text-gray-600.dark:text-gray-400 練習回数
-              span.text-gray-800.dark:text-gray-200 = user.typing_sessions.count
+              span.text-gray-800.dark:text-gray-200 = user.lesson_records.count
             .flex.justify-between
               span.text-gray-600.dark:text-gray-400 最終ログイン
               span.text-gray-800.dark:text-gray-200
@@ -239,7 +239,7 @@
 .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
   h3.text-xl.font-semibold.text-gray-800.dark:text-white.mb-4 最近の練習
 
-  - if @recent_sessions.any?
+  - if @recent_records.any?
     / PC: テーブル表示
     .hidden.md:block.overflow-x-auto
       table.min-w-full.divide-y.divide-gray-200.dark:divide-gray-600
@@ -253,72 +253,72 @@
             th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 所要時間
             th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider ミス数
         tbody.bg-white.dark:bg-gray-800.divide-y.divide-gray-200.dark:divide-gray-600
-          - @recent_sessions.each do |session|
+          - @recent_records.each do |record|
             tr.hover:bg-gray-50.dark:hover:bg-gray-700
-              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = session.completed_at.strftime("%Y/%m/%d %H:%M")
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = record.completed_at.strftime("%Y/%m/%d %H:%M")
               td.px-4.py-3
                 .flex.items-center
-                  - if session.user.icon_url.present?
-                    img.w-8.h-8.rounded-full.mr-3 src=session.user.icon_url alt=session.user.name
+                  - if record.user.icon_url.present?
+                    img.w-8.h-8.rounded-full.mr-3 src=record.user.icon_url alt=record.user.name
                   - else
                     .w-8.h-8.rounded-full.bg-gray-300.dark:bg-gray-600.flex.items-center.justify-center.mr-3
-                      span.text-sm.font-medium.text-gray-600.dark:text-gray-300 = session.user.name[0].upcase
-                  = link_to admin_user_path(session.user), class: "text-sm.font-medium.text-blue-600.dark:text-blue-400.hover:underline" do
-                    = session.user.name
+                      span.text-sm.font-medium.text-gray-600.dark:text-gray-300 = record.user.name[0].upcase
+                  = link_to admin_user_path(record.user), class: "text-sm.font-medium.text-blue-600.dark:text-blue-400.hover:underline" do
+                    = record.user.name
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
-                - if session.lesson_name.present?
-                  = session.lesson_name
+                - if record.lesson_name.present?
+                  = record.lesson_name
                 - else
                   span.text-gray-400 不明
-              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = session.word_count
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = record.word_count
               td.px-4.py-3.text-sm
-                - accuracy_class = session.accuracy >= 90 ? "text-green-600 dark:text-green-400" : session.accuracy >= 70 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"
-                span class=accuracy_class = "#{session.accuracy}%"
+                - accuracy_class = record.accuracy >= 90 ? "text-green-600 dark:text-green-400" : record.accuracy >= 70 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"
+                span class=accuracy_class = "#{record.accuracy}%"
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
-                - if session.duration_seconds.present?
-                  = "#{session.duration_seconds}秒"
+                - if record.duration_seconds.present?
+                  = "#{record.duration_seconds}秒"
                 - else
                   span.text-gray-400 不明
-              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = session.mistake_count
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = record.mistake_count
 
     / モバイル: カード表示
     .md:hidden.space-y-4
-      - @recent_sessions.each do |session|
+      - @recent_records.each do |record|
         .bg-gray-50.dark:bg-gray-700.rounded-lg.p-4
           .flex.items-center.mb-3
-            - if session.user.icon_url.present?
-              img.w-10.h-10.rounded-full.mr-3 src=session.user.icon_url alt=session.user.name
+            - if record.user.icon_url.present?
+              img.w-10.h-10.rounded-full.mr-3 src=record.user.icon_url alt=record.user.name
             - else
               .w-10.h-10.rounded-full.bg-gray-300.dark:bg-gray-600.flex.items-center.justify-center.mr-3
-                span.text-base.font-medium.text-gray-600.dark:text-gray-300 = session.user.name[0].upcase
+                span.text-base.font-medium.text-gray-600.dark:text-gray-300 = record.user.name[0].upcase
             div
-              = link_to admin_user_path(session.user), class: "font-medium.text-gray-800.dark:text-white.hover:underline" do
-                = session.user.name
-              p.text-xs.text-gray-600.dark:text-gray-400.mt-1 = session.completed_at.strftime("%Y/%m/%d %H:%M")
+              = link_to admin_user_path(record.user), class: "font-medium.text-gray-800.dark:text-white.hover:underline" do
+                = record.user.name
+              p.text-xs.text-gray-600.dark:text-gray-400.mt-1 = record.completed_at.strftime("%Y/%m/%d %H:%M")
           .mb-3
             p.text-sm.font-medium.text-gray-800.dark:text-white
-              - if session.lesson_name.present?
-                = session.lesson_name
+              - if record.lesson_name.present?
+                = record.lesson_name
               - else
                 span.text-gray-400 不明
           .grid.grid-cols-2.gap-3.text-sm
             div
               p.text-gray-600.dark:text-gray-400.text-xs 単語数
-              p.text-gray-800.dark:text-gray-200.font-medium = session.word_count
+              p.text-gray-800.dark:text-gray-200.font-medium = record.word_count
             div
               p.text-gray-600.dark:text-gray-400.text-xs 正答率
-              - accuracy_class = session.accuracy >= 90 ? "text-green-600 dark:text-green-400" : session.accuracy >= 70 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"
-              p.font-medium class=accuracy_class = "#{session.accuracy}%"
+              - accuracy_class = record.accuracy >= 90 ? "text-green-600 dark:text-green-400" : record.accuracy >= 70 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"
+              p.font-medium class=accuracy_class = "#{record.accuracy}%"
             div
               p.text-gray-600.dark:text-gray-400.text-xs 所要時間
               p.text-gray-800.dark:text-gray-200.font-medium
-                - if session.duration_seconds.present?
-                  = "#{session.duration_seconds}秒"
+                - if record.duration_seconds.present?
+                  = "#{record.duration_seconds}秒"
                 - else
                   span.text-gray-400 不明
             div
               p.text-gray-600.dark:text-gray-400.text-xs ミス数
-              p.text-gray-800.dark:text-gray-200.font-medium = session.mistake_count
+              p.text-gray-800.dark:text-gray-200.font-medium = record.mistake_count
 
   - else
     .text-center.py-8.text-gray-500.dark:text-gray-400

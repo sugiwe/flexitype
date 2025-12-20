@@ -1,4 +1,4 @@
-class PracticesController < ApplicationController
+class LessonsController < ApplicationController
   def show
     # URLパラメータから数値IDを取得
     lesson_id = params[:id]
@@ -7,7 +7,7 @@ class PracticesController < ApplicationController
     @lesson_info = LessonLoader.get_lesson_info(lesson_id)
 
     # 練習用の単語/文章を取得
-    @words = LessonLoader.get_practice_items(lesson_id)
+    @words = LessonLoader.get_lesson_items(lesson_id)
 
     # レッスンが見つからない場合は404
     if @lesson_info.nil? || @words.empty?

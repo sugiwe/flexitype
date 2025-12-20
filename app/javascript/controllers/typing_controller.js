@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "practiceScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay", "displayArea"]
+  static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "lessonScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay", "displayArea"]
   static values = {
     words: Array,
     currentWord: Number,
@@ -54,7 +54,7 @@ export default class extends Controller {
     // 統計情報
     this.mistakeCount = 0 // ミスタイプの総数
     this.totalKeystrokes = 0 // 総キー入力数
-    this.sessionStartTime = null // セッション開始時刻（最初の入力時に設定）
+    this.lessonStartTime = null // レッスン開始時刻（最初の入力時に設定）
     this.isFirstInput = true // 最初の入力かどうか
 
     // キーマップから逆引きマップを生成（全レイヤー分）
@@ -148,7 +148,7 @@ export default class extends Controller {
 
     // 最初の入力時に計測開始
     if (this.isFirstInput && input.length > 0) {
-      this.sessionStartTime = new Date()
+      this.lessonStartTime = new Date()
       this.isFirstInput = false
       console.log("Timer started at first input")
     }
@@ -209,11 +209,11 @@ export default class extends Controller {
     this.highlightNextKey()
   }
 
-  // セッション完了画面を表示
+  // レッスン完了画面を表示
   showCompletionScreen() {
     // 所要時間を計算
     const endTime = new Date()
-    const elapsedMs = endTime - this.sessionStartTime
+    const elapsedMs = endTime - this.lessonStartTime
     const elapsedSeconds = Math.floor(elapsedMs / 1000)
     const minutes = Math.floor(elapsedSeconds / 60)
     const seconds = elapsedSeconds % 60
@@ -236,7 +236,7 @@ export default class extends Controller {
     }
 
     // 画面を切り替え
-    this.practiceScreenTarget.classList.add('hidden')
+    this.lessonScreenTarget.classList.add('hidden')
     this.completionScreenTarget.classList.remove('hidden')
   }
 
@@ -250,7 +250,7 @@ export default class extends Controller {
           'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
         },
         body: JSON.stringify({
-          session: {
+          lesson_record: {
             category: this.lessonInfoValue.category_key,
             lesson_id: this.lessonInfoValue.lesson_id,
             lesson_name: this.lessonInfoValue.lesson_name,
@@ -271,15 +271,15 @@ export default class extends Controller {
     }
   }
 
-  // セッションを再開
-  restartSession() {
+  // レッスンを再開
+  restartLesson() {
     // 統計情報をリセット
     this.currentWordValue = 0
     this.currentPosition = 0
     this.hasError = false
     this.mistakeCount = 0
     this.totalKeystrokes = 0
-    this.sessionStartTime = null // 次の入力時に再設定
+    this.lessonStartTime = null // 次の入力時に再設定
     this.isFirstInput = true // 最初の入力フラグをリセット
 
     // 入力欄をクリア
@@ -287,7 +287,7 @@ export default class extends Controller {
 
     // 画面を切り替え
     this.completionScreenTarget.classList.add('hidden')
-    this.practiceScreenTarget.classList.remove('hidden')
+    this.lessonScreenTarget.classList.remove('hidden')
 
     // 表示を更新
     this.updateDisplay()

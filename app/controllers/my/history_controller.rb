@@ -1,29 +1,29 @@
 class My::HistoryController < My::ApplicationController
   def index
     # ページネーション付きで履歴を取得
-    @sessions = current_user.typing_sessions.recent.page(params[:page]).per(20)
+    @lesson_records = current_user.lesson_records.recent.page(params[:page]).per(20)
 
     # 統計情報を計算
-    @total_count = current_user.typing_sessions.count
-    @average_accuracy = current_user.typing_sessions.average(:accuracy)&.round(1) || 0
+    @total_count = current_user.lesson_records.count
+    @average_accuracy = current_user.lesson_records.average(:accuracy)&.round(1) || 0
   end
 
   def create
-    # セッションデータを保存
-    @session = current_user.typing_sessions.build(session_params)
-    @session.completed_at = Time.current
+    # レッスン記録データを保存
+    @lesson_record = current_user.lesson_records.build(lesson_record_params)
+    @lesson_record.completed_at = Time.current
 
-    if @session.save
+    if @lesson_record.save
       render json: { success: true, message: "練習履歴を保存しました" }
     else
-      render json: { success: false, errors: @session.errors.full_messages }, status: :unprocessable_entity
+      render json: { success: false, errors: @lesson_record.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   private
 
-  def session_params
-    params.require(:session).permit(
+  def lesson_record_params
+    params.require(:lesson_record).permit(
       :category,
       :lesson_id,
       :lesson_name,

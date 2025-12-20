@@ -12,7 +12,7 @@ class ProfilesController < ApplicationController
     end
 
     # 公開する統計情報
-    @total_sessions = @user.typing_sessions.count
-    @average_accuracy = @user.typing_sessions.average(:accuracy)&.round(1) || 0
+    @total_records = @user.lesson_records.count
+    @average_accuracy = @user.lesson_records.average(:accuracy)&.round(1) || 0
   end
 end

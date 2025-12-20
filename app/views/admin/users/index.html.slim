@@ -47,7 +47,7 @@
                 - else
                   span.text-gray-400 未設定
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.email
-              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.typing_sessions.count
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.lesson_records.count
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.keymap_sets.count
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.sign_in_count
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
@@ -87,7 +87,7 @@
             span.text-gray-800.dark:text-gray-200.truncate.ml-2 = user.email
           .flex.justify-between
             span.text-gray-600.dark:text-gray-400 練習回数
-            span.text-gray-800.dark:text-gray-200 = user.typing_sessions.count
+            span.text-gray-800.dark:text-gray-200 = user.lesson_records.count
           .flex.justify-between
             span.text-gray-600.dark:text-gray-400 キーマップ数
             span.text-gray-800.dark:text-gray-200 = user.keymap_sets.count

@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   has_many :keymap_sets, dependent: :destroy
   has_many :keymaps, dependent: :destroy
-  has_many :typing_sessions, dependent: :destroy
+  has_many :lesson_records, dependent: :destroy
 
   after_create :create_default_keymap_set
 
@@ -52,9 +52,9 @@ class User < ApplicationRecord
   end
 
   # 古い履歴を削除（history_limitを超えた分）
-  def cleanup_old_typing_sessions
-    sessions = typing_sessions.order(created_at: :desc)
-    sessions.offset(history_limit).destroy_all
+  def cleanup_old_lesson_records
+    records = lesson_records.order(created_at: :desc)
+    records.offset(history_limit).destroy_all
   end
 
   private

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_19_192820) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_20_025959) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,7 +42,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_192820) do
     t.index ["user_id"], name: "index_keymaps_on_user_id"
   end
 
-  create_table "typing_sessions", force: :cascade do |t|
+  create_table "lesson_records", force: :cascade do |t|
     t.decimal "accuracy", precision: 5, scale: 2
     t.string "category"
     t.datetime "completed_at"
@@ -55,9 +55,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_192820) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.integer "word_count", default: 0, null: false
-    t.index ["user_id", "completed_at"], name: "index_typing_sessions_on_user_id_and_completed_at", order: { completed_at: :desc }
-    t.index ["user_id", "created_at"], name: "index_typing_sessions_on_user_id_and_created_at", order: { created_at: :desc }
-    t.index ["user_id"], name: "index_typing_sessions_on_user_id"
+    t.index ["user_id", "completed_at"], name: "index_lesson_records_on_user_id_and_completed_at", order: { completed_at: :desc }
+    t.index ["user_id", "created_at"], name: "index_lesson_records_on_user_id_and_created_at", order: { created_at: :desc }
+    t.index ["user_id"], name: "index_lesson_records_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -81,5 +81,5 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_192820) do
   add_foreign_key "keymap_sets", "users"
   add_foreign_key "keymaps", "keymap_sets"
   add_foreign_key "keymaps", "users"
-  add_foreign_key "typing_sessions", "users"
+  add_foreign_key "lesson_records", "users"
 end
