@@ -1,5 +1,6 @@
 class LessonRecord < ApplicationRecord
   belongs_to :user
+  belongs_to :lesson, optional: true  # データ移行完了後にoptionalを外す
 
   # バリデーション
   validates :word_count, presence: true, numericality: { greater_than_or_equal_to: 0 }

@@ -57,6 +57,12 @@ class User < ApplicationRecord
     records.offset(history_limit).destroy_all
   end
 
+  # 管理者かどうかを判定
+  def admin?
+    admin_emails = ENV["ADMIN_EMAILS"]&.split(",")&.map(&:strip) || []
+    admin_emails.include?(email)
+  end
+
   private
 
   # 初期キーマップセットを作成
