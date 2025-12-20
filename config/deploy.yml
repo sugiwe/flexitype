@@ -46,6 +46,7 @@ env:
     - ADMIN_EMAILS
     - ALLOWED_EMAILS
     - GTM_CONTAINER_ID
+    - GOOGLE_ADSENSE_PUBLISHER_ID
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.

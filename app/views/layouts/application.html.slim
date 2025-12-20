@@ -25,6 +25,10 @@ html
     meta name="twitter:description" content="Typnix（タイプニックス）は、垂直配列キーボードに特化したタイピング練習アプリです。自分のキーマップで効率的に練習できます。"
     meta name="twitter:image" content=image_url("ogp.png")
 
+    / Google AdSense（サイト所有権確認）
+    - if ENV['GOOGLE_ADSENSE_PUBLISHER_ID'].present?
+      meta name="google-adsense-account" content=ENV['GOOGLE_ADSENSE_PUBLISHER_ID']
+
     = yield :head
 
     link rel="icon" href="/icon.png?v=2" type="image/png"
