@@ -122,7 +122,7 @@
                   span.inline-flex.items-center.justify-center.w-8.h-8.text-gray-600.dark:text-gray-400 = index + 1
               td.px-4.py-3.text-sm.font-medium.text-gray-800.dark:text-gray-200 = lesson.lesson_name || "不明"
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
-                span.font-bold.text-green-600.dark:text-green-400 = lesson.practice_count
+                span.font-bold.text-green-600.dark:text-green-400 = lesson.lesson_count
                 span.text-gray-500.dark:text-gray-400.ml-1 回
               td.px-4.py-3.text-sm
                 - avg_accuracy = lesson.avg_accuracy&.round(1) || 0
@@ -144,7 +144,7 @@
             div
               p.text-gray-600.dark:text-gray-400.text-xs 練習回数
               p.text-gray-800.dark:text-gray-200.font-bold.text-green-600.dark:text-green-400
-                = lesson.practice_count
+                = lesson.lesson_count
                 span.text-gray-500.dark:text-gray-400.ml-1 回
             div
               p.text-gray-600.dark:text-gray-400.text-xs 平均正答率

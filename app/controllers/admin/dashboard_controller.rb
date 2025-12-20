@@ -30,8 +30,8 @@ class Admin::DashboardController < Admin::ApplicationController
     @popular_lessons = LessonRecord
       .where.not(lesson_id: nil)
       .group(:lesson_id, :lesson_name)
-      .select("lesson_id, lesson_name, COUNT(*) as practice_count, AVG(accuracy) as avg_accuracy")
-      .order("practice_count DESC")
+      .select("lesson_id, lesson_name, COUNT(*) as lesson_count, AVG(accuracy) as avg_accuracy")
+      .order("lesson_count DESC")
       .limit(10)
   end
 end
