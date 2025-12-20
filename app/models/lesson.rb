@@ -17,6 +17,20 @@ class Lesson < ApplicationRecord
   scope :premium, -> { where(premium: true) }
   scope :available_for_guest, -> { where(requires_login: false) }
 
+  # 特定ユーザーに表示可能なレッスンを取得
+  # 管理者: 全レッスン
+  # 一般ユーザー: 公式レッスン + 自分のレッスン + 公開レッスン
+  scope :visible_to, ->(user) {
+    if user&.admin?
+      all
+    else
+      left_joins(:user).where(
+        "lessons.user_id = :user_id OR lessons.is_public = true OR users.admin = true",
+        user_id: user&.id
+      ).distinct
+    end
+  }
+
   # 公式レッスンかどうかを判定
   def official?
     user&.admin?

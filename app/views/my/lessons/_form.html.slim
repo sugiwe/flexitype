@@ -1,0 +1,64 @@
+= form_with model: [:my, @lesson], local: true do |f|
+  / エラーメッセージ表示
+  - if @lesson.errors.any?
+    .mb-6.bg-red-50.dark:bg-red-900.border-l-4.border-red-500.dark:border-red-400.p-4.rounded
+      .text-red-800.dark:text-red-200.font-semibold.mb-2
+        = "#{@lesson.errors.count}件のエラーがあります"
+      ul.list-disc.list-inside.text-sm.text-red-700.dark:text-red-300
+        - @lesson.errors.full_messages.each do |message|
+          li = message
+
+  / レッスン名
+  .mb-6
+    = f.label :name, "レッスン名", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+    = f.text_field :name, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white", placeholder: "例: ホームポジション練習"
+
+  / カテゴリー選択
+  .mb-6
+    = f.label :category_id, "カテゴリー", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+    = f.select :category_id, @categories.map { |c| [c.name, c.id] }, { prompt: "カテゴリーを選択してください" }, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+
+  / 説明
+  .mb-6
+    = f.label :description, "説明", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+    = f.text_area :description, rows: 3, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white", placeholder: "レッスンの内容を説明してください"
+
+  / 単語・文章リスト
+  .mb-6
+    = f.label :items, "単語・文章リスト（1行に1つ）", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+    = f.text_area :items, value: @lesson.items&.join("\n"), rows: 10, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm", placeholder: "hello\nworld\nruby\nrails"
+    p.mt-1.text-sm.text-gray-500.dark:text-gray-400 1行に1つの単語または文章を入力してください
+
+  / 問題数
+  .mb-6
+    = f.label :count, "問題数", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+    = f.number_field :count, min: 1, max: 100, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+    p.mt-1.text-sm.text-gray-500.dark:text-gray-400 練習時に表示する問題数（1〜100）
+
+  / 公開設定
+  .mb-6
+    .flex.items-center
+      = f.check_box :is_public, class: "w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-400"
+      = f.label :is_public, "このレッスンを公開する", class: "ml-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+    p.mt-1.text-sm.text-gray-500.dark:text-gray-400 公開すると、他のユーザーもこのレッスンを練習できます
+
+  / 管理者のみ表示（premium, requires_login）
+  - if current_user.admin?
+    .mb-6.p-4.bg-yellow-50.dark:bg-yellow-900.border-l-4.border-yellow-500.dark:border-yellow-400.rounded
+      p.text-sm.font-semibold.text-yellow-800.dark:text-yellow-200.mb-3 管理者専用設定
+
+      .mb-3
+        .flex.items-center
+          = f.check_box :requires_login, class: "w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-400"
+          = f.label :requires_login, "ログイン必須", class: "ml-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+        p.mt-1.text-sm.text-gray-500.dark:text-gray-400 チェックすると、ログインしていないユーザーには表示されません
+
+      .flex.items-center
+        = f.check_box :premium, class: "w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-400"
+        = f.label :premium, "有料限定", class: "ml-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+      p.mt-1.text-sm.text-gray-500.dark:text-gray-400 チェックすると、有料プランユーザーのみが利用できます（将来実装予定）
+
+  / ボタン
+  .flex.gap-4
+    = f.submit "保存", class: "px-6 py-3 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition font-semibold"
+    = link_to "キャンセル", my_lessons_path, class: "px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition font-semibold"

@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   has_many :keymap_sets, dependent: :destroy
   has_many :keymaps, dependent: :destroy
+  has_many :lessons, dependent: :destroy
   has_many :lesson_records, dependent: :destroy
 
   after_create :create_default_keymap_set
