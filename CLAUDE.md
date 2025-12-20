@@ -137,7 +137,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### データ管理
 
 - キーマップ: DB に保存 (ユーザーごと、KeymapSet)
-- 練習履歴: DB に保存（TypingSession）
+- 練習履歴: DB に保存（LessonRecord）
 - 単語リスト: YAML ファイル管理 (`config/typing_words.yml`、`config/lessons/`)
 - UI 設定: LocalStorage (テーマ選択、デスクトップバナー表示状態など)
 
@@ -178,7 +178,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 #### 公開ページ（認証不要）
 
 - `/` - トップページ（レッスン一覧）
-- `/practices/:id` - 練習ページ（数値 ID ベース）
+- `/lessons/:id` - レッスンページ（数値 ID ベース）
 - `/@:username` - ユーザープロフィール
 - `/terms` - 利用規約
 - `/privacy` - プライバシーポリシー
@@ -241,7 +241,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **User**: Google 認証、履歴制限、ログイン追跡（last_sign_in_at, sign_in_count）
 - **KeymapSet**: キーマップセット（名前、説明、公開設定、slug、keyboard_type）
 - **Keymap**: キー配置（レイヤー、位置、文字、keymap_set_id）
-- **TypingSession**: 練習履歴（正答率、所要時間、ミス数、completed_at）
+- **LessonRecord**: 練習履歴（正答率、所要時間、ミス数、completed_at）
 
 ---
 
@@ -260,14 +260,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Phase 5**: セキュリティ・レスポンシブ対応（Day 15）
   - Brakeman 0 警告、モバイル対応、OGP 設定
 - **Phase 6**: 履歴機能（Day 16）
-  - TypingSession モデル、自動クリーンアップ、履歴一覧ページ
+  - LessonRecord モデル、自動クリーンアップ、履歴一覧ページ
 
 ### Phase 7: ブラッシュアップ（Day 17-25、進行中）
 
 - ✅ **Day 17**: URL 構造整理、ユーザー名機能（`/@username`）
 - ✅ **Day 18**: KeymapSet 基盤実装、UI/UX 改善（詳細: `CLAUDE_KEYMAP_EXPANSION.md`）
 - ✅ **Day 19**: Google ログイン修正、キーマップ UI 改善（slug 対応）
-- ✅ **Day 20**: 管理者ダッシュボード実装 + Google AdSense 審査リクエスト（詳細: `CLAUDE_ADMIN_DASHBOARD.md`, `CLAUDE_ADSENSE.md`）
+- ✅ **Day 20**: 管理者ダッシュボード実装 + Google AdSense 審査リクエスト + practice/session → lesson/lesson_record リファクタリング（詳細: `CLAUDE_ADMIN_DASHBOARD.md`, `CLAUDE_ADSENSE.md`）
 - 🔜 **Day 21-22**: Google Analytics 確認（GTMは導入済み）
 - 🔜 **Day 23**: トップページ改修（練習増加 + タブ化）
 - 🔜 **Day 24**: バグ修正、パフォーマンス最適化
@@ -283,7 +283,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ **Day 17**: URL 構造整理、ユーザー名機能
 - ✅ **Day 18**: KeymapSet 基盤実装（Phase 1）、UI/UX 改善
 - ✅ **Day 19**: Google ログイン修正（Turbo 対応・CSP 競合解消）、キーマップ UI 改善
-- ✅ **Day 20**: 管理者ダッシュボード実装（Phase 1-3 完了）、Google AdSense 審査リクエスト
+- ✅ **Day 20**: 管理者ダッシュボード実装（Phase 1-3 完了）、Google AdSense 審査リクエスト、practice/session → lesson/lesson_record リファクタリング
 
 ### 技術的マイルストーン
 
@@ -293,15 +293,44 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Day 17: **URL 構造整理**（RESTful 設計、数値 ID ベース）
 - Day 18: **KeymapSet 基盤実装**（複数キーマップ管理の基礎完成）
 - Day 19: **Google ログインバグ修正**（Turbo 対応、CSP 競合解消）
-- Day 20: **管理者ダッシュボード実装 + Google AdSense 審査リクエスト**
+- Day 20: **管理者ダッシュボード実装 + Google AdSense 審査リクエスト + 用語統一リファクタリング**（practice/session → lesson/lesson_record）
 
-### 次のステップ（Phase 7: 残タスク）
+### 次のステップ（Phase 7 以降）
+
+#### Day 21-25: レッスンDB化と機能拡張（詳細: `CLAUDE_LESSON_DB_PLAN.md`）
+
+**Phase A: 基盤整備（Day 21-22）**
+- 🔜 **Day 21**: レッスンDB化 Part 1
+  - Lesson モデル、Category モデルの設計・作成
+  - YAML データを DB に移行するスクリプト
+  - LessonLoader を DB ベースに書き換え
+- 🔜 **Day 22**: レッスンDB化 Part 2 + トップページタブ化
+  - 管理者用レッスンCRUD（`/admin/lessons`）
+  - トップページのタブ UI 実装（公式レッスン、自作レッスン、共有レッスン）
+  - カテゴリーグループ分け
+
+**Phase B: コア機能拡張（Day 23）**
+- 🔜 **Day 23**: ユーザー作成レッスン機能
+  - `/my/lessons` 一覧・作成フォーム
+  - 公開/非公開設定
+  - 他ユーザーの公開レッスン閲覧
+
+**Phase C: UX向上（Day 24）**
+- 🔜 **Day 24**: 成績評価システム + 結果シェア機能
+  - 評価ロジック実装（正答率 + WPM で4段階: プロ級、上級者、中級者、初心者）
+  - LessonRecord に grade カラム追加
+  - HTML Canvas で画像生成（背景 + 統計情報）
+
+**Phase D: 仕上げ（Day 25）**
+- 🔜 **Day 25**: バグ修正 + 最終調整 + ドキュメント整備
+  - パフォーマンス最適化（N+1 クエリなど）
+  - セキュリティチェック（Brakeman, bundler-audit）
+  - 日報作成（Day 21-25 分）
+
+#### その他の進行中タスク
 
 - ⏳ **AdSense 審査**: 1〜2週間（審査通過後に広告配置を実装）
-- 🔜 **Day 21-22**: Google Analytics 確認
-- 🔜 **Day 23**: トップページ改修（練習増加 + タブ化）
-- 🔜 **Day 24**: バグ修正、パフォーマンス最適化
-- 🔜 **Day 25**: 最終チェック、ドキュメント整備
+- ✅ **Google Analytics**: 導入済み（GTM + GA4）
 
 ---
 
@@ -314,64 +343,69 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **`CLAUDE_KEYMAP_EXPANSION.md`** - キーマップ拡張設計（✅ Phase 1 完了、Phase 2-3 は将来実装）
 - **`CLAUDE_ADSENSE.md`** - Google AdSense 導入設計（✅ Day 20 サイト所有権確認完了、審査中）
 
-### 将来実装
+### 実装予定（Day 21-25）
+
+- **`CLAUDE_LESSON_DB_PLAN.md`** - レッスンDB化と機能拡張計画（🔜 Day 21-25 で実装予定）
+  - レッスンのDB化（YAML → PostgreSQL）
+  - ユーザー作成レッスン機能
+  - 成績評価システム（4段階）
+  - 結果シェア機能（画像生成）
+
+### 将来実装（Day 26以降）
 
 - **`CLAUDE_KEYBOARD_TYPE_DESIGN.md`** - キーボードタイプ対応設計（Phase 0 完了、Phase 1 以降は将来実装）
 - **`CLAUDE_WHITELIST_DESIGN.md`** - ホワイトリスト管理設計（保留中）
 
 ---
 
-## 今後の予定タスク
+## 将来実装予定（Day 26以降）
 
-### 優先度: 高（Phase 7 で実装予定）
+### キーマップ機能の拡張
 
-#### 1. Google AdSense 審査（進行中）
+#### キーマップ公開機能（Phase 2-3）
 
-- ✅ サイト所有権確認完了（Day 20）
-- ✅ 審査リクエスト完了（Day 20）
-- 審査期間: 1〜2週間
-- 審査通過後: ディスプレイ広告（300x250）をサイドバーに配置
-- 詳細: `CLAUDE_ADSENSE.md`
+詳細は `CLAUDE_KEYMAP_EXPANSION.md` を参照。
 
-#### 2. Google Analytics 確認（Day 21-22 予定）
+- キーマップ一覧ページ（`/my/keymaps`）
+- 公開/非公開設定
+- 他ユーザーの公開キーマップ閲覧（`/@username/keymaps`）
+- フォーク機能（他ユーザーのキーマップをコピー）
 
-- Google Tag Manager（GTM）は導入済み（Day 19）
-- Google Analytics 4（GA4）の設定確認
-- プライバシーポリシーは既に対応済み（Cookie使用について明記）
-
-#### 3. トップページ改修（Day 23 予定）
-
-- 練習増加（現在 16 レッスン → 30+レッスン）
-- タブ分けによるカテゴリ整理（基本練習、単語練習、プログラミング、文章練習、カスタム）
-
-### 優先度: 中（余裕があれば実装）
-
-#### 4. キーマップ設定の充実
+#### キーマップ設定の充実
 
 - ファンクションキー（F1-F12）の追加
 - 修飾キー組み合わせ（Ctrl+C など）
 - マウスキー、マクロ
 
-#### 5. エラーページの整備
+### キーボードタイプ対応（Phase 1 以降）
 
-- 404 ページのカスタマイズ
-- 500 ページのカスタマイズ
+詳細は `CLAUDE_KEYBOARD_TYPE_DESIGN.md` を参照。
 
-### 優先度: 低（将来的に検討）
+- 複数のキーボードタイプに対応（Corne、Lily58、5x6配列など）
+- KeyboardTypeモデルの作成
+- JSONB型の`layout_data`カラムでキーボード情報を管理
+- UI動的生成対応
 
-#### 6. キーマップ公開機能（Phase 3）
+### 課金スキーム設計と実装（Day 26-30 予定）
 
-- 詳細: `CLAUDE_KEYMAP_EXPANSION.md`
+詳細は `CLAUDE_LESSON_DB_PLAN.md` を参照。
 
-#### 7. キーボードタイプ対応（Phase 1 以降）
+**技術スタック:**
+- Stripe（決済処理）
+- Subscription モデル（サブスクリプション管理）
+- Webhook 処理（支払い成功/失敗の処理）
 
-- 詳細: `CLAUDE_KEYBOARD_TYPE_DESIGN.md`
+**無料/有料機能の分け方（案）:**
+- 公式レッスン（基礎）: 無料 / 公式レッスン（全カテゴリ）: 有料
+- キーマップ登録: 2つまで（無料） / 5つまで（有料）
+- 練習履歴: 50件（無料） / 無制限（有料）
+- 自作レッスン作成: 2つまで・非公開のみ（無料） / 5つまで・公開可能（有料）
+- 統計グラフ: 有料のみ
 
-#### 8. その他の拡張案（MVP 後）
+### その他の拡張案
 
-- 練習後のシェア機能
+- エラーページの整備（404/500ページのカスタマイズ）
 - 統計グラフ（正答率の推移など）
-- WPM（Words Per Minute）の記録
 - ランキング機能
 - 言語切り替え（多言語対応）
 
