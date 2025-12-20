@@ -1,2 +1,2 @@
-module PracticeHelper
+module LessonHelper
 end

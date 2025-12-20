@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "practiceScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay", "displayArea"]
+  static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "lessonScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay", "displayArea"]
   static values = {
     words: Array,
     currentWord: Number,
@@ -236,7 +236,7 @@ export default class extends Controller {
     }
 
     // 画面を切り替え
-    this.practiceScreenTarget.classList.add('hidden')
+    this.lessonScreenTarget.classList.add('hidden')
     this.completionScreenTarget.classList.remove('hidden')
   }
 
@@ -287,7 +287,7 @@ export default class extends Controller {
 
     // 画面を切り替え
     this.completionScreenTarget.classList.add('hidden')
-    this.practiceScreenTarget.classList.remove('hidden')
+    this.lessonScreenTarget.classList.remove('hidden')
 
     // 表示を更新
     this.updateDisplay()

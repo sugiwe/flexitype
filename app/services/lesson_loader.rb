@@ -47,7 +47,7 @@ class LessonLoader
   end
 
   # レッスンIDから練習用の単語/文章リストを取得
-  def self.get_practice_items(id)
+  def self.get_lesson_items(id)
     lesson = find_lesson(id)
     return [] unless lesson
 

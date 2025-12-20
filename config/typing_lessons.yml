@@ -171,7 +171,7 @@ lessons:
       - equality
       - quantity
       - aquarium
-  word_practice:
+  word_lessons:
     category: 単語練習
     description: 難易度別の一般的な英単語
     requires_login: false
@@ -437,7 +437,7 @@ lessons:
       - jessica
       - sarah
       - karen
-  sentence_practice:
+  sentence_lessons:
     category: 短文練習
     description: 3-5語の短い文章
     requires_login: true
