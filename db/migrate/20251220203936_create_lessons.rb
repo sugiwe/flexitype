@@ -14,7 +14,7 @@ class CreateLessons < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :lessons, [:user_id, :name]
+    add_index :lessons, [ :user_id, :name ]
     add_index :lessons, :is_public
   end
 end

@@ -21,4 +21,18 @@ class Lesson < ApplicationRecord
   def official?
     user&.admin?
   end
+
+  # JavaScript用のレッスン情報をJSON形式で返す
+  def to_lesson_info
+    {
+      id: id,
+      category_name: category.name,
+      category_description: category.description,
+      lesson_name: name,
+      lesson_description: description,
+      count: count,
+      requires_login: requires_login,
+      premium: premium
+    }
+  end
 end
