@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_20_025959) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_20_205257) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "categories", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "display_order", default: 0, null: false
+    t.string "name", limit: 50, null: false
+    t.boolean "premium", default: false, null: false
+    t.boolean "requires_login", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_categories_on_name", unique: true
+  end
 
   create_table "keymap_sets", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -60,6 +71,24 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_20_025959) do
     t.index ["user_id"], name: "index_lesson_records_on_user_id"
   end
 
+  create_table "lessons", force: :cascade do |t|
+    t.bigint "category_id", null: false
+    t.integer "count", default: 20, null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.boolean "is_public", default: false, null: false
+    t.jsonb "items", default: [], null: false
+    t.string "name", limit: 100, null: false
+    t.boolean "premium", default: false, null: false
+    t.boolean "requires_login", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["category_id"], name: "index_lessons_on_category_id"
+    t.index ["is_public"], name: "index_lessons_on_is_public"
+    t.index ["user_id", "name"], name: "index_lessons_on_user_id_and_name"
+    t.index ["user_id"], name: "index_lessons_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "current_sign_in_at"
@@ -82,4 +111,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_20_025959) do
   add_foreign_key "keymaps", "keymap_sets"
   add_foreign_key "keymaps", "users"
   add_foreign_key "lesson_records", "users"
+  add_foreign_key "lessons", "categories"
+  add_foreign_key "lessons", "users"
 end

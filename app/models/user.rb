@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   has_many :keymap_sets, dependent: :destroy
   has_many :keymaps, dependent: :destroy
+  has_many :lessons, dependent: :destroy
   has_many :lesson_records, dependent: :destroy
 
   after_create :create_default_keymap_set
@@ -55,6 +56,24 @@ class User < ApplicationRecord
   def cleanup_old_lesson_records
     records = lesson_records.order(created_at: :desc)
     records.offset(history_limit).destroy_all
+  end
+
+  # 管理者かどうかを判定
+  def admin?
+    admin_emails = ENV["ADMIN_EMAILS"]&.split(",")&.map(&:strip) || []
+    admin_emails.include?(email)
+  end
+
+  # 課金ユーザーかどうかを判定（将来的にはsubscriptionテーブルを参照）
+  def premium?
+    # 現時点では管理者のみtrue（仮実装）
+    # 将来的には: subscriptions.active.exists? など
+    admin?
+  end
+
+  # 課金ユーザーまたは管理者かどうか
+  def premium_or_admin?
+    premium? || admin?
   end
 
   private

@@ -1,19 +1,16 @@
 class LessonsController < ApplicationController
   def show
-    # URLパラメータから数値IDを取得
-    lesson_id = params[:id]
-
-    # レッスン情報を取得
-    @lesson_info = LessonLoader.get_lesson_info(lesson_id)
-
-    # 練習用の単語/文章を取得
-    @words = LessonLoader.get_lesson_items(lesson_id)
+    # レッスンを取得
+    @lesson = Lesson.includes(:category).find_by(id: params[:id])
 
     # レッスンが見つからない場合は404
-    if @lesson_info.nil? || @words.empty?
+    unless @lesson
       redirect_to root_path, alert: "レッスンが見つかりませんでした。"
       return
     end
+
+    # 練習用の単語/文章を取得（ランダム）
+    @words = @lesson.items.shuffle.take(@lesson.count)
 
     # キーマップを読み込む（ユーザーのキーマップまたはデフォルト）
     user_id = logged_in? ? current_user.id : nil
