@@ -304,16 +304,31 @@ export default class extends Controller {
     const current = currentWord[this.currentPosition] || ""
     const remaining = currentWord.slice(this.currentPosition + 1)
 
-    // 単語表示を更新
-    if (this.hasError) {
-      // ミスタイプ時: 現在の文字を赤く表示 + 背景色追加
+    // スペースを視覚化する関数
+    const displayChar = (char) => char === ' ' ? '␣' : this.escapeHtml(char)
+
+    // 単語表示を更新（常に同じ高さ・幅を保ってレイアウトシフトを防止）
+    // 完了/現在/残りの全ての文字に同じパディング・マージンを適用し、色とアンダーラインだけを変える
+    const completedChars = completed.split('').map(char =>
+      `<span class="inline-block text-center px-2 py-1 mb-1 font-semibold text-green-600 dark:text-green-400">${displayChar(char)}</span>`
+    ).join('')
+
+    const remainingChars = remaining.split('').map(char =>
+      `<span class="inline-block text-center px-2 py-1 mb-1 text-gray-400 dark:text-gray-500">${displayChar(char)}</span>`
+    ).join('')
+
+    if (!current) {
+      // 単語の最後に達した場合: 完了した文字のみ表示
+      this.displayTarget.innerHTML = completedChars
+    } else if (this.hasError) {
+      // ミスタイプ時: 現在の文字を赤く表示
       this.displayTarget.innerHTML = `
-        <span class="text-green-600 dark:text-green-400 font-semibold">${this.escapeHtml(completed)}</span><span class="inline-block px-2 py-1 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 border-b-4 border-red-600 dark:border-red-400 font-bold rounded animate-shake">${this.escapeHtml(current)}</span><span class="text-gray-400 dark:text-gray-500">${this.escapeHtml(remaining)}</span>
+        ${completedChars}<span class="inline-block text-center px-2 py-1 mb-1 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 border-b-4 border-red-600 dark:border-red-400 font-bold rounded animate-shake">${displayChar(current)}</span>${remainingChars}
       `
     } else {
-      // 通常時: 現在の文字を青く表示 + 背景色追加 + パルスアニメーション + 点滅アンダーライン
+      // 通常時: 現在の文字を青く表示
       this.displayTarget.innerHTML = `
-        <span class="text-green-600 dark:text-green-400 font-semibold">${this.escapeHtml(completed)}</span><span class="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold rounded relative"><span class="border-b-4 border-blue-600 dark:border-blue-400 animate-blink-underline">${this.escapeHtml(current)}</span></span><span class="text-gray-400 dark:text-gray-500">${this.escapeHtml(remaining)}</span>
+        ${completedChars}<span class="inline-block text-center px-2 py-1 mb-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold rounded relative"><span class="border-b-4 border-blue-600 dark:border-blue-400 animate-blink-underline">${displayChar(current)}</span></span>${remainingChars}
       `
     }
 
