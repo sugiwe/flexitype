@@ -32,5 +32,6 @@ Rails.application.routes.draw do
   namespace :admin do
     root to: "dashboard#index"  # /admin
     resources :users, only: [ :index, :show ]  # /admin/users, /admin/users/:id
+    resources :categories, except: [ :show ]  # /admin/categories (CRUD, show不要)
   end
 end

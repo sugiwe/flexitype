@@ -243,8 +243,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **User**: Google 認証、履歴制限、ログイン追跡、premium判定
 - **KeymapSet**: キーマップセット（名前、説明、公開設定、slug、keyboard_type）
 - **Keymap**: キー配置（レイヤー、位置、文字、keymap_set_id）
-- **Category**: レッスンカテゴリー（名前、説明、表示順、requires_login、premium）
-- **Lesson**: レッスン（user_id、category_id、items (JSONB)、is_public、visible_toスコープ）
+- **Category**: レッスンカテゴリー（名前、説明、表示順、published、requires_login、premium）
+- **Lesson**: レッスン（user_id、category_id、items (JSONB)、is_public、visible_toスコープ、カテゴリーからrequires_login/premium継承）
 - **LessonRecord**: 練習履歴（正答率、所要時間、ミス数、completed_at）
 
 ---
@@ -272,11 +272,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ **Day 18**: KeymapSet 基盤実装、UI/UX 改善（詳細: `CLAUDE_KEYMAP_EXPANSION.md`）
 - ✅ **Day 19**: Google ログイン修正、キーマップ UI 改善（slug 対応）
 - ✅ **Day 20**: 管理者ダッシュボード実装 + Google AdSense 審査リクエスト + practice/session → lesson/lesson_record リファクタリング（詳細: `CLAUDE_ADMIN_DASHBOARD.md`, `CLAUDE_ADSENSE.md`）
-- ✅ **Day 21**: レッスンDB化 Part 1 完了（Category・Lessonモデル、YAML移行、LessonLoader削除、`/my/lessons` CRUD実装）
-- 🔜 **Day 22**: カテゴリー管理機能（Admin::CategoriesController）
-- 🔜 **Day 23**: トップページタブ化（公式・自作・共有レッスン）
-- 🔜 **Day 24**: バグ修正、パフォーマンス最適化
-- 🔜 **Day 25**: 最終チェック、ドキュメント整備
+- ✅ **Day 21**: レッスンDB化完了 + カテゴリー管理機能実装 + アーキテクチャ大幅改善（Category・Lessonモデル、権限フラグ整理、published機能、Admin::CategoriesController）
+- 🔜 **Day 22**: テストユーザーのフィードバックを元に改善
+- 🔜 **Day 23**: トップページタブ化、成績評価システム、結果シェア機能（画像生成）
+- 🔜 **Day 24**: 最終調整・リファクタリング
+- 🔜 **Day 25**: 最終調整・ドキュメント整備
 
 ---
 
@@ -289,7 +289,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ **Day 18**: KeymapSet 基盤実装（Phase 1）、UI/UX 改善
 - ✅ **Day 19**: Google ログイン修正（Turbo 対応・CSP 競合解消）、キーマップ UI 改善
 - ✅ **Day 20**: 管理者ダッシュボード実装（Phase 1-3 完了）、Google AdSense 審査リクエスト、practice/session → lesson/lesson_record リファクタリング
-- ✅ **Day 21**: レッスンDB化 Part 1（Category・Lessonモデル、YAML移行、LessonLoader削除、`/my/lessons` CRUD実装、本番環境デプロイ + 緊急データ復旧）
+- ✅ **Day 21**: レッスンDB化完了 + カテゴリー管理機能完全実装 + アーキテクチャ大幅改善
+  - Category・Lessonモデル作成とYAML移行
+  - LessonLoader削除（Rails way化）
+  - `/my/lessons` CRUD実装
+  - Admin::CategoriesController 完全実装
+  - 権限フラグの冗長性解消（delegate パターン）
+  - published フラグによる公開制御
 
 ### 技術的マイルストーン
 
@@ -300,29 +306,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Day 18: **KeymapSet 基盤実装**（複数キーマップ管理の基礎完成）
 - Day 19: **Google ログインバグ修正**（Turbo 対応、CSP 競合解消）
 - Day 20: **管理者ダッシュボード実装 + Google AdSense 審査リクエスト + 用語統一リファクタリング**（practice/session → lesson/lesson_record）
-- Day 21: **レッスンDB化完了 + 本番環境データ移行の教訓**（YAMLからPostgreSQLへ移行、LessonLoaderサービスオブジェクト削除、ハイブリッドCRUD設計、本番デプロイ後のデータ消失事故とRakeタスクによる復旧）
+- Day 21: **レッスンDB化完了 + カテゴリー管理機能完成 + アーキテクチャ改善**（Day 21-22の目標を1日で達成、delegate パターン活用、published 機能、本番環境データ移行の教訓）
 
 ### 次のステップ（Phase 7 以降）
 
-#### Day 22-25: レッスン機能拡張とUX向上（詳細: `CLAUDE_LESSON_DB_PLAN.md`）
+#### Day 22-25: UX向上と機能拡張（詳細: `CLAUDE_LESSON_DB_PLAN.md`）
 
-**Day 22**:
-- 🔜 Admin::CategoriesController実装（カテゴリーCRUD）
-- 🔜 カテゴリー管理ビューの作成
+**Day 22**: テストユーザーのフィードバックを元に改善
+- 🔜 実際のユーザーからのフィードバック収集
+- 🔜 UI/UXの改善
+- 🔜 バグ修正
 
-**Day 23**:
+**Day 23**: トップページタブ化、成績評価システム、結果シェア機能
 - 🔜 トップページのタブ化（公式・自作・共有レッスン）
-- 🔜 カテゴリーグループ分けUI
+- 🔜 成績評価システム（4段階評価: プロ級、上級者、中級者、初心者）
+- 🔜 結果シェア機能（HTML Canvas で画像生成）
 
-**Day 24**:
-- 🔜 成績評価システム（4段階評価）
-- 🔜 結果シェア機能（画像生成）
-
-**Day 25**:
-- 🔜 バグ修正 + 最終調整
+**Day 24**: 最終調整・リファクタリング
 - 🔜 パフォーマンス最適化（N+1 クエリなど）
+- 🔜 コードリファクタリング
 - 🔜 セキュリティチェック（Brakeman, bundler-audit）
-- 🔜 ドキュメント整備
+
+**Day 25**: 最終調整・ドキュメント整備
+- 🔜 最終バグ修正
+- 🔜 ドキュメント整備（README、CHANGELOG など）
+- 🔜 25日間の振り返り
 
 #### その他の進行中タスク
 
@@ -345,7 +353,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **`CLAUDE_LESSON_DB_PLAN.md`** - レッスンDB化と機能拡張計画
   - ✅ Day 21: レッスンのDB化（YAML → PostgreSQL）完了
   - ✅ Day 21: ユーザー作成レッスン機能（`/my/lessons` CRUD）完了
-  - 🔜 Day 22-24: カテゴリー管理、トップページタブ化、成績評価システム
+  - ✅ Day 21: カテゴリー管理機能（Admin::CategoriesController）完了
+  - 🔜 Day 22: テストユーザーのフィードバックを元に改善
+  - 🔜 Day 23: トップページタブ化、成績評価システム、結果シェア機能
+  - 🔜 Day 24: 最終調整・リファクタリング
   - 🔜 Day 25: 最終調整・ドキュメント整備
 
 ### 将来実装（Day 26以降）

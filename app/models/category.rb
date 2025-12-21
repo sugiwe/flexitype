@@ -7,6 +7,7 @@ class Category < ApplicationRecord
 
   # スコープ
   scope :ordered, -> { order(display_order: :asc) }
+  scope :published, -> { where(published: true) }
   scope :free, -> { where(premium: false) }
   scope :available_for_guest, -> { where(requires_login: false) }
 end

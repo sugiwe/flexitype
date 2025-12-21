@@ -16,10 +16,8 @@ class My::LessonsController < My::ApplicationController
   def create
     @lesson = current_user.lessons.build(lesson_params)
 
-    # 一般ユーザーは常に無料・非公開（デフォルト値を設定）
+    # 一般ユーザーは常に非公開（デフォルト値を設定）
     unless current_user.admin?
-      @lesson.premium = false
-      @lesson.requires_login = false
       @lesson.is_public = false
     end
 
@@ -36,14 +34,7 @@ class My::LessonsController < My::ApplicationController
   end
 
   def update
-    # 一般ユーザーのpremium/requires_loginフラグ変更を防止
-    if current_user.admin?
-      update_params = lesson_params
-    else
-      update_params = lesson_params.except(:premium, :requires_login)
-    end
-
-    if @lesson.update(update_params)
+    if @lesson.update(lesson_params)
       redirect_to my_lessons_path, notice: "レッスンを更新しました。"
     else
       @categories = Category.ordered
@@ -69,16 +60,9 @@ class My::LessonsController < My::ApplicationController
 
   def lesson_params
     # paramsを取得
-    permitted_params = if current_user.admin?
-      params.require(:lesson).permit(
-        :name, :description, :category_id, :count, :is_public,
-        :premium, :requires_login, :items
-      )
-    else
-      params.require(:lesson).permit(
-        :name, :description, :category_id, :count, :is_public, :items
-      )
-    end
+    permitted_params = params.require(:lesson).permit(
+      :name, :description, :category_id, :count, :is_public, :items
+    )
 
     # itemsをテキストエリアの改行区切りから配列に変換
     if permitted_params[:items].is_a?(String)
