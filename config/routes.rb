@@ -22,7 +22,7 @@ Rails.application.routes.draw do
   # Personal pages (authentication required, /my namespace)
   namespace :my do
     root to: "dashboard#index"  # /my
-    resources :keymaps, only: [ :index, :new, :create, :edit, :update, :destroy ], param: :slug  # /my/keymaps, /my/keymaps/new, POST /my/keymaps, /my/keymaps/keymap-1/edit, PATCH /my/keymaps/keymap-1, DELETE /my/keymaps/keymap-1
+    resources :keymaps, only: [ :index, :new, :create, :edit, :update, :destroy ], param: :slug
     resources :lessons, only: [ :index, :new, :create, :edit, :update, :destroy ]  # /my/lessons (公式レッスン + 自作レッスン + 公開レッスン管理)
     resources :history, only: [ :index, :create ]  # /my/history, POST /my/history
     resource :account, only: [ :edit, :update ]  # /my/account/edit, PATCH /my/account
