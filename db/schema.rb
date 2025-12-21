@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_21_060839) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_21_211737) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -89,6 +89,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_21_060839) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.integer "active_keymap_set_id", null: false
     t.datetime "created_at", null: false
     t.datetime "current_sign_in_at"
     t.string "email", limit: 254, null: false
@@ -100,6 +101,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_21_060839) do
     t.integer "sign_in_count", default: 0, null: false
     t.datetime "updated_at", null: false
     t.string "username", null: false
+    t.index ["active_keymap_set_id"], name: "index_users_on_active_keymap_set_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["google_uid"], name: "index_users_on_google_uid", unique: true
     t.index ["last_sign_in_at"], name: "index_users_on_last_sign_in_at"
@@ -112,4 +114,5 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_21_060839) do
   add_foreign_key "lesson_records", "users"
   add_foreign_key "lessons", "categories"
   add_foreign_key "lessons", "users"
+  add_foreign_key "users", "keymap_sets", column: "active_keymap_set_id"
 end

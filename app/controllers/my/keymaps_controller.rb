@@ -41,6 +41,7 @@ class My::KeymapsController < My::ApplicationController
 
   def update
     return reset_keymap if params[:reset_to_default]
+    return set_active_keymap if params[:active]
     return update_basic_info if basic_info_only?
 
     update_keymaps
@@ -87,6 +88,15 @@ class My::KeymapsController < My::ApplicationController
   # 基本情報のみの更新かどうか
   def basic_info_only?
     params[:keymap_set].present? && params[:keymaps].blank?
+  end
+
+  # キーマップをアクティブに設定
+  def set_active_keymap
+    current_user.update!(active_keymap_set: @keymap_set)
+    redirect_to my_keymaps_path, notice: "キーマップ「#{@keymap_set.name}」を使用中に設定しました"
+  rescue StandardError => e
+    Rails.logger.error "Set active keymap error: #{e.message}"
+    redirect_to my_keymaps_path, alert: "キーマップの設定に失敗しました"
   end
 
   # キーマップをデフォルト設定にリセット
