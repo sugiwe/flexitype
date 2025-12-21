@@ -289,7 +289,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ **Day 18**: KeymapSet 基盤実装（Phase 1）、UI/UX 改善
 - ✅ **Day 19**: Google ログイン修正（Turbo 対応・CSP 競合解消）、キーマップ UI 改善
 - ✅ **Day 20**: 管理者ダッシュボード実装（Phase 1-3 完了）、Google AdSense 審査リクエスト、practice/session → lesson/lesson_record リファクタリング
-- ✅ **Day 21**: レッスンDB化 Part 1（Category・Lessonモデル、YAML移行、LessonLoader削除、`/my/lessons` CRUD実装）
+- ✅ **Day 21**: レッスンDB化 Part 1（Category・Lessonモデル、YAML移行、LessonLoader削除、`/my/lessons` CRUD実装、本番環境デプロイ + 緊急データ復旧）
 
 ### 技術的マイルストーン
 
@@ -300,7 +300,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Day 18: **KeymapSet 基盤実装**（複数キーマップ管理の基礎完成）
 - Day 19: **Google ログインバグ修正**（Turbo 対応、CSP 競合解消）
 - Day 20: **管理者ダッシュボード実装 + Google AdSense 審査リクエスト + 用語統一リファクタリング**（practice/session → lesson/lesson_record）
-- Day 21: **レッスンDB化完了 + アーキテクチャ改善**（YAMLからPostgreSQLへ移行、LessonLoaderサービスオブジェクト削除、ハイブリッドCRUD設計）
+- Day 21: **レッスンDB化完了 + 本番環境データ移行の教訓**（YAMLからPostgreSQLへ移行、LessonLoaderサービスオブジェクト削除、ハイブリッドCRUD設計、本番デプロイ後のデータ消失事故とRakeタスクによる復旧）
 
 ### 次のステップ（Phase 7 以降）
 
