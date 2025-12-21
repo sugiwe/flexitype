@@ -9,11 +9,22 @@ class AddActiveKeymapSetToUsers < ActiveRecord::Migration[8.1]
     reversible do |dir|
       dir.up do
         User.reset_column_information
+        KeymapSet.reset_column_information
+
         User.find_each do |user|
           first_keymap_set = user.keymap_sets.order(created_at: :asc).first
-          if first_keymap_set
-            user.update_column(:active_keymap_set_id, first_keymap_set.id)
+
+          # キーマップセットがない場合はデフォルトを作成
+          if first_keymap_set.nil?
+            first_keymap_set = user.keymap_sets.create!(
+              name: "マイキーマップ",
+              slug: KeymapSet.generate_next_slug(user),
+              description: "デフォルトキーマップ（Mac配列ベース）です。",
+              is_public: false
+            )
           end
+
+          user.update_column(:active_keymap_set_id, first_keymap_set.id)
         end
       end
     end
