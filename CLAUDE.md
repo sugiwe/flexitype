@@ -138,7 +138,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - キーマップ: DB に保存 (ユーザーごと、KeymapSet)
 - 練習履歴: DB に保存（LessonRecord）
-- 単語リスト: YAML ファイル管理 (`config/typing_words.yml`、`config/lessons/`)
+- レッスン: DB に保存（Category、Lesson - Day 21でYAMLから移行完了）
 - UI 設定: LocalStorage (テーマ選択、デスクトップバナー表示状態など)
 
 ---
@@ -154,14 +154,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 2. ✅ **キーマップ管理**（複数管理、KeymapSet、slug 対応、6 レイヤー）
 3. ✅ **タイピング練習**（レッスンシステム、指ガイド、レイヤー自動判定、2 段表示）
 4. ✅ **練習履歴・統計**（自動クリーンアップ、レスポンシブ UI、ページネーション）
-5. ✅ **管理者ダッシュボード**（ユーザー統計、人気レッスンランキング、詳細: `CLAUDE_ADMIN_DASHBOARD.md`）
-6. ✅ **レスポンシブ対応**（モバイル・PC 両対応、ハンバーガーメニュー）
-7. ✅ **ダークモード**（Light/Dark/System、LocalStorage 永続化）
-8. ✅ **URL 構造整理**（RESTful 設計、`/my`名前空間、`/@username`プロフィール）
-9. ✅ **ユーザー名機能**（`/@username`形式、Gmail 互換バリデーション）
-10. ✅ **SEO/SNS 対応**（OGP、Twitter Card）
-11. ✅ **セキュリティ強化**（Brakeman 0 警告、CSP 設定、Strong Parameters）
-12. ✅ **本番環境デプロイ**（https://typnix.com、SSL/TLS、Kamal）
+5. ✅ **レッスン管理**（Category・Lessonモデル、ユーザー作成レッスン、visible_toスコープ）
+6. ✅ **管理者ダッシュボード**（ユーザー統計、人気レッスンランキング、詳細: `CLAUDE_ADMIN_DASHBOARD.md`）
+7. ✅ **レスポンシブ対応**（モバイル・PC 両対応、ハンバーガーメニュー）
+8. ✅ **ダークモード**（Light/Dark/System、LocalStorage 永続化）
+9. ✅ **URL 構造整理**（RESTful 設計、`/my`名前空間、`/@username`プロフィール）
+10. ✅ **ユーザー名機能**（`/@username`形式、Gmail 互換バリデーション）
+11. ✅ **SEO/SNS 対応**（OGP、Twitter Card）
+12. ✅ **セキュリティ強化**（Brakeman 0 警告、CSP 設定、Strong Parameters）
+13. ✅ **本番環境デプロイ**（https://typnix.com、SSL/TLS、Kamal）
 
 ---
 
@@ -190,6 +191,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `/my/account/edit` - アカウント設定（username 編集）
 - `/my/keymaps` - キーマップ一覧
 - `/my/keymaps/:slug/edit` - キーマップ編集
+- `/my/lessons` - レッスン管理（課金ユーザー向け）
 - `/my/history` - 練習履歴
 
 #### 管理者ページ（認証+管理者権限必須、`/admin`配下）
@@ -238,9 +240,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 詳細は各モデルファイルおよび `CLAUDE_FEATURES.md` を参照。
 
-- **User**: Google 認証、履歴制限、ログイン追跡（last_sign_in_at, sign_in_count）
+- **User**: Google 認証、履歴制限、ログイン追跡、premium判定
 - **KeymapSet**: キーマップセット（名前、説明、公開設定、slug、keyboard_type）
 - **Keymap**: キー配置（レイヤー、位置、文字、keymap_set_id）
+- **Category**: レッスンカテゴリー（名前、説明、表示順、requires_login、premium）
+- **Lesson**: レッスン（user_id、category_id、items (JSONB)、is_public、visible_toスコープ）
 - **LessonRecord**: 練習履歴（正答率、所要時間、ミス数、completed_at）
 
 ---
@@ -268,14 +272,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ **Day 18**: KeymapSet 基盤実装、UI/UX 改善（詳細: `CLAUDE_KEYMAP_EXPANSION.md`）
 - ✅ **Day 19**: Google ログイン修正、キーマップ UI 改善（slug 対応）
 - ✅ **Day 20**: 管理者ダッシュボード実装 + Google AdSense 審査リクエスト + practice/session → lesson/lesson_record リファクタリング（詳細: `CLAUDE_ADMIN_DASHBOARD.md`, `CLAUDE_ADSENSE.md`）
-- 🔜 **Day 21-22**: Google Analytics 確認（GTMは導入済み）
-- 🔜 **Day 23**: トップページ改修（練習増加 + タブ化）
+- ✅ **Day 21**: レッスンDB化 Part 1 完了（Category・Lessonモデル、YAML移行、LessonLoader削除、`/my/lessons` CRUD実装）
+- 🔜 **Day 22**: カテゴリー管理機能（Admin::CategoriesController）
+- 🔜 **Day 23**: トップページタブ化（公式・自作・共有レッスン）
 - 🔜 **Day 24**: バグ修正、パフォーマンス最適化
 - 🔜 **Day 25**: 最終チェック、ドキュメント整備
 
 ---
 
-## 🎯 現在の進捗状況（Day 20 完了時点）
+## 🎯 現在の進捗状況（Day 21 完了時点）
 
 ### 完了した主要マイルストーン
 
@@ -284,6 +289,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ **Day 18**: KeymapSet 基盤実装（Phase 1）、UI/UX 改善
 - ✅ **Day 19**: Google ログイン修正（Turbo 対応・CSP 競合解消）、キーマップ UI 改善
 - ✅ **Day 20**: 管理者ダッシュボード実装（Phase 1-3 完了）、Google AdSense 審査リクエスト、practice/session → lesson/lesson_record リファクタリング
+- ✅ **Day 21**: レッスンDB化 Part 1（Category・Lessonモデル、YAML移行、LessonLoader削除、`/my/lessons` CRUD実装）
 
 ### 技術的マイルストーン
 
@@ -294,38 +300,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Day 18: **KeymapSet 基盤実装**（複数キーマップ管理の基礎完成）
 - Day 19: **Google ログインバグ修正**（Turbo 対応、CSP 競合解消）
 - Day 20: **管理者ダッシュボード実装 + Google AdSense 審査リクエスト + 用語統一リファクタリング**（practice/session → lesson/lesson_record）
+- Day 21: **レッスンDB化完了 + アーキテクチャ改善**（YAMLからPostgreSQLへ移行、LessonLoaderサービスオブジェクト削除、ハイブリッドCRUD設計）
 
 ### 次のステップ（Phase 7 以降）
 
-#### Day 21-25: レッスンDB化と機能拡張（詳細: `CLAUDE_LESSON_DB_PLAN.md`）
+#### Day 22-25: レッスン機能拡張とUX向上（詳細: `CLAUDE_LESSON_DB_PLAN.md`）
 
-**Phase A: 基盤整備（Day 21-22）**
-- 🔜 **Day 21**: レッスンDB化 Part 1
-  - Lesson モデル、Category モデルの設計・作成
-  - YAML データを DB に移行するスクリプト
-  - LessonLoader を DB ベースに書き換え
-- 🔜 **Day 22**: レッスンDB化 Part 2 + トップページタブ化
-  - 管理者用レッスンCRUD（`/admin/lessons`）
-  - トップページのタブ UI 実装（公式レッスン、自作レッスン、共有レッスン）
-  - カテゴリーグループ分け
+**Day 22**:
+- 🔜 Admin::CategoriesController実装（カテゴリーCRUD）
+- 🔜 カテゴリー管理ビューの作成
 
-**Phase B: コア機能拡張（Day 23）**
-- 🔜 **Day 23**: ユーザー作成レッスン機能
-  - `/my/lessons` 一覧・作成フォーム
-  - 公開/非公開設定
-  - 他ユーザーの公開レッスン閲覧
+**Day 23**:
+- 🔜 トップページのタブ化（公式・自作・共有レッスン）
+- 🔜 カテゴリーグループ分けUI
 
-**Phase C: UX向上（Day 24）**
-- 🔜 **Day 24**: 成績評価システム + 結果シェア機能
-  - 評価ロジック実装（正答率 + WPM で4段階: プロ級、上級者、中級者、初心者）
-  - LessonRecord に grade カラム追加
-  - HTML Canvas で画像生成（背景 + 統計情報）
+**Day 24**:
+- 🔜 成績評価システム（4段階評価）
+- 🔜 結果シェア機能（画像生成）
 
-**Phase D: 仕上げ（Day 25）**
-- 🔜 **Day 25**: バグ修正 + 最終調整 + ドキュメント整備
-  - パフォーマンス最適化（N+1 クエリなど）
-  - セキュリティチェック（Brakeman, bundler-audit）
-  - 日報作成（Day 21-25 分）
+**Day 25**:
+- 🔜 バグ修正 + 最終調整
+- 🔜 パフォーマンス最適化（N+1 クエリなど）
+- 🔜 セキュリティチェック（Brakeman, bundler-audit）
+- 🔜 ドキュメント整備
 
 #### その他の進行中タスク
 
@@ -343,13 +340,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **`CLAUDE_KEYMAP_EXPANSION.md`** - キーマップ拡張設計（✅ Phase 1 完了、Phase 2-3 は将来実装）
 - **`CLAUDE_ADSENSE.md`** - Google AdSense 導入設計（✅ Day 20 サイト所有権確認完了、審査中）
 
-### 実装予定（Day 21-25）
+### 実装中（Day 21-25）
 
-- **`CLAUDE_LESSON_DB_PLAN.md`** - レッスンDB化と機能拡張計画（🔜 Day 21-25 で実装予定）
-  - レッスンのDB化（YAML → PostgreSQL）
-  - ユーザー作成レッスン機能
-  - 成績評価システム（4段階）
-  - 結果シェア機能（画像生成）
+- **`CLAUDE_LESSON_DB_PLAN.md`** - レッスンDB化と機能拡張計画
+  - ✅ Day 21: レッスンのDB化（YAML → PostgreSQL）完了
+  - ✅ Day 21: ユーザー作成レッスン機能（`/my/lessons` CRUD）完了
+  - 🔜 Day 22-24: カテゴリー管理、トップページタブ化、成績評価システム
+  - 🔜 Day 25: 最終調整・ドキュメント整備
 
 ### 将来実装（Day 26以降）
 
@@ -440,12 +437,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **達成状況:**
 
 - ✅ 25 日間で独自ドメインへのデプロイ完了（Day 14 で達成、11 日前倒し）
-- ✅ 主要機能（練習、キーマップ設定、履歴、管理者ダッシュボード）がすべて完成
+- ✅ 主要機能（練習、キーマップ設定、履歴、レッスン管理、管理者ダッシュボード）がすべて完成
 - ✅ セキュリティ、レスポンシブ対応、ダークモードなど、プロダクション品質のアプリケーション
 - ✅ 本番環境で稼働中（https://typnix.com）
 - ✅ Brakeman 0 警告達成
-- ✅ 数値 ID ベースの URL 設計により、将来的な DB 化の基盤が整った
+- ✅ レッスンDB化完了（YAMLからPostgreSQLへの完全移行）
 - ✅ KeymapSet モデルの実装により、複数キーマップ管理の基盤が完成
+- ✅ Rails wayなアーキテクチャ（LessonLoaderサービスオブジェクト削除、RESTful設計）
 
 **技術的な成長:**
 
