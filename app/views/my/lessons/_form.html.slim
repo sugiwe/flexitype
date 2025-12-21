@@ -42,22 +42,6 @@
       = f.label :is_public, "このレッスンを公開する", class: "ml-2 text-sm font-medium text-gray-700 dark:text-gray-300"
     p.mt-1.text-sm.text-gray-500.dark:text-gray-400 公開すると、他のユーザーもこのレッスンを練習できます
 
-  / 管理者のみ表示（premium, requires_login）
-  - if current_user.admin?
-    .mb-6.p-4.bg-yellow-50.dark:bg-yellow-900.border-l-4.border-yellow-500.dark:border-yellow-400.rounded
-      p.text-sm.font-semibold.text-yellow-800.dark:text-yellow-200.mb-3 管理者専用設定
-
-      .mb-3
-        .flex.items-center
-          = f.check_box :requires_login, class: "w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-400"
-          = f.label :requires_login, "ログイン必須", class: "ml-2 text-sm font-medium text-gray-700 dark:text-gray-300"
-        p.mt-1.text-sm.text-gray-500.dark:text-gray-400 チェックすると、ログインしていないユーザーには表示されません
-
-      .flex.items-center
-        = f.check_box :premium, class: "w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-400"
-        = f.label :premium, "有料限定", class: "ml-2 text-sm font-medium text-gray-700 dark:text-gray-300"
-      p.mt-1.text-sm.text-gray-500.dark:text-gray-400 チェックすると、有料プランユーザーのみが利用できます（将来実装予定）
-
   / ボタン
   .flex.gap-4
     = f.submit "保存", class: "px-6 py-3 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition font-semibold"
