@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_20_205257) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_21_060839) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,6 +20,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_20_205257) do
     t.integer "display_order", default: 0, null: false
     t.string "name", limit: 50, null: false
     t.boolean "premium", default: false, null: false
+    t.boolean "published", default: true, null: false
     t.boolean "requires_login", default: false, null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_categories_on_name", unique: true
@@ -79,8 +80,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_20_205257) do
     t.boolean "is_public", default: false, null: false
     t.jsonb "items", default: [], null: false
     t.string "name", limit: 100, null: false
-    t.boolean "premium", default: false, null: false
-    t.boolean "requires_login", default: false, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["category_id"], name: "index_lessons_on_category_id"

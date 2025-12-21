@@ -39,9 +39,7 @@ nav.p-4
           span 管理画面
 
       li
-        / カテゴリー管理（準備中）
-        .flex.items-center.px-4.py-3.text-gray-400.dark:text-gray-500.rounded-lg.cursor-not-allowed.opacity-60
+        = link_to admin_categories_path, class: "flex items-center px-4 py-3 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-900 hover:text-red-600 dark:hover:text-red-400 transition #{current_page?(admin_categories_path) || current_page?(new_admin_category_path) || (controller_name == 'categories' && action_name == 'edit') ? 'bg-red-50 dark:bg-red-900 text-red-600 dark:text-red-400 font-semibold' : ''}" do
           svg.w-5.h-5.mr-3 fill="none" stroke="currentColor" viewBox="0 0 24 24"
             path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
           span カテゴリー管理
-          .ml-auto.px-2.py-1.bg-gray-200.dark:bg-gray-700.text-xs.rounded-full 準備中
