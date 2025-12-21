@@ -1,0 +1,49 @@
+= form_with model: [:admin, category], local: true, class: "space-y-6" do |f|
+  / カテゴリー名
+  .space-y-2
+    = f.label :name, "カテゴリー名", class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
+    = f.text_field :name, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white", placeholder: "例: 基礎練習", required: true, maxlength: 50
+
+  / 説明
+  .space-y-2
+    = f.label :description, "説明", class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
+    = f.text_area :description, rows: 3, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white", placeholder: "このカテゴリーの説明を入力してください", maxlength: 200
+
+  / 表示順
+  .space-y-2
+    = f.label :display_order, "表示順", class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
+    = f.number_field :display_order, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white", min: 0, step: 1
+    p.text-xs.text-gray-500.dark:text-gray-400.mt-1 数字が小さいほど上に表示されます
+
+  / 公開設定フラグ
+  .flex.items-center.gap-3
+    = f.check_box :published, class: "w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+    = f.label :published, "公開する", class: "text-sm font-medium text-gray-700 dark:text-gray-300"
+    span.text-xs.text-gray-500.dark:text-gray-400 （チェックを外すとホームページに表示されません）
+
+  / ログイン必須フラグ
+  .flex.items-center.gap-3
+    = f.check_box :requires_login, class: "w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+    = f.label :requires_login, "ログイン必須", class: "text-sm font-medium text-gray-700 dark:text-gray-300"
+    span.text-xs.text-gray-500.dark:text-gray-400 （このカテゴリーのレッスンはログインユーザーのみ閲覧可能）
+
+  / 有料限定フラグ
+  .flex.items-center.gap-3
+    = f.check_box :premium, class: "w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+    = f.label :premium, "有料限定", class: "text-sm font-medium text-gray-700 dark:text-gray-300"
+    span.text-xs.text-gray-500.dark:text-gray-400 （このカテゴリーのレッスンは課金ユーザーのみ閲覧可能）
+
+  / エラーメッセージ
+  - if category.errors.any?
+    .bg-red-50.dark:bg-red-900.border.border-red-200.dark:border-red-700.rounded-lg.p-4
+      h3.text-sm.font-medium.text-red-800.dark:text-red-200.mb-2
+        = pluralize(category.errors.count, "件のエラー")
+        | があります
+      ul.list-disc.list-inside.text-sm.text-red-700.dark:text-red-300
+        - category.errors.full_messages.each do |message|
+          li = message
+
+  / 送信ボタン
+  .flex.gap-3
+    = f.submit class: "px-6 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition"
+    = link_to "キャンセル", admin_categories_path, class: "px-6 py-2 bg-gray-500 dark:bg-gray-600 text-white rounded-lg hover:bg-gray-600 dark:hover:bg-gray-500 transition"
