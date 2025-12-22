@@ -25,24 +25,15 @@
         p.font-semibold.text-blue-800.dark:text-blue-200 ログインすると、さらに多くの機能が利用できます！
         p.text-sm.text-blue-700.dark:text-blue-300.mt-1 ご自身のキーマップ登録、練習履歴の記録、より多くのレッスン利用など
 
-/ レッスン選択エリア
-.space-y-8
-  - @categories.each do |category|
-    .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6.transition-colors
-      / カテゴリヘッダー
-      .mb-4
-        h2.text-2xl.font-bold.text-gray-800.dark:text-white = category.name
-        p.text-gray-600.dark:text-gray-400.mt-1 = category.description
+/ タブナビゲーション
+.mb-6 data-controller="tabs"
+  .border-b.border-gray-200.dark:border-gray-700
+    nav.flex.space-x-2 aria-label="Tabs"
+      - @tabs.each do |tab_key, tab_config|
+        = link_to root_path(tab: tab_key), data: { turbo_frame: "lesson_content", tabs_target: "tab", tab: tab_key }, class: "group inline-flex items-center gap-2 px-4 py-3 border-b-2 font-medium text-sm transition-colors #{'border-blue-500 text-blue-600 dark:text-blue-400' if @current_tab == tab_key.to_s} #{'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600' unless @current_tab == tab_key.to_s}" do
+          span.text-xl = tab_config[:icon]
+          = tab_config[:name]
 
-      / レッスンカード一覧
-      .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-4
-        - category.lessons.each do |lesson|
-          = link_to lesson_path(id: lesson.id), class: "relative block bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border-2 border-blue-200 dark:border-blue-700 rounded-lg p-4 hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500 transition transform hover:-translate-y-1" do
-            .flex.items-start.justify-between.mb-2
-              h3.text-base.font-bold.text-gray-800.dark:text-white = lesson.name
-              .px-2.py-1.bg-blue-100.dark:bg-blue-800.text-blue-700.dark:text-blue-200.text-xs.rounded-full.font-semibold
-                = "#{lesson.count}問"
-            p.text-sm.text-gray-600.dark:text-gray-300.line-clamp-2.pr-6 = lesson.description
-            / 矢印アイコンを右下に固定配置
-            .absolute.bottom-3.right-3.text-blue-600.dark:text-blue-400.text-lg
-              | →
+  / Turbo Frame for lesson content
+  = turbo_frame_tag "lesson_content", data: { tabs_target: "content" } do
+    = render partial: "tab_content", locals: { tab_key: @current_tab }

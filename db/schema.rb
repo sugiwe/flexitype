@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_21_211737) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_22_014645) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -22,8 +22,10 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_21_211737) do
     t.boolean "premium", default: false, null: false
     t.boolean "published", default: true, null: false
     t.boolean "requires_login", default: false, null: false
+    t.string "tab", default: "basics", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_categories_on_name", unique: true
+    t.index ["tab"], name: "index_categories_on_tab"
   end
 
   create_table "keymap_sets", force: :cascade do |t|
