@@ -1,6 +1,6 @@
 # CLAUDE_LESSONS.md
 
-このドキュメントは、Typnixの練習レッスンの全体像を管理するためのものです。
+このドキュメントは、Typnixの練習レッスンの全体像を管理するためのインデックスです。
 
 ## 📋 レッスン構成の方針
 
@@ -46,496 +46,98 @@
 
 ### タブ1: 基礎トレーニング 🔰
 
-#### カテゴリー1-1: アルファベット基礎（Category: 基礎練習）
+#### カテゴリー1-1: 基礎練習
 
 **カテゴリー設定:**
 - `requires_login: false`
 - `premium: false`
 - `published: true`
 
-#### Lesson 1: 上段キー
-- **説明**: qwertyuiop の練習
-- **出題数**: 20
-- **単語リスト**（全20語）:
-  - qwerty
-  - uiop
-  - qwe
-  - rty
-  - uio
-  - wer
-  - tyu
-  - iop
-  - qer
-  - wrt
-  - yui
-  - ert
-  - tui
-  - que
-  - poi
-  - quit
-  - port
-  - pour
-  - quite
-  - quote
+**レッスン一覧:**
+- [Lesson 1: 上段キー](lessons/1_basics/01_upper_row.md) - qwertyuiop の練習
+- [Lesson 2: ホームポジション](lessons/1_basics/02_home_position.md) - asdfghjkl の練習
+- [Lesson 3: 下段キー](lessons/1_basics/03_lower_row.md) - zxcvbnm の練習
 
-#### Lesson 2: ホームポジション
-- **説明**: asdfghjkl の練習
-- **出題数**: 20
-- **単語リスト**（全20語）:
-  - asdf
-  - ghjkl
-  - asd
-  - fgh
-  - jkl
-  - sdf
-  - ghj
-  - hjk
-  - asf
-  - dgh
-  - jkl
-  - sad
-  - lad
-  - had
-  - all
-  - fall
-  - hall
-  - gala
-  - salad
-  - flask
-
-#### Lesson 3: 下段キー
-- **説明**: zxcvbnm の練習
-- **出題数**: 20
-- **単語リスト**（全20語）:
-  - zxcv
-  - bnm
-  - zxc
-  - cvb
-  - bnm
-  - xcv
-  - vbn
-  - zxv
-  - cvn
-  - zcv
-  - vbm
-  - van
-  - can
-  - man
-  - bam
-  - comb
-  - bomb
-  - calm
-  - claim
-  - cabin
-
----
-
-#### カテゴリー1-2: 指別練習（Category: 指別練習）
+#### カテゴリー1-2: 指別練習
 
 **カテゴリー設定:**
 - `requires_login: false`
 - `premium: false`
 - `published: true`
 
-#### Lesson 4: 左手中心
-- **説明**: 左手で打ちやすい単語
-- **出題数**: 20
-- **単語リスト**（全20語）:
-  - test
-  - best
-  - west
-  - rest
-  - read
-  - tree
-  - free
-  - sweet
-  - street
-  - great
-  - bread
-  - sewer
-  - water
-  - aware
-  - dress
-  - state
-  - asset
-  - trade
-  - crate
-  - waste
-
-#### Lesson 5: 右手中心
-- **説明**: 右手で打ちやすい単語
-- **出題数**: 20
-- **単語リスト**（全20語）:
-  - join
-  - link
-  - look
-  - moon
-  - loop
-  - pool
-  - pink
-  - pump
-  - jump
-  - limp
-  - milk
-  - only
-  - upon
-  - lump
-  - plum
-  - plump
-  - mummy
-  - pupil
-  - kimono
-  - nylon
-
-#### Lesson 6: 小指強化
-- **説明**: 小指を使うキーの練習
-- **出題数**: 20
-- **単語リスト**（全20語）:
-  - apple
-  - paper
-  - peace
-  - pizza
-  - point
-  - power
-  - apple
-  - upper
-  - happy
-  - pepper
-  - appear
-  - proper
-  - zipper
-  - quality
-  - quickly
-  - quarter
-  - question
-  - equality
-  - quantity
-  - aquarium
+**レッスン一覧:**
+- [Lesson 4: 左手中心](lessons/1_basics/04_left_hand.md) - 左手で打ちやすい単語
+- [Lesson 5: 右手中心](lessons/1_basics/05_right_hand.md) - 右手で打ちやすい単語
+- [Lesson 6: 小指強化](lessons/1_basics/06_pinky.md) - 小指を使うキーの練習
 
 ---
 
 ### タブ2: 英語練習
 
-#### カテゴリー2-1: 単語練習（Category: 単語練習）
+#### カテゴリー2-1: 単語練習
 
 **カテゴリー設定:**
 - `requires_login: false`
 - `premium: false`
 - `published: true`
 
-#### Lesson 7: 初級単語
-- **説明**: 短くて簡単な単語
-- **出題数**: 30
-- **単語リスト**（全30語）:
-  - apple
-  - hello
-  - world
-  - type
-  - code
-  - home
-  - user
-  - data
-  - file
-  - test
-  - view
-  - form
-  - link
-  - save
-  - open
-  - close
-  - start
-  - stop
-  - play
-  - work
-  - name
-  - time
-  - page
-  - site
-  - book
-  - love
-  - life
-  - food
-  - city
-  - country
+**レッスン一覧:**
+- [Lesson 7: 初級単語](lessons/2_english/07_beginner_words.md) - 短くて簡単な単語（30語）
+- [Lesson 8: 中級単語](lessons/2_english/08_intermediate_words.md) - やや長めの単語（30語）
+- [Lesson 9: 上級単語](lessons/2_english/09_advanced_words.md) - 長くて複雑な単語（30語）
 
-#### Lesson 8: 中級単語
-- **説明**: やや長めの単語
-- **出題数**: 30
-- **単語リスト**（全30語）:
-  - keyboard
-  - computer
-  - program
-  - software
-  - hardware
-  - network
-  - internet
-  - database
-  - function
-  - variable
-  - method
-  - object
-  - string
-  - number
-  - boolean
-  - array
-  - controller
-  - service
-  - component
-  - interface
-  - message
-  - session
-  - request
-  - response
-  - parameter
-  - argument
-  - document
-  - element
-  - attribute
-  - property
+#### カテゴリー2-2: テーマ別
 
-#### Lesson 9: 上級単語
-- **説明**: 長くて複雑な単語
-- **出題数**: 30
-- **単語リスト**（全30語）:
-  - authentication
-  - authorization
-  - implementation
-  - configuration
-  - optimization
-  - serialization
-  - deserialization
-  - initialization
-  - synchronization
-  - polymorphism
-  - encapsulation
-  - inheritance
-  - abstraction
-  - dependency
-  - middleware
-  - asynchronous
-  - refactoring
-  - architecture
-  - infrastructure
-  - deployment
-  - scalability
-  - availability
-  - reliability
-  - maintainability
-  - compatibility
-  - functionality
-  - performance
-  - repository
-  - documentation
-  - specification
+**カテゴリー設定:**
+- `requires_login: true`
+- `premium: false`
+- `published: true`
+
+**レッスン一覧:**
+- [Lesson 12: 果物](lessons/2_english/12_fruits.md) - 果物の名前（20語）
+- [Lesson 13: 天気](lessons/2_english/13_weather.md) - 天気に関する単語（20語）
+- [Lesson 14: ありがちな人名](lessons/2_english/14_names.md) - 英語圏の一般的な名前（20語）
+
+#### カテゴリー2-3: 短文練習
+
+**カテゴリー設定:**
+- `requires_login: true`
+- `premium: false`
+- `published: true`
+
+**レッスン一覧:**
+- [Lesson 15: 3-5語の短文](lessons/2_english/15_short_sentences.md) - よく使うフレーズ（15文）
 
 ---
 
-#### カテゴリー2-2: テーマ別（Category: テーマ別）
+### タブ3: 日本語練習 ⭐準備中
 
-**カテゴリー設定:**
-- `requires_login: true`
-- `premium: false`
-- `published: true`
-
-#### Lesson 12: 果物
-
-**カテゴリー設定:**
-- `requires_login: true`
-- `premium: false`
-- `published: true`
-
-#### Lesson 10: Ruby用語
-- **説明**: Ruby言語の用語
-- **出題数**: 25
-- **単語リスト**（全25語）:
-  - ruby
-  - rails
-  - model
-  - controller
-  - view
-  - gem
-  - bundle
-  - rake
-  - migration
-  - schema
-  - module
-  - class
-  - method
-  - attr
-  - def
-  - end
-  - unless
-  - yield
-  - block
-  - proc
-  - lambda
-  - scope
-  - validate
-  - callback
-  - association
-
-#### Lesson 11: Web用語
-- **説明**: Web開発の用語
-- **出題数**: 25
-- **単語リスト**（全25語）:
-  - html
-  - css
-  - javascript
-  - frontend
-  - backend
-  - api
-  - rest
-  - json
-  - ajax
-  - fetch
-  - promise
-  - async
-  - await
-  - dom
-  - event
-  - listener
-  - handler
-  - router
-  - route
-  - path
-  - query
-  - params
-  - header
-  - cookie
-  - session
+（将来実装予定）
 
 ---
 
-### 5. テーマ別（Category: テーマ別）
+### タブ4: プログラミング
+
+#### カテゴリー4-1: テーマ別
 
 **カテゴリー設定:**
 - `requires_login: true`
 - `premium: false`
 - `published: true`
 
-#### Lesson 12: 果物
-- **説明**: 果物の名前
-- **出題数**: 20
-- **単語リスト**（全20語）:
-  - apple
-  - banana
-  - orange
-  - grape
-  - lemon
-  - peach
-  - melon
-  - cherry
-  - strawberry
-  - blueberry
-  - raspberry
-  - pineapple
-  - watermelon
-  - kiwi
-  - mango
-  - papaya
-  - coconut
-  - avocado
-  - pomegranate
-  - tangerine
+**レッスン一覧:**
+- [Lesson 10: Ruby用語](lessons/4_programming/10_ruby.md) - Ruby言語の用語（25語）
+- [Lesson 11: Web用語](lessons/4_programming/11_web.md) - Web開発の用語（25語）
 
-#### Lesson 13: 天気
-- **説明**: 天気に関する単語
-- **出題数**: 20
-- **単語リスト**（全20語）:
-  - sunny
-  - cloudy
-  - rainy
-  - snowy
-  - windy
-  - foggy
-  - storm
-  - thunder
-  - lightning
-  - rainbow
-  - temperature
-  - humidity
-  - forecast
-  - climate
-  - season
-  - spring
-  - summer
-  - autumn
-  - winter
-  - weather
-
-#### Lesson 14: ありがちな人名
-- **説明**: 英語圏の一般的な名前
-- **出題数**: 20
-- **単語リスト**（全20語）:
-  - james
-  - john
-  - robert
-  - michael
-  - william
-  - david
-  - richard
-  - joseph
-  - thomas
-  - charles
-  - mary
-  - patricia
-  - jennifer
-  - linda
-  - barbara
-  - elizabeth
-  - susan
-  - jessica
-  - sarah
-  - karen
-
----
-
-### 6. 短文練習（Category: 短文練習）
+#### カテゴリー4-2: 短文練習
 
 **カテゴリー設定:**
 - `requires_login: true`
 - `premium: false`
 - `published: true`
 
-#### Lesson 15: 3-5語の短文
-- **説明**: よく使うフレーズ
-- **出題数**: 15
-- **文章リスト**（全15文）:
-  - hello world
-  - good morning
-  - thank you
-  - see you later
-  - how are you
-  - nice to meet you
-  - have a nice day
-  - what is your name
-  - i love ruby
-  - ruby on rails
-  - let me know
-  - as soon as possible
-  - by the way
-  - for your information
-  - in my opinion
-
-#### Lesson 16: プログラミングフレーズ
-- **説明**: コードでよく使う表現
-- **出題数**: 15
-- **文章リスト**（全15文）:
-  - def method name
-  - class user model
-  - if condition true
-  - return false unless
-  - render json data
-  - redirect to root
-  - find by id
-  - where name like
-  - order by created
-  - limit ten offset
-  - validates presence of
-  - has many comments
-  - belongs to user
-  - before action authenticate
-  - after commit send email
+**レッスン一覧:**
+- [Lesson 16: プログラミングフレーズ](lessons/4_programming/16_programming_phrases.md) - コードでよく使う表現（15文）
 
 ---
 
@@ -607,7 +209,27 @@
 
 ---
 
+## 🗂️ ファイル構成
+
+レッスンの詳細は、以下のディレクトリ構造で管理されています:
+
+```
+docs/lessons/
+├── 1_basics/          # 基礎トレーニング（Lesson 1-6）
+├── 2_english/         # 英語練習（Lesson 7-9, 12-15）
+├── 3_japanese/        # 日本語練習（準備中）
+└── 4_programming/     # プログラミング（Lesson 10-11, 16）
+```
+
+各レッスンファイルには以下の情報が含まれます:
+- 基本情報（説明、出題数、カテゴリー）
+- 権限設定（requires_login, premium, published）
+- 完全な単語/文章リスト
+
+---
+
 ## 🔄 移行履歴
 
 - **Day 21**: `config/typing_lessons.yml` → PostgreSQL（Category・Lessonモデル）に移行完了
-- **Day 22**: `config/typing_lessons.yml` → `CLAUDE_LESSONS.md` に移行、YAMLファイル削除予定
+- **Day 22**: `config/typing_lessons.yml` → `CLAUDE_LESSONS.md` に移行、YAMLファイル削除
+- **Day 22**: レッスンを個別ファイルに分割、`CLAUDE_LESSONS.md` をインデックス化
