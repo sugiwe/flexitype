@@ -303,11 +303,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Admin::CategoriesController 完全実装
   - 権限フラグの冗長性解消（delegate パターン）
   - published フラグによる公開制御
-- 🔄 **Day 22**: ユーザーフィードバック対応（進行中）
+- ✅ **Day 22**: ユーザーフィードバック対応 + タブ化実装完了
   - ✅ キーマップリセット機能のバグ修正（早期リターンパターン）
   - ✅ キーマップ選択機能の実装（active_keymap_set_id、UI/UX改善）
   - ✅ タイピング練習時の操作説明改善（Delete キー説明追加）
   - ✅ レイアウトシフト問題の修正（min-height設定）
+  - ✅ トップページのタブ化実装（Turbo Frames + Stimulus）
+  - ✅ レッスン管理画面のタブ化実装（ユーザー種別対応）
   - ✅ 本番環境デプロイ成功（マイグレーションエラー対応含む）
 
 ### 技術的マイルストーン
@@ -320,20 +322,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Day 19: **Google ログインバグ修正**（Turbo 対応、CSP 競合解消）
 - Day 20: **管理者ダッシュボード実装 + Google AdSense 審査リクエスト + 用語統一リファクタリング**（practice/session → lesson/lesson_record）
 - Day 21: **レッスンDB化完了 + カテゴリー管理機能完成 + アーキテクチャ改善**（Day 21-22の目標を1日で達成、delegate パターン活用、published 機能、本番環境データ移行の教訓）
+- Day 22: **タブ化実装完了**（Turbo Frames + Stimulus、トップページ・レッスン管理画面のタブ化、ユーザー種別による表示制御）
 
 ### 次のステップ（Phase 7 以降）
 
 #### Day 22-25: UX向上と機能拡張（詳細: `CLAUDE_LESSON_DB_PLAN.md`）
 
-**Day 22**: テストユーザーのフィードバックを元に改善
-- 🔜 実際のユーザーからのフィードバック収集
-- 🔜 UI/UXの改善
-- 🔜 バグ修正
+**Day 22**: テストユーザーのフィードバックを元に改善（完了）
+- ✅ キーマップ選択機能の実装
+- ✅ トップページのタブ化（4タブ: 基礎、英語、日本語、プログラミング）
+- ✅ レッスン管理画面のタブ化（管理者: 4タブ、一般ユーザー: 1タブ）
+- ✅ UI/UXの改善（操作説明、レイアウトシフト修正）
+- ✅ バグ修正（キーマップリセット、Lesson.officialスコープ）
 
-**Day 23**: トップページタブ化、成績評価システム、結果シェア機能
-- 🔜 トップページのタブ化（公式・自作・共有レッスン）
+**Day 23**: 成績評価システム、結果シェア機能
 - 🔜 成績評価システム（4段階評価: プロ級、上級者、中級者、初心者）
 - 🔜 結果シェア機能（HTML Canvas で画像生成）
+- 🔜 本番環境デプロイ（Day 22の成果）
 
 **Day 24**: 最終調整・リファクタリング
 - 🔜 パフォーマンス最適化（N+1 クエリなど）
