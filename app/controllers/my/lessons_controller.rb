@@ -2,10 +2,15 @@ class My::LessonsController < My::ApplicationController
   before_action :set_lesson, only: [ :edit, :update, :destroy ]
 
   def index
-    # visible_toスコープを使用（公式 + 自分 + 公開）
-    @lessons = Lesson.visible_to(current_user)
-      .includes(:category, :user)
-      .order(created_at: :desc)
+    if current_user.admin?
+      # 管理者: 全タブ（マイレッスン、コミュニティを除く）
+      @tabs = Category.available_tabs
+      @current_tab = params[:tab] || "basics"
+    else
+      # 一般ユーザー: マイレッスンタブのみ
+      @tabs = { my_lessons: Category::TABS[:my_lessons].merge(disabled: false) }
+      @current_tab = "my_lessons"
+    end
   end
 
   def new
@@ -48,6 +53,26 @@ class My::LessonsController < My::ApplicationController
   end
 
   private
+
+  def lessons_for_tab(tab_key)
+    if current_user.admin?
+      # 管理者: 公式レッスンのみ（自分が作成したレッスン = 公式レッスン）
+      current_user.lessons
+        .joins(:category)
+        .where(categories: { tab: tab_key.to_s })
+        .includes(:category, :user)
+        .order(created_at: :desc)
+    else
+      # 一般ユーザー: 自分が作成したレッスンのみ
+      current_user.lessons
+        .joins(:category)
+        .where(categories: { tab: tab_key.to_s })
+        .includes(:category, :user)
+        .order(created_at: :desc)
+    end
+  end
+
+  helper_method :lessons_for_tab
 
   def set_lesson
     # 管理者は全レッスンにアクセス可能、一般ユーザーは自分のレッスンのみ
