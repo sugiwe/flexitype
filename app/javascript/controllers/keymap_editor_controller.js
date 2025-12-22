@@ -274,17 +274,23 @@ export default class extends Controller {
       const csrfToken = document.querySelector("[name='csrf-token']").content
       const keymapSetSlug = this.keymapSetSlugValue
       const response = await fetch(`/my/keymaps/${keymapSetSlug}`, {
-        method: "DELETE",
+        method: "PATCH",
         headers: {
+          "Content-Type": "application/json",
           "X-CSRF-Token": csrfToken
-        }
+        },
+        body: JSON.stringify({
+          reset_to_default: true
+        })
       })
 
       if (response.ok) {
-        // 削除成功したらページをリロードしてデフォルト状態を表示
+        // リセット成功したらページをリロードしてデフォルト状態を表示
         window.location.reload()
       } else {
-        alert("デフォルト設定に戻すことができませんでした")
+        const errorData = await response.json()
+        const errorMessage = errorData.error || "デフォルト設定に戻すことができませんでした"
+        alert(errorMessage)
       }
     } catch (error) {
       console.error("Reset error:", error)

@@ -66,8 +66,29 @@ class Keymap < ApplicationRecord
   # @param user_id [Integer, nil] ユーザーID（nilの場合はデフォルトを返す）
   # @return [Hash] レイヤー番号 => { キー位置 => 文字 } のハッシュ
   def self.all_layers_for_user_or_default(user_id)
+    if user_id.present?
+      user = User.find_by(id: user_id)
+      if user&.active_keymap_set_id
+        # ユーザーのアクティブなキーマップセットを使用
+        return all_layers_for_keymap_set(user.active_keymap_set_id)
+      end
+    end
+
+    # ユーザーIDがnilまたはアクティブなキーマップがない場合はデフォルトを返す
+    default_keymap
+  end
+
+  # 特定のキーマップセットの全レイヤーを取得
+  # @param keymap_set_id [Integer] キーマップセットID
+  # @return [Hash] レイヤー番号 => { キー位置 => 文字 } のハッシュ
+  def self.all_layers_for_keymap_set(keymap_set_id)
     (0..5).each_with_object({}) do |layer, result|
-      result[layer] = for_user_or_default(user_id, layer)
+      # このキーマップセットのキーマップを取得
+      user_keymap = where(keymap_set_id: keymap_set_id, layer: layer)
+                      .pluck(:key_position, :character)
+                      .to_h
+      # デフォルトキーマップにユーザーのキーマップをマージ
+      result[layer] = (default_keymap[layer] || {}).merge(user_keymap)
     end
   end
 end

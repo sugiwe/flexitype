@@ -47,7 +47,7 @@ module Admin
     end
 
     def category_params
-      params.require(:category).permit(:name, :description, :display_order, :published, :requires_login, :premium)
+      params.require(:category).permit(:name, :description, :tab, :display_order, :published, :requires_login, :premium)
     end
   end
 end

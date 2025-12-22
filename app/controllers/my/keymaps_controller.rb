@@ -40,44 +40,11 @@ class My::KeymapsController < My::ApplicationController
   end
 
   def update
-    # 基本情報のみの更新（form_withから）
-    if params[:keymap_set].present? && params[:keymaps].blank?
-      if @keymap_set.update(keymap_set_params)
-        redirect_to edit_my_keymap_path(@keymap_set), notice: "基本情報を更新しました"
-      else
-        render :edit, status: :unprocessable_entity
-      end
-      return
-    end
+    return reset_keymap if params[:reset_to_default]
+    return set_active_keymap if params[:active]
+    return update_basic_info if basic_info_only?
 
-    # キーマップを一括保存（JavaScriptから）
-    keymaps_params = keymap_params
-
-    ActiveRecord::Base.transaction do
-      # 基本情報も一緒に保存（name, descriptionが含まれていれば）
-      if params[:keymap_set].present?
-        @keymap_set.update!(keymap_set_params)
-      end
-
-      keymaps_params.each do |layer, keymap_hash|
-        keymap_hash.each do |position, char|
-          next if char.blank?
-
-          keymap = current_user.keymaps.find_or_initialize_by(
-            keymap_set: @keymap_set,
-            layer: layer.to_i,
-            key_position: position
-          )
-          keymap.character = char
-          keymap.save!
-        end
-      end
-    end
-
-    render json: { success: true, message: "キーマップ「#{@keymap_set.name}」を保存しました" }
-  rescue StandardError => e
-    Rails.logger.error "Keymap save error: #{e.message}"
-    render json: { success: false, error: e.message }, status: :unprocessable_entity
+    update_keymaps
   end
 
   def destroy
@@ -116,5 +83,66 @@ class My::KeymapsController < My::ApplicationController
       "4": {},
       "5": {}
     )
+  end
+
+  # 基本情報のみの更新かどうか
+  def basic_info_only?
+    params[:keymap_set].present? && params[:keymaps].blank?
+  end
+
+  # キーマップをアクティブに設定
+  def set_active_keymap
+    current_user.update!(active_keymap_set: @keymap_set)
+    redirect_to my_keymaps_path, notice: "キーマップ「#{@keymap_set.name}」を使用中に設定しました"
+  rescue StandardError => e
+    Rails.logger.error "Set active keymap error: #{e.message}"
+    redirect_to my_keymaps_path, alert: "キーマップの設定に失敗しました"
+  end
+
+  # キーマップをデフォルト設定にリセット
+  def reset_keymap
+    @keymap_set.keymaps.destroy_all
+    render json: { success: true, message: "キーマップをデフォルト設定に戻しました" }
+  rescue StandardError => e
+    Rails.logger.error "Keymap reset error: #{e.message}"
+    render json: { success: false, error: "リセット中にエラーが発生しました" }, status: :unprocessable_entity
+  end
+
+  # 基本情報（name, description, slug）を更新
+  def update_basic_info
+    if @keymap_set.update(keymap_set_params)
+      redirect_to edit_my_keymap_path(@keymap_set), notice: "基本情報を更新しました"
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  # キーマップデータを一括保存
+  def update_keymaps
+    keymaps_params = keymap_params
+
+    ActiveRecord::Base.transaction do
+      # 基本情報も一緒に保存（name, descriptionが含まれていれば）
+      @keymap_set.update!(keymap_set_params) if params[:keymap_set].present?
+
+      keymaps_params.each do |layer, keymap_hash|
+        keymap_hash.each do |position, char|
+          next if char.blank?
+
+          keymap = current_user.keymaps.find_or_initialize_by(
+            keymap_set: @keymap_set,
+            layer: layer.to_i,
+            key_position: position
+          )
+          keymap.character = char
+          keymap.save!
+        end
+      end
+    end
+
+    render json: { success: true, message: "キーマップ「#{@keymap_set.name}」を保存しました" }
+  rescue StandardError => e
+    Rails.logger.error "Keymap save error: #{e.message}"
+    render json: { success: false, error: e.message }, status: :unprocessable_entity
   end
 end

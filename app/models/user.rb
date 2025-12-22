@@ -3,6 +3,7 @@ class User < ApplicationRecord
   has_many :keymaps, dependent: :destroy
   has_many :lessons, dependent: :destroy
   has_many :lesson_records, dependent: :destroy
+  belongs_to :active_keymap_set, class_name: "KeymapSet"
 
   after_create :create_default_keymap_set
 
@@ -78,12 +79,14 @@ class User < ApplicationRecord
 
   private
 
-  # 初期キーマップセットを作成
+  # 初期キーマップセットを作成し、アクティブに設定
   def create_default_keymap_set
-    keymap_sets.create!(
+    default_keymap = keymap_sets.create!(
       name: "マイキーマップ",
       description: "デフォルトキーマップ（Mac配列ベース）です。一般的なMacキーボードの配列を基にしています。このまま練習に使うことも、あなたの実際のキーボード配列に合わせて自由に編集することもできます。将来的には他のユーザーと共有できる機能も予定しています。",
       is_public: false
     )
+    # 作成したキーマップを即座にアクティブに設定
+    update!(active_keymap_set: default_keymap)
   end
 end
