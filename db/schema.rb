@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_23_024506) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_23_062333) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -93,6 +93,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_23_024506) do
     t.index ["user_id"], name: "index_lessons_on_user_id"
   end
 
+  create_table "shares", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "lesson_record_id", null: false
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lesson_record_id"], name: "index_shares_on_lesson_record_id"
+    t.index ["token"], name: "index_shares_on_token", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.integer "active_keymap_set_id", null: false
     t.datetime "created_at", null: false
@@ -119,5 +128,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_23_024506) do
   add_foreign_key "lesson_records", "users"
   add_foreign_key "lessons", "categories"
   add_foreign_key "lessons", "users"
+  add_foreign_key "shares", "lesson_records"
   add_foreign_key "users", "keymap_sets", column: "active_keymap_set_id"
 end
