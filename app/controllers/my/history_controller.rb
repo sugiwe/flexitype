@@ -11,6 +11,7 @@ class My::HistoryController < My::ApplicationController
     # 統計情報を計算（フィルタリング後のレコードで計算）
     @total_count = @filtered_records.count
     @average_accuracy = @filtered_records.average(:accuracy)&.round(1) || 0
+    @average_wpm = @filtered_records.where.not(wpm: nil).average(:wpm)&.round(1) || 0
   end
 
   def create
