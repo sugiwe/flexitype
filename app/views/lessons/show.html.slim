@@ -7,7 +7,7 @@
     = @lesson.description
 
 / メインエリア
-.bg-white.dark:bg-gray-800.rounded-lg.shadow-lg.p-8.transition-colors data-controller="typing" data-typing-words-value=@words.to_json data-typing-keymaps-value=@keymaps.to_json data-typing-lesson-info-value=@lesson.to_lesson_info.to_json data-typing-logged-in-value=logged_in? data-typing-grades-value=LessonRecord::GRADES.to_json
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-lg.p-8.transition-colors data-controller="typing" data-typing-words-value=@words.to_json data-typing-keymaps-value=@keymaps.to_json data-typing-lesson-info-value=@lesson.to_lesson_info.to_json data-typing-logged-in-value=logged_in? data-typing-grades-value=LessonGrades::DEFINITIONS.to_json
   / セッション完了画面（初期は非表示）
   .hidden data-typing-target="completionScreen"
     .text-center.py-12

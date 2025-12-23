@@ -261,7 +261,7 @@ export default class extends Controller {
   }
 
   // グレードを計算（カワウソテーマ・5段階）
-  // Rubyの LessonRecord::GRADES から data-typing-grades-value 経由で取得
+  // Rubyの LessonGrades::DEFINITIONS から data-typing-grades-value 経由で取得
   calculateGrade(accuracy, wpm) {
     const grades = this.gradesValue
 
