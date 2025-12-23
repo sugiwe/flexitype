@@ -6,7 +6,7 @@
     p.text-gray-600.dark:text-gray-400 キーマップの名前と説明を入力してください
 
   / フォーム
-  = form_with model: @keymap_set, url: my_keymaps_path, local: true, class: "bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6" do |f|
+  = form_with model: @keymap_set, url: my_keymaps_path, class: "bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6" do |f|
     / エラーメッセージ
     - if @keymap_set.errors.any?
       .bg-red-50.dark:bg-red-900.border.border-red-200.dark:border-red-700.rounded-lg.p-4.mb-6

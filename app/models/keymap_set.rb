@@ -48,6 +48,9 @@ class KeymapSet < ApplicationRecord
     # 全6レイヤー分のデフォルトキーマップをコピー
     default_keymap.each do |layer, keymap_hash|
       keymap_hash.each do |position, character|
+        # 空文字の場合はスキップ（未設定として扱う）
+        next if character.blank?
+
         keymaps.create!(
           user: user,
           layer: layer,
