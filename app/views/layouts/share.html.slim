@@ -1,0 +1,20 @@
+doctype html
+html
+  head
+    title = content_for(:title) || "Typnix | 垂直配列タイピング練習アプリ"
+    = render "layouts/head"
+    = yield :head
+
+  body.min-h-screen.bg-gray-50.dark:bg-gray-900.transition-colors
+    = render "layouts/gtm_noscript"
+
+    / ヘッダー（ロゴ + サービス説明）
+    header.bg-white.dark:bg-gray-800.border-b.border-gray-200.dark:border-gray-700.transition-colors
+      .container.max-w-6xl.mx-auto.py-6.px-4.text-center
+        = link_to root_path, data: { turbo: false }, class: "inline-block" do
+          = image_tag "logo.svg", alt: "Typnix", class: "h-10 mx-auto mb-2 dark:brightness-0 dark:invert"
+        p.text-sm.text-gray-600.dark:text-gray-400 垂直配列タイピング練習アプリ
+
+    / メインコンテンツ
+    main.container.max-w-6xl.mx-auto.py-8.px-4
+      = yield

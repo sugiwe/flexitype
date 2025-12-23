@@ -245,7 +245,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Keymap**: キー配置（レイヤー、位置、文字、keymap_set_id）
 - **Category**: レッスンカテゴリー（名前、説明、表示順、published、requires_login、premium）
 - **Lesson**: レッスン（user_id、category_id、items (JSONB)、is_public、visible_toスコープ、カテゴリーからrequires_login/premium継承）
-- **LessonRecord**: 練習履歴（正答率、所要時間、ミス数、completed_at）
+- **LessonRecord**: 練習履歴（正答率、所要時間、ミス数、completed_at、WPM計算、5段階グレード判定）
+- **Share**: シェア機能（lesson_record_id、token、OGP対応のランディングページ）
 
 ---
 
@@ -273,21 +274,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ **Day 19**: Google ログイン修正、キーマップ UI 改善（slug 対応）
 - ✅ **Day 20**: 管理者ダッシュボード実装 + Google AdSense 審査リクエスト + practice/session → lesson/lesson_record リファクタリング（詳細: `CLAUDE_ADMIN_DASHBOARD.md`, `CLAUDE_ADSENSE.md`）
 - ✅ **Day 21**: レッスンDB化完了 + カテゴリー管理機能実装 + アーキテクチャ大幅改善（Category・Lessonモデル、権限フラグ整理、published機能、Admin::CategoriesController）
-- 🔄 **Day 22**: ユーザーフィードバック対応（進行中）
+- ✅ **Day 22**: ユーザーフィードバック対応 + タブ化実装完了
   - ✅ キーマップリセット機能のバグ修正
   - ✅ キーマップ選択機能の実装（active_keymap_set_id）
   - ✅ タイピング練習時の操作説明改善（Delete キー説明追加）
   - ✅ レイアウトシフト問題の修正
-  - 🔜 記号単体でのキーマップ設定（優先度：低、将来実装）
-  - 🔜 数字や記号を含む練習問題の追加（Day 26以降で対応）
-  - 🔜 キーマップインポート機能（Vial JSON対応、将来実装）
-- 🔜 **Day 23**: トップページタブ化、成績評価システム、結果シェア機能（画像生成）
+  - ✅ トップページのタブ化（4タブ: 基礎、英語、日本語、プログラミング）
+  - ✅ レッスン管理画面のタブ化（ユーザー種別対応）
+  - ✅ ユーザー種別用語の統一（一般ユーザー/プレミアムユーザー）
+- ✅ **Day 23**: 成績評価システム + シェア機能実装完了
+  - ✅ 5段階カワウソグレードシステム（正答率 × WPM）
+  - ✅ シェア機能（X/Twitter連携、OGP対応）
+  - ✅ レイアウトファイルのDRY化（パーシャル化）
 - 🔜 **Day 24**: 最終調整・リファクタリング
 - 🔜 **Day 25**: 最終調整・ドキュメント整備
 
 ---
 
-## 🎯 現在の進捗状況（Day 22 進行中）
+## 🎯 現在の進捗状況（Day 23 完了）
 
 ### 完了した主要マイルストーン
 
@@ -304,13 +308,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - 権限フラグの冗長性解消（delegate パターン）
   - published フラグによる公開制御
 - ✅ **Day 22**: ユーザーフィードバック対応 + タブ化実装完了
-  - ✅ キーマップリセット機能のバグ修正（早期リターンパターン）
-  - ✅ キーマップ選択機能の実装（active_keymap_set_id、UI/UX改善）
-  - ✅ タイピング練習時の操作説明改善（Delete キー説明追加）
-  - ✅ レイアウトシフト問題の修正（min-height設定）
-  - ✅ トップページのタブ化実装（Turbo Frames + Stimulus）
-  - ✅ レッスン管理画面のタブ化実装（ユーザー種別対応）
-  - ✅ 本番環境デプロイ成功（マイグレーションエラー対応含む）
+  - キーマップリセット機能のバグ修正（早期リターンパターン）
+  - キーマップ選択機能の実装（active_keymap_set_id、UI/UX改善）
+  - キーマップ未設定表示の改善（空欄表示、全レイヤー一貫性）
+  - 新規キーマップ作成のバグ修正（Turbo対応、空文字スキップ）
+  - ユーザー種別用語の統一（一般ユーザー/プレミアムユーザー）
+  - トップページのタブ化実装（Turbo Frames + Stimulus）
+  - レッスン管理画面のタブ化実装（ユーザー種別対応）
+  - 本番環境デプロイ成功（マイグレーションエラー対応含む）
+- ✅ **Day 23**: 成績評価システム + シェア機能実装完了
+  - 5段階カワウソグレードシステム（プロ級・上級者・中級者・初心者・入門者）
+  - LessonRecordにWPM計算とグレード判定メソッド追加
+  - Shareモデル作成（has_secure_token、delegate パターン）
+  - SharesController実装（認証、OGP対応）
+  - シェア用ランディングページ（グレードバッジ、成績カード、CTA）
+  - X（旧Twitter）シェア機能
+  - レイアウトファイルのDRY化（_head.html.slim、_gtm_noscript.html.slim）
+  - 動的OGP画像生成は保留（TODO、静的テンプレート使用）
 
 ### 技術的マイルストーン
 
@@ -321,29 +335,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Day 18: **KeymapSet 基盤実装**（複数キーマップ管理の基礎完成）
 - Day 19: **Google ログインバグ修正**（Turbo 対応、CSP 競合解消）
 - Day 20: **管理者ダッシュボード実装 + Google AdSense 審査リクエスト + 用語統一リファクタリング**（practice/session → lesson/lesson_record）
-- Day 21: **レッスンDB化完了 + カテゴリー管理機能完成 + アーキテクチャ改善**（Day 21-22の目標を1日で達成、delegate パターン活用、published 機能、本番環境データ移行の教訓）
-- Day 22: **タブ化実装完了**（Turbo Frames + Stimulus、トップページ・レッスン管理画面のタブ化、ユーザー種別による表示制御）
+- Day 21: **レッスンDB化完了 + カテゴリー管理機能完成 + アーキテクチャ改善**（delegate パターン活用、published 機能、本番環境データ移行の教訓）
+- Day 22: **タブ化実装完了 + キーマップ改善**（Turbo Frames + Stimulus、ユーザーフィードバック対応、空欄表示の一貫性）
+- Day 23: **成績評価システム + シェア機能完成**（5段階カワウソグレード、X/Twitter連携、OGP対応、レイアウトDRY化）
 
 ### 次のステップ（Phase 7 以降）
 
-#### Day 22-25: UX向上と機能拡張（詳細: `CLAUDE_LESSON_DB_PLAN.md`）
-
-**Day 22**: テストユーザーのフィードバックを元に改善（完了）
-- ✅ キーマップ選択機能の実装
-- ✅ トップページのタブ化（4タブ: 基礎、英語、日本語、プログラミング）
-- ✅ レッスン管理画面のタブ化（管理者: 4タブ、一般ユーザー: 1タブ）
-- ✅ UI/UXの改善（操作説明、レイアウトシフト修正）
-- ✅ バグ修正（キーマップリセット、Lesson.officialスコープ）
-
-**Day 23**: 成績評価システム、結果シェア機能
-- 🔜 成績評価システム（4段階評価: プロ級、上級者、中級者、初心者）
-- 🔜 結果シェア機能（HTML Canvas で画像生成）
-- 🔜 本番環境デプロイ（Day 22の成果）
+#### Day 24-25: 最終調整（詳細: `CLAUDE_LESSON_DB_PLAN.md`）
 
 **Day 24**: 最終調整・リファクタリング
+- 🔜 feature/grade-system ブランチの PR 作成・マージ
 - 🔜 パフォーマンス最適化（N+1 クエリなど）
 - 🔜 コードリファクタリング
 - 🔜 セキュリティチェック（Brakeman, bundler-audit）
+- 🔜 本番環境でシェア機能のOGPプレビュー確認
 
 **Day 25**: 最終調整・ドキュメント整備
 - 🔜 最終バグ修正
@@ -366,14 +371,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **`CLAUDE_KEYMAP_EXPANSION.md`** - キーマップ拡張設計（✅ Phase 1 完了、Phase 2-3 は将来実装）
 - **`CLAUDE_ADSENSE.md`** - Google AdSense 導入設計（✅ Day 20 サイト所有権確認完了、審査中）
 
-### 実装中（Day 21-25）
+### 実装完了（Day 21-23）
 
 - **`CLAUDE_LESSON_DB_PLAN.md`** - レッスンDB化と機能拡張計画
   - ✅ Day 21: レッスンのDB化（YAML → PostgreSQL）完了
   - ✅ Day 21: ユーザー作成レッスン機能（`/my/lessons` CRUD）完了
   - ✅ Day 21: カテゴリー管理機能（Admin::CategoriesController）完了
-  - 🔜 Day 22: テストユーザーのフィードバックを元に改善
-  - 🔜 Day 23: トップページタブ化、成績評価システム、結果シェア機能
+  - ✅ Day 22: テストユーザーのフィードバックを元に改善完了
+  - ✅ Day 23: 成績評価システム + シェア機能完了
   - 🔜 Day 24: 最終調整・リファクタリング
   - 🔜 Day 25: 最終調整・ドキュメント整備
 
@@ -460,6 +465,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 自作レッスン作成: 2つまで・非公開のみ（無料） / 5つまで・公開可能（有料）
 - 統計グラフ: 有料のみ
 
+### シェア機能の拡張
+
+**動的OGP画像生成**
+- **現状**: Day 23で静的テンプレート画像を使用
+- **問題点**: MiniMagickでのテキストオーバーレイがローカル環境で動作せず
+- **影響度**: 低（ツイート文面とランディングページで結果が確認できるため）
+- **実装方針**:
+  - MiniMagick + ImageMagick でテンプレート画像にテキストを合成
+  - グレード名、正答率、WPMを画像に描画
+  - フォント問題、ImageMagickバージョン互換性の調査が必要
+- **作業量**: 中（フォント設定、デバッグ含めて半日）
+- **優先度**: 低（将来実装）
+- **TODO**: SharesController にコメントアウト済み
+
 ### その他の拡張案
 
 - エラーページの整備（404/500ページのカスタマイズ）
@@ -495,23 +514,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクトの成果
 
-**達成状況:**
+**達成状況（Day 23時点）:**
 
 - ✅ 25 日間で独自ドメインへのデプロイ完了（Day 14 で達成、11 日前倒し）
-- ✅ 主要機能（練習、キーマップ設定、履歴、レッスン管理、管理者ダッシュボード）がすべて完成
+- ✅ 主要機能（練習、キーマップ設定、履歴、レッスン管理、管理者ダッシュボード、成績評価、シェア機能）がすべて完成
 - ✅ セキュリティ、レスポンシブ対応、ダークモードなど、プロダクション品質のアプリケーション
 - ✅ 本番環境で稼働中（https://typnix.com）
-- ✅ Brakeman 0 警告達成
+- ✅ Brakeman 0 警告達成（継続的にセキュリティチェック実施）
 - ✅ レッスンDB化完了（YAMLからPostgreSQLへの完全移行）
 - ✅ KeymapSet モデルの実装により、複数キーマップ管理の基盤が完成
-- ✅ Rails wayなアーキテクチャ（LessonLoaderサービスオブジェクト削除、RESTful設計）
+- ✅ Rails wayなアーキテクチャ（LessonLoaderサービスオブジェクト削除、RESTful設計、delegate パターン活用）
+- ✅ 5段階カワウソグレードシステム（ユーザーフィードバック重視の設計）
+- ✅ X（旧Twitter）シェア機能（OGP対応、SNS認知拡大の基盤）
+- ✅ Turbo Frames + Stimulus によるモダンなSPA風UI（タブ化実装）
 
 **技術的な成長:**
 
-- Rails 8.1.1 の最新機能を活用
-- Hotwire（Turbo + Stimulus）による快適な UX
-- Kamal によるモダンなデプロイフロー
-- セキュリティベストプラクティスの実践
+- Rails 8.1.1 の最新機能を活用（Turbo対応、form_withの挙動変化への対応）
+- Hotwire（Turbo + Stimulus）による快適な UX（タブ化、非同期フォーム送信）
+- Kamal によるモダンなデプロイフロー（継続的デプロイ、ヘルスチェック）
+- セキュリティベストプラクティスの実践（Brakeman 0警告、Strong Parameters、CSRF対策）
+- DRY原則の徹底（パーシャル化、delegate パターン、メソッド重複回避）
+- ユーザーフィードバック駆動開発（Day 22-23で積極的に対応）
 
 ---
 

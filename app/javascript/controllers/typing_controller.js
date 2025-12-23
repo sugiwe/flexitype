@@ -1,13 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "lessonScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay", "displayArea"]
+  static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "lessonScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay", "displayArea", "gradeEmoji", "gradeName", "gradeDescription", "wpmDisplay"]
   static values = {
     words: Array,
     currentWord: Number,
     keymaps: Object,
     lessonInfo: Object,
-    loggedIn: Boolean
+    loggedIn: Boolean,
+    grades: Object
   }
 
   // キーマップから動的に生成する（初期化時に設定）
@@ -54,6 +55,7 @@ export default class extends Controller {
     // 統計情報
     this.mistakeCount = 0 // ミスタイプの総数
     this.totalKeystrokes = 0 // 総キー入力数
+    this.typedChars = 0 // タイプした文字数（成績評価用）
     this.lessonStartTime = null // レッスン開始時刻（最初の入力時に設定）
     this.isFirstInput = true // 最初の入力かどうか
 
@@ -173,6 +175,11 @@ export default class extends Controller {
     const expectedChar = currentWord[this.currentPosition]
     const typedChar = input[input.length - 1]
 
+    // タイプ数をカウント（Backspaceを除く）
+    if (event.inputType !== 'deleteContentBackward') {
+      this.typedChars++
+    }
+
     if (typedChar === expectedChar) {
       // 正しい入力
       this.currentPosition = input.length
@@ -225,10 +232,23 @@ export default class extends Controller {
     // 正答率を計算（総文字数に対するミス数の割合）
     const accuracy = Math.round(((totalChars - this.mistakeCount) / totalChars) * 100)
 
+    // WPMを計算（CPM = タイプ数 / 秒数 × 60、WPM = CPM / 5）
+    const cpm = elapsedSeconds > 0 ? (this.typedChars / elapsedSeconds) * 60 : 0
+    const wpm = Math.round(cpm / 5)
+
+    // グレードを判定
+    const grade = this.calculateGrade(accuracy, wpm)
+
     // 統計情報を画面に表示
     this.accuracyDisplayTarget.textContent = `${accuracy}%`
     this.timeDisplayTarget.textContent = timeString
     this.mistakesDisplayTarget.textContent = this.mistakeCount
+    this.wpmDisplayTarget.textContent = wpm
+
+    // グレード情報を表示
+    this.gradeEmojiTarget.textContent = grade.emoji
+    this.gradeNameTarget.textContent = grade.name
+    this.gradeDescriptionTarget.textContent = grade.description
 
     // ログインユーザーの場合、履歴を保存
     if (this.loggedInValue) {
@@ -238,6 +258,26 @@ export default class extends Controller {
     // 画面を切り替え
     this.lessonScreenTarget.classList.add('hidden')
     this.completionScreenTarget.classList.remove('hidden')
+  }
+
+  // グレードを計算（カワウソテーマ・5段階）
+  // Rubyの LessonRecord::GRADES から data-typing-grades-value 経由で取得
+  calculateGrade(accuracy, wpm) {
+    const grades = this.gradesValue
+
+    // Ruby側のキー名（legendary, adult, young, child, baby）でアクセス
+    // accuracy_min, wpm_min は camelCase に変換されている
+    if (accuracy >= grades.legendary.accuracy_min && wpm >= grades.legendary.wpm_min) {
+      return grades.legendary
+    } else if (accuracy >= grades.adult.accuracy_min && wpm >= grades.adult.wpm_min) {
+      return grades.adult
+    } else if (accuracy >= grades.young.accuracy_min && wpm >= grades.young.wpm_min) {
+      return grades.young
+    } else if (accuracy >= grades.child.accuracy_min && wpm >= grades.child.wpm_min) {
+      return grades.child
+    } else {
+      return grades.baby
+    }
   }
 
   // 履歴を保存
@@ -258,16 +298,53 @@ export default class extends Controller {
             correct_count: this.words.length * this.words.reduce((sum, word) => sum + word.length, 0) - this.mistakeCount,
             mistake_count: this.mistakeCount,
             accuracy: accuracy,
-            duration_seconds: durationSeconds
+            duration_seconds: durationSeconds,
+            typed_chars: this.typedChars
           }
         })
       })
 
-      if (!response.ok) {
+      if (response.ok) {
+        // レスポンスからlesson_record_idを取得して保存
+        const data = await response.json()
+        this.savedLessonRecordId = data.lesson_record_id
+      } else {
         console.error('Failed to save history:', await response.text())
       }
     } catch (error) {
       console.error('Error saving history:', error)
+    }
+  }
+
+  // 結果をシェア
+  async shareResult() {
+    if (!this.savedLessonRecordId) {
+      alert('レッスン記録が見つかりません。もう一度練習を完了してください。')
+      return
+    }
+
+    try {
+      const response = await fetch('/shares', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          lesson_record_id: this.savedLessonRecordId
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        // Xのシェアウィンドウを開く
+        window.open(data.twitter_url, '_blank', 'width=550,height=420')
+      } else {
+        alert('シェアに失敗しました')
+      }
+    } catch (error) {
+      console.error('Share error:', error)
+      alert('シェアに失敗しました')
     }
   }
 
@@ -279,6 +356,7 @@ export default class extends Controller {
     this.hasError = false
     this.mistakeCount = 0
     this.totalKeystrokes = 0
+    this.typedChars = 0
     this.lessonStartTime = null // 次の入力時に再設定
     this.isFirstInput = true // 最初の入力フラグをリセット
 
