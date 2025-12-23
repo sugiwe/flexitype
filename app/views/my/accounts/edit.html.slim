@@ -32,7 +32,18 @@
           | プロフィールページのURL（
           span.font-mono.text-blue-600.dark:text-blue-400 = "typnix.com/@#{@user.username}"
           | ）に使用されます
-        = f.text_field :username, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "username"
+
+        - if @user.can_change_username?
+          = f.text_field :username, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "username"
+        - else
+          = f.text_field :username, disabled: true, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed", placeholder: "username"
+          .text-sm.text-amber-600.dark:text-amber-400.mt-2.flex.items-start.gap-2
+            svg.w-5.h-5.flex-shrink-0.mt-0.5 fill="currentColor" viewBox="0 0 20 20"
+              path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"
+            div
+              | ユーザー名は24時間に1回しか変更できません
+              br
+              strong = "次回変更可能: #{@user.next_username_change_at.strftime('%Y年%m月%d日 %H時%M分')}"
 
         - if @user.errors[:username].any?
           .text-sm.text-red-600.dark:text-red-400.mt-1
@@ -44,6 +55,10 @@
           | ※記号は連続不可、先頭・末尾不可
           br
           | ※3〜30文字
+          br
+          | ※予約語（admin、api、myなど）は使用できません
+          br
+          | ※変更後24時間は再変更できません
 
       / 現在のメールアドレス（表示のみ）
       .space-y-2
