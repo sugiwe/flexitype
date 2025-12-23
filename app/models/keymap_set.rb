@@ -32,7 +32,7 @@ class KeymapSet < ApplicationRecord
   private
 
   def check_user_keymap_limit
-    # 無課金ユーザーは2つまで（将来的に課金ユーザーは5つまで拡張可能）
+    # 一般ユーザーは2つまで（将来的にプレミアムユーザーは5つまで拡張可能）
     max_keymaps = 2
     current_count = user.keymap_sets.count
 
