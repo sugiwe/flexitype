@@ -129,7 +129,7 @@ export default class extends Controller {
 
   // format_key_displayヘルパーのJavaScript版（2段表示対応）
   formatKeyDisplay(char) {
-    if (!char || char === '-') return '<div class="text-xs text-gray-700 dark:text-gray-200">-</div>'
+    if (!char || char === '-') return '<div class="text-xs"></div>'
 
     // blankの場合は✕マーク（背景は親要素で設定）
     if (char.toLowerCase() === 'blank') {

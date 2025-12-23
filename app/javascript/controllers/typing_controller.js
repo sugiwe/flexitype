@@ -360,7 +360,7 @@ export default class extends Controller {
           // 全レイヤーの文字データを保存（data-layer-0, data-layer-1, ...）
           for (let layer = 0; layer < 6; layer++) {
             const layerData = this.keymapsValue[layer] || this.keymapsValue[layer.toString()] || {}
-            const char = layerData[position] || '-'
+            const char = layerData[position] || ''
             keyElement.dataset[`layer${layer}`] = char
           }
         }
@@ -374,7 +374,7 @@ export default class extends Controller {
 
     // 全てのキーの表示を更新
     document.querySelectorAll('.key[data-position]').forEach(keyElement => {
-      const char = keyElement.dataset[`layer${layer}`] || '-'
+      const char = keyElement.dataset[`layer${layer}`] || ''
       // 2段表示のHTMLを生成
       keyElement.innerHTML = this.formatKeyDisplay(char)
 
@@ -391,7 +391,7 @@ export default class extends Controller {
 
   // format_key_displayヘルパーのJavaScript版（2段表示対応）
   formatKeyDisplay(char) {
-    if (!char) return '<div class="text-xs text-gray-700 dark:text-gray-200">-</div>'
+    if (!char) return '<div class="text-xs"></div>'
 
     // blankの場合は✕マーク（背景は親要素で設定）
     if (char.toLowerCase() === 'blank') {
