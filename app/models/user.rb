@@ -11,7 +11,6 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true, length: { maximum: 254 }
   validates :name, presence: true, length: { maximum: 30 }
   validates :icon_url, length: { maximum: 4096 }, allow_blank: true
-  validates :history_limit, presence: true, numericality: { greater_than: 0 }
   validates :username, presence: true, uniqueness: { case_sensitive: false },
                        format: { with: /\A[a-z0-9]+(?:[._-][a-z0-9]+)*\z/,
                                 message: "は半角英数字、ハイフン、アンダースコア、ドットのみ使用できます（記号は連続不可、先頭・末尾不可）" },
@@ -55,11 +54,6 @@ class User < ApplicationRecord
     allowed_emails.include?(email)
   end
 
-  # 古い履歴を削除（history_limitを超えた分）
-  def cleanup_old_lesson_records
-    records = lesson_records.order(created_at: :desc)
-    records.offset(history_limit).destroy_all
-  end
 
   # 管理者かどうかを判定
   def admin?
