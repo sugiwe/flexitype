@@ -14,9 +14,6 @@ class LessonRecord < ApplicationRecord
   before_save :calculate_wpm
   before_save :calculate_grade
 
-  # 作成後、古い履歴を自動削除
-  after_create :cleanup_old_records
-
   # スコープ: 完了日時降順
   scope :recent, -> { order(completed_at: :desc) }
 
@@ -108,9 +105,5 @@ class LessonRecord < ApplicationRecord
     else
       GRADES["baby"][:name]
     end
-  end
-
-  def cleanup_old_records
-    user.cleanup_old_lesson_records
   end
 end
