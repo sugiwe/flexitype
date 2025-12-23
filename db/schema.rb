@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_23_194636) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_23_202059) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -108,7 +108,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_23_194636) do
     t.datetime "current_sign_in_at"
     t.string "email", limit: 254, null: false
     t.string "google_uid", null: false
-    t.integer "history_limit", default: 50, null: false
     t.string "icon_url", limit: 4096
     t.datetime "last_sign_in_at"
     t.string "name", limit: 30, null: false
