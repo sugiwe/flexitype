@@ -31,7 +31,8 @@ class My::HistoryController < My::ApplicationController
       :correct_count,
       :mistake_count,
       :accuracy,
-      :duration_seconds
+      :duration_seconds,
+      :typed_chars
     )
   end
 end

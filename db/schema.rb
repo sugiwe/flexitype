@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_22_045632) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_23_024506) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -63,12 +63,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_22_045632) do
     t.integer "correct_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.integer "duration_seconds"
+    t.string "grade", limit: 20
     t.string "lesson_id"
     t.string "lesson_name"
     t.integer "mistake_count", default: 0, null: false
+    t.integer "typed_chars"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.integer "word_count", default: 0, null: false
+    t.integer "wpm"
     t.index ["user_id", "completed_at"], name: "index_lesson_records_on_user_id_and_completed_at", order: { completed_at: :desc }
     t.index ["user_id", "created_at"], name: "index_lesson_records_on_user_id_and_created_at", order: { created_at: :desc }
     t.index ["user_id"], name: "index_lesson_records_on_user_id"

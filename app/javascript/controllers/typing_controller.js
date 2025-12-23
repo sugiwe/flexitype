@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "lessonScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay", "displayArea"]
+  static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "lessonScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay", "displayArea", "gradeEmoji", "gradeName", "gradeDescription", "wpmDisplay"]
   static values = {
     words: Array,
     currentWord: Number,
@@ -54,6 +54,7 @@ export default class extends Controller {
     // 統計情報
     this.mistakeCount = 0 // ミスタイプの総数
     this.totalKeystrokes = 0 // 総キー入力数
+    this.typedChars = 0 // タイプした文字数（成績評価用）
     this.lessonStartTime = null // レッスン開始時刻（最初の入力時に設定）
     this.isFirstInput = true // 最初の入力かどうか
 
@@ -173,6 +174,11 @@ export default class extends Controller {
     const expectedChar = currentWord[this.currentPosition]
     const typedChar = input[input.length - 1]
 
+    // タイプ数をカウント（Backspaceを除く）
+    if (event.inputType !== 'deleteContentBackward') {
+      this.typedChars++
+    }
+
     if (typedChar === expectedChar) {
       // 正しい入力
       this.currentPosition = input.length
@@ -225,10 +231,23 @@ export default class extends Controller {
     // 正答率を計算（総文字数に対するミス数の割合）
     const accuracy = Math.round(((totalChars - this.mistakeCount) / totalChars) * 100)
 
+    // WPMを計算（CPM = タイプ数 / 秒数 × 60、WPM = CPM / 5）
+    const cpm = elapsedSeconds > 0 ? (this.typedChars / elapsedSeconds) * 60 : 0
+    const wpm = Math.round(cpm / 5)
+
+    // グレードを判定
+    const grade = this.calculateGrade(accuracy, wpm)
+
     // 統計情報を画面に表示
     this.accuracyDisplayTarget.textContent = `${accuracy}%`
     this.timeDisplayTarget.textContent = timeString
     this.mistakesDisplayTarget.textContent = this.mistakeCount
+    this.wpmDisplayTarget.textContent = wpm
+
+    // グレード情報を表示
+    this.gradeEmojiTarget.textContent = grade.emoji
+    this.gradeNameTarget.textContent = grade.name
+    this.gradeDescriptionTarget.textContent = grade.description
 
     // ログインユーザーの場合、履歴を保存
     if (this.loggedInValue) {
@@ -238,6 +257,59 @@ export default class extends Controller {
     // 画面を切り替え
     this.lessonScreenTarget.classList.add('hidden')
     this.completionScreenTarget.classList.remove('hidden')
+  }
+
+  // グレードを計算（カワウソテーマ・5段階）
+  calculateGrade(accuracy, wpm) {
+    const grades = {
+      legendary: {
+        name: '伝説のカワウソ',
+        emoji: '👑',
+        description: 'タイピングの神様！',
+        accuracyMin: 98,
+        wpmMin: 80
+      },
+      adult: {
+        name: '大人のカワウソ',
+        emoji: '🦦',
+        description: '堂々としたタイピング',
+        accuracyMin: 90,
+        wpmMin: 50
+      },
+      young: {
+        name: '若手のカワウソ',
+        emoji: '🐾',
+        description: 'すくすく成長中！',
+        accuracyMin: 80,
+        wpmMin: 30
+      },
+      child: {
+        name: '子どものカワウソ',
+        emoji: '🌊',
+        description: '元気いっぱい練習中！',
+        accuracyMin: 70,
+        wpmMin: 15
+      },
+      baby: {
+        name: '赤ちゃんカワウソ',
+        emoji: '🐣',
+        description: 'よちよちスタート！',
+        accuracyMin: 0,
+        wpmMin: 0
+      }
+    }
+
+    if (accuracy >= grades.legendary.accuracyMin && wpm >= grades.legendary.wpmMin) {
+      return grades.legendary
+    } else if (accuracy >= grades.adult.accuracyMin && wpm >= grades.adult.wpmMin) {
+      return grades.adult
+    } else if (accuracy >= grades.young.accuracyMin && wpm >= grades.young.wpmMin) {
+      return grades.young
+    } else if (accuracy >= grades.child.accuracyMin && wpm >= grades.child.wpmMin) {
+      return grades.child
+    } else {
+      return grades.baby
+    }
   }
 
   // 履歴を保存
@@ -258,7 +330,8 @@ export default class extends Controller {
             correct_count: this.words.length * this.words.reduce((sum, word) => sum + word.length, 0) - this.mistakeCount,
             mistake_count: this.mistakeCount,
             accuracy: accuracy,
-            duration_seconds: durationSeconds
+            duration_seconds: durationSeconds,
+            typed_chars: this.typedChars
           }
         })
       })
@@ -279,6 +352,7 @@ export default class extends Controller {
     this.hasError = false
     this.mistakeCount = 0
     this.totalKeystrokes = 0
+    this.typedChars = 0
     this.lessonStartTime = null // 次の入力時に再設定
     this.isFirstInput = true // 最初の入力フラグをリセット
 
