@@ -7,7 +7,8 @@ export default class extends Controller {
     currentWord: Number,
     keymaps: Object,
     lessonInfo: Object,
-    loggedIn: Boolean
+    loggedIn: Boolean,
+    grades: Object
   }
 
   // キーマップから動的に生成する（初期化時に設定）
@@ -260,52 +261,19 @@ export default class extends Controller {
   }
 
   // グレードを計算（カワウソテーマ・5段階）
+  // Rubyの LessonRecord::GRADES から data-typing-grades-value 経由で取得
   calculateGrade(accuracy, wpm) {
-    const grades = {
-      legendary: {
-        name: '伝説のカワウソ',
-        emoji: '👑',
-        description: 'タイピングの神様！',
-        accuracyMin: 98,
-        wpmMin: 80
-      },
-      adult: {
-        name: '大人のカワウソ',
-        emoji: '🦦',
-        description: '堂々としたタイピング',
-        accuracyMin: 90,
-        wpmMin: 50
-      },
-      young: {
-        name: '若手のカワウソ',
-        emoji: '🐾',
-        description: 'すくすく成長中！',
-        accuracyMin: 80,
-        wpmMin: 30
-      },
-      child: {
-        name: '子どものカワウソ',
-        emoji: '🌊',
-        description: '元気いっぱい練習中！',
-        accuracyMin: 70,
-        wpmMin: 15
-      },
-      baby: {
-        name: '赤ちゃんカワウソ',
-        emoji: '🐣',
-        description: 'よちよちスタート！',
-        accuracyMin: 0,
-        wpmMin: 0
-      }
-    }
+    const grades = this.gradesValue
 
-    if (accuracy >= grades.legendary.accuracyMin && wpm >= grades.legendary.wpmMin) {
+    // Ruby側のキー名（legendary, adult, young, child, baby）でアクセス
+    // accuracy_min, wpm_min は camelCase に変換されている
+    if (accuracy >= grades.legendary.accuracy_min && wpm >= grades.legendary.wpm_min) {
       return grades.legendary
-    } else if (accuracy >= grades.adult.accuracyMin && wpm >= grades.adult.wpmMin) {
+    } else if (accuracy >= grades.adult.accuracy_min && wpm >= grades.adult.wpm_min) {
       return grades.adult
-    } else if (accuracy >= grades.young.accuracyMin && wpm >= grades.young.wpmMin) {
+    } else if (accuracy >= grades.young.accuracy_min && wpm >= grades.young.wpm_min) {
       return grades.young
-    } else if (accuracy >= grades.child.accuracyMin && wpm >= grades.child.wpmMin) {
+    } else if (accuracy >= grades.child.accuracy_min && wpm >= grades.child.wpm_min) {
       return grades.child
     } else {
       return grades.baby
