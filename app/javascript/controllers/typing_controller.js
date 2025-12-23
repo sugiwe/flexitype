@@ -304,11 +304,47 @@ export default class extends Controller {
         })
       })
 
-      if (!response.ok) {
+      if (response.ok) {
+        // レスポンスからlesson_record_idを取得して保存
+        const data = await response.json()
+        this.savedLessonRecordId = data.lesson_record_id
+      } else {
         console.error('Failed to save history:', await response.text())
       }
     } catch (error) {
       console.error('Error saving history:', error)
+    }
+  }
+
+  // 結果をシェア
+  async shareResult() {
+    if (!this.savedLessonRecordId) {
+      alert('レッスン記録が見つかりません。もう一度練習を完了してください。')
+      return
+    }
+
+    try {
+      const response = await fetch('/shares', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          lesson_record_id: this.savedLessonRecordId
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        // Xのシェアウィンドウを開く
+        window.open(data.twitter_url, '_blank', 'width=550,height=420')
+      } else {
+        alert('シェアに失敗しました')
+      }
+    } catch (error) {
+      console.error('Share error:', error)
+      alert('シェアに失敗しました')
     }
   }
 
