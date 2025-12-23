@@ -2,15 +2,9 @@ doctype html
 html
   head
     title = content_for(:title) || "Typnix | 垂直配列タイピング練習アプリ"
-    meta name="viewport" content="width=device-width,initial-scale=1"
-    meta name="apple-mobile-web-app-capable" content="yes"
-    meta name="application-name" content="Typnix"
-    meta name="mobile-web-app-capable" content="yes"
-    meta name="description" content="Typnix（タイプニックス）は、垂直配列キーボードに特化したタイピング練習アプリです。自分のキーマップで効率的に練習できます。"
-    = csrf_meta_tags
-    = csp_meta_tag
+    = render "layouts/head"
 
-    / OGP設定
+    / OGP設定（トップページ用）
     meta property="og:title" content="Typnix | 垂直配列タイピング練習アプリ"
     meta property="og:description" content="Typnix（タイプニックス）は、垂直配列キーボードに特化したタイピング練習アプリです。自分のキーマップで効率的に練習できます。"
     meta property="og:type" content="website"
@@ -19,55 +13,17 @@ html
     meta property="og:site_name" content="Typnix"
     meta property="og:locale" content="ja_JP"
 
-    / Twitter Card設定
+    / Twitter Card設定（トップページ用）
     meta name="twitter:card" content="summary_large_image"
     meta name="twitter:title" content="Typnix | 垂直配列タイピング練習アプリ"
     meta name="twitter:description" content="Typnix（タイプニックス）は、垂直配列キーボードに特化したタイピング練習アプリです。自分のキーマップで効率的に練習できます。"
     meta name="twitter:image" content=image_url("ogp.png")
 
-    / Google AdSense（サイト所有権確認）
-    - if ENV['GOOGLE_ADSENSE_PUBLISHER_ID'].present?
-      meta name="google-adsense-account" content=ENV['GOOGLE_ADSENSE_PUBLISHER_ID']
-
     = yield :head
-
-    link rel="icon" href="/icon.png?v=2" type="image/png"
-    link rel="icon" href="/icon.svg?v=2" type="image/svg+xml"
-    link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2"
-
-    = stylesheet_link_tag :app, "data-turbo-track": "reload"
-    = javascript_importmap_tags
     script src="https://accounts.google.com/gsi/client" async="" defer="" data-turbo-track="reload"
 
-    / テーマのちらつき防止: ページ読み込み前にdarkクラスを適用
-    script
-      | (function() {
-      |   const theme = localStorage.getItem('theme') || 'light';
-      |   if (theme === 'dark') {
-      |     document.documentElement.classList.add('dark');
-      |   } else if (theme === 'light') {
-      |     document.documentElement.classList.remove('dark');
-      |   } else if (theme === 'system') {
-      |     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      |       document.documentElement.classList.add('dark');
-      |     }
-      |   }
-      | })();
-
-    / Google Tag Manager
-    - if ENV['GTM_CONTAINER_ID'].present?
-      script
-        | (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        | new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        | j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        | 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        | })(window,document,'script','dataLayer','#{ENV['GTM_CONTAINER_ID']}');
-
   body.h-screen.flex.bg-gray-50.dark:bg-gray-900.overflow-hidden.transition-colors data-controller="sidebar"
-    / Google Tag Manager (noscript)
-    - if ENV['GTM_CONTAINER_ID'].present?
-      noscript
-        iframe src="https://www.googletagmanager.com/ns.html?id=#{ENV['GTM_CONTAINER_ID']}" height="0" width="0" style="display:none;visibility:hidden"
+    = render "layouts/gtm_noscript"
     / フラッシュメッセージ
     = render "layouts/shared/flash_messages"
 
