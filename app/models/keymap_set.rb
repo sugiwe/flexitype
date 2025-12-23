@@ -32,7 +32,7 @@ class KeymapSet < ApplicationRecord
   private
 
   def check_user_keymap_limit
-    # 無課金ユーザーは2つまで（将来的に課金ユーザーは5つまで拡張可能）
+    # 一般ユーザーは2つまで（将来的にプレミアムユーザーは5つまで拡張可能）
     max_keymaps = 2
     current_count = user.keymap_sets.count
 
@@ -48,6 +48,9 @@ class KeymapSet < ApplicationRecord
     # 全6レイヤー分のデフォルトキーマップをコピー
     default_keymap.each do |layer, keymap_hash|
       keymap_hash.each do |position, character|
+        # 空文字の場合はスキップ（未設定として扱う）
+        next if character.blank?
+
         keymaps.create!(
           user: user,
           layer: layer,

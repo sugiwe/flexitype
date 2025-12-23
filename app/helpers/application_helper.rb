@@ -11,8 +11,8 @@ module ApplicationHelper
   # @param char [String] キーマップの文字（例: "q", "Q/q", "!/1", "spc", "bs"）
   # @return [String] 表示用のHTML文字列
   def format_key_display(char)
-    # nilまたは空文字の場合
-    return content_tag(:div, "-", class: "text-xs") if char.nil? || char.to_s.empty?
+    # nilまたは空文字の場合は空欄（何も表示しない）
+    return content_tag(:div, "", class: "text-xs") if char.nil? || char.to_s.empty?
 
     # 文字列に変換
     char_str = char.to_s

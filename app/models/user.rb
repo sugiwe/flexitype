@@ -65,14 +65,14 @@ class User < ApplicationRecord
     admin_emails.include?(email)
   end
 
-  # 課金ユーザーかどうかを判定（将来的にはsubscriptionテーブルを参照）
+  # プレミアムユーザーかどうかを判定（将来的にはsubscriptionテーブルを参照）
   def premium?
     # 現時点では管理者のみtrue（仮実装）
     # 将来的には: subscriptions.active.exists? など
     admin?
   end
 
-  # 課金ユーザーまたは管理者かどうか
+  # プレミアムユーザーまたは管理者かどうか
   def premium_or_admin?
     premium? || admin?
   end
