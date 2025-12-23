@@ -16,6 +16,8 @@ class User < ApplicationRecord
                        format: { with: /\A[a-z0-9]+(?:[._-][a-z0-9]+)*\z/,
                                 message: "は半角英数字、ハイフン、アンダースコア、ドットのみ使用できます（記号は連続不可、先頭・末尾不可）" },
                        length: { minimum: 3, maximum: 30 }
+  validate :username_not_reserved
+  validate :username_change_allowed, if: :username_changed?
 
   # Google IDトークンのペイロードからユーザーを検索または作成
   def self.from_google(payload)
@@ -77,7 +79,37 @@ class User < ApplicationRecord
     premium? || admin?
   end
 
+  # ユーザー名を変更可能かどうか
+  def can_change_username?
+    username_changed_at.nil? || username_changed_at < 24.hours.ago
+  end
+
+  # 次回ユーザー名変更可能日時
+  def next_username_change_at
+    return nil if username_changed_at.nil?
+
+    username_changed_at + 24.hours
+  end
+
   private
+
+  # ユーザー名が予約語でないかチェック
+  def username_not_reserved
+    return if username.blank?
+
+    if ReservedUsernames::LIST.include?(username.downcase)
+      errors.add(:username, "は予約されているため使用できません")
+    end
+  end
+
+  # ユーザー名の変更が許可されているかチェック
+  def username_change_allowed
+    return if new_record? # 新規作成時はチェックしない
+    return if can_change_username?
+
+    next_change = next_username_change_at.strftime("%Y年%m月%d日 %H時%M分")
+    errors.add(:username, "は24時間に1回しか変更できません（次回変更可能: #{next_change}）")
+  end
 
   # 初期キーマップセットを作成し、アクティブに設定
   def create_default_keymap_set
