@@ -14,7 +14,7 @@ class My::HistoryController < My::ApplicationController
     @lesson_record.completed_at = Time.current
 
     if @lesson_record.save
-      render json: { success: true, message: "練習履歴を保存しました" }
+      render json: { success: true, message: "練習履歴を保存しました", lesson_record_id: @lesson_record.id }
     else
       render json: { success: false, errors: @lesson_record.errors.full_messages }, status: :unprocessable_entity
     end

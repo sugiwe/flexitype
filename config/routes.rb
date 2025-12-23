@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   get "/practices/:id", to: redirect("/lessons/%{id}", status: 301)
 
   # Share pages (public)
-  resources :shares, only: [ :show ], param: :token
+  resources :shares, only: [ :show, :create ], param: :token
 
   get "about", to: "pages#about"
   get "terms", to: "pages#terms"
