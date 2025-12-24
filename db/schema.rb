@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_23_202059) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_24_053929) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,13 +58,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_23_202059) do
 
   create_table "lesson_records", force: :cascade do |t|
     t.decimal "accuracy", precision: 5, scale: 2
-    t.string "category"
     t.datetime "completed_at"
     t.integer "correct_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.integer "duration_seconds"
     t.string "grade", limit: 20
-    t.string "lesson_id"
+    t.bigint "lesson_id", null: false
     t.string "lesson_name"
     t.integer "mistake_count", default: 0, null: false
     t.integer "typed_chars"
@@ -72,6 +71,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_23_202059) do
     t.bigint "user_id", null: false
     t.integer "word_count", default: 0, null: false
     t.integer "wpm"
+    t.index ["lesson_id"], name: "index_lesson_records_on_lesson_id"
     t.index ["user_id", "completed_at"], name: "index_lesson_records_on_user_id_and_completed_at", order: { completed_at: :desc }
     t.index ["user_id", "created_at"], name: "index_lesson_records_on_user_id_and_created_at", order: { created_at: :desc }
     t.index ["user_id"], name: "index_lesson_records_on_user_id"
@@ -125,6 +125,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_23_202059) do
   add_foreign_key "keymap_sets", "users"
   add_foreign_key "keymaps", "keymap_sets"
   add_foreign_key "keymaps", "users"
+  add_foreign_key "lesson_records", "lessons"
   add_foreign_key "lesson_records", "users"
   add_foreign_key "lessons", "categories"
   add_foreign_key "lessons", "users"
