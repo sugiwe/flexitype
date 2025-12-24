@@ -302,7 +302,6 @@ export default class extends Controller {
         },
         body: JSON.stringify({
           lesson_record: {
-            category: this.lessonInfoValue.category_key,
             lesson_id: this.lessonInfoValue.lesson_id,
             lesson_name: this.lessonInfoValue.lesson_name,
             word_count: this.words.length,

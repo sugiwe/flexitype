@@ -41,7 +41,6 @@ class My::HistoryController < My::ApplicationController
 
   def lesson_record_params
     params.require(:lesson_record).permit(
-      :category,
       :lesson_id,
       :lesson_name,
       :word_count,

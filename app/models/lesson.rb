@@ -42,7 +42,7 @@ class Lesson < ApplicationRecord
   # JavaScript用のレッスン情報をJSON形式で返す
   def to_lesson_info
     {
-      id: id,
+      lesson_id: id,
       category_name: category.name,
       category_description: category.description,
       lesson_name: name,
