@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :keymap_set do
     association :user
-    name { "テストキーマップ#{Faker::Number.unique.number(digits: 2)}" }
+    sequence(:name) { |n| "テストキーマップ#{n}" }
     sequence(:slug) { |n| "test-keymap-#{n}" }
     description { Faker::Lorem.sentence }
     is_public { false }
