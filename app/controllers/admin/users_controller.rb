@@ -11,8 +11,5 @@ class Admin::UsersController < Admin::ApplicationController
 
     # 統計情報を読み込む（Concern使用）
     load_user_statistics(@user)
-
-    # Admin独自の統計情報
-    @total_keymaps = @user.keymap_sets.count
   end
 end

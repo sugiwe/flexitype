@@ -12,6 +12,7 @@ module UserStatistics
   def load_user_statistics(user)
     @total_records = user.lesson_records.count
     @average_accuracy = user.lesson_records.average(:accuracy)&.round(1) || 0
+    @total_keymaps = user.keymap_sets.count
     @published_lessons = user.published_lessons
   end
 end

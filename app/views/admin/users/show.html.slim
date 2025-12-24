@@ -49,39 +49,8 @@
         - else
           span.text-gray-400 未ログイン
 
-/ 統計情報
-.grid.grid-cols-1.md:grid-cols-3.gap-6.mb-6
-  / 総練習回数
-  .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
-    .flex.items-center.justify-between
-      div
-        p.text-sm.text-gray-600.dark:text-gray-400 総練習回数
-        p.text-3xl.font-bold.text-green-600.dark:text-green-400.mt-2 = @total_records
-      .w-12.h-12.bg-green-100.dark:bg-green-900.rounded-full.flex.items-center.justify-center
-        svg.w-6.h-6.text-green-600.dark:text-green-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-
-  / 平均正答率
-  .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
-    .flex.items-center.justify-between
-      div
-        p.text-sm.text-gray-600.dark:text-gray-400 平均正答率
-        p.text-3xl.font-bold.text-blue-600.dark:text-blue-400.mt-2
-          = @average_accuracy
-          span.text-base.ml-1 %
-      .w-12.h-12.bg-blue-100.dark:bg-blue-900.rounded-full.flex.items-center.justify-center
-        svg.w-6.h-6.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-
-  / 総キーマップ数
-  .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
-    .flex.items-center.justify-between
-      div
-        p.text-sm.text-gray-600.dark:text-gray-400 総キーマップ数
-        p.text-3xl.font-bold.text-yellow-600.dark:text-yellow-400.mt-2 = @total_keymaps
-      .w-12.h-12.bg-yellow-100.dark:bg-yellow-900.rounded-full.flex.items-center.justify-center
-        svg.w-6.h-6.text-yellow-600.dark:text-yellow-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+/ 統計情報（共通パーシャル使用）
+= render "shared/user_statistics", total_records: @total_records, average_accuracy: @average_accuracy, total_keymaps: @total_keymaps
 
 / キーマップ一覧
 .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6.mb-6
