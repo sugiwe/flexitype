@@ -1,4 +1,25 @@
 ja:
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "バリデーションに失敗しました: %{errors}"
+        restrict_dependent_destroy:
+          has_one: "%{record}が存在しているので削除できません"
+          has_many: "%{record}が存在しているので削除できません"
+        blank: "を入力してください"
+        taken: "はすでに存在します"
+        too_short: "は%{count}文字以上で入力してください"
+        too_long: "は%{count}文字以内で入力してください"
+        invalid: "は不正な値です"
+        required: "を入力してください"
+    attributes:
+      user:
+        google_uid: "Google UID"
+        email: "メールアドレス"
+        name: "名前"
+        username: "ユーザー名"
+        icon_url: "アイコンURL"
+        active_keymap_set: "アクティブキーマップ"
   time:
     formats:
       default: "%Y/%m/%d %H:%M:%S"
