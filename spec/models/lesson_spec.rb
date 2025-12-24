@@ -42,7 +42,7 @@ RSpec.describe Lesson, type: :model do
       end
 
       it "配列形式であること" do
-        expect(build(:lesson, items: [{ "type" => "typing", "text" => "test" }])).to be_valid
+        expect(build(:lesson, items: [ { "type" => "typing", "text" => "test" } ])).to be_valid
       end
     end
 
