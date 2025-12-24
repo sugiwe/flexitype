@@ -32,6 +32,84 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **リモートプッシュ前に以下のチェックを実行する:**
   - `bundle exec rubocop`: コード品質チェック
   - `bundle exec brakeman --no-pager`: セキュリティ脆弱性チェック
+  - `bundle exec rspec`: テスト実行（Day 25で導入）
+
+### テスト戦略（Day 25で導入）
+
+#### 基本方針
+
+- **シンプルさ重視**: 複雑な設定は避け、Rails標準に近い構成
+- **重要な箇所を優先**: すべてをカバーするより、ビジネスロジックの核心部分を確実に
+- **段階的実装**: モデルテスト → システムテスト → CI/CD の順で進める
+- **継続的なメンテナンス**: 新機能追加時は必ずテストも追加
+
+#### テスト駆動の哲学
+
+- **「あるべき姿」のテストを書く**: テストが通らない場合、実装を修正してテストに合わせる（テストを歪めない）
+  - 例: エラーメッセージが英語のままなら、日本語翻訳を追加する（テストで英語を許容しない）
+  - 例: バリデーションが機能していないなら、バリデーションを修正する（テストで緩い条件を許容しない）
+- **プラグマティックなアプローチ**: 80-90%のテストが通る状態を優先し、複雑なテストは後回し
+  - 複雑なテスト（例: after_create コールバック、外部キー制約との競合）は `skip` でスキップ
+  - スキップしたテストには必ず `TODO` コメントで理由と解決策を記録
+  - 例: `# TODO: after_createコールバックのテストを追加（FactoryBotとNOT NULL制約の相性問題）`
+  - 技術的負債として管理し、時間のある時に1つずつ解消
+- **TDD (Test-Driven Development)**: 理想的な動作を先にテストで定義し、実装をそれに合わせる
+
+#### テスト対象の優先順位
+
+**Phase 1: モデルテスト（最優先）**
+- **User**: 認証ロジック、バリデーション、ユーザー名変更制限（24時間制限、予約語チェック）
+- **LessonRecord**: WPM計算、グレード判定、統計計算、期間フィルター
+- **Lesson**: visible_toスコープ、権限チェック、公開/非公開制御
+- **Category**: タブ機能、公開制御、表示順
+- **KeymapSet**: slug生成、バリデーション、ユーザー関連付け
+- **Share**: トークン生成、delegate動作、OGP情報
+
+**Phase 2: システムテスト（E2E）**
+- ログイン→タイピング練習→記録保存のフロー
+- キーマップ作成・編集フロー
+- 期間フィルター付き履歴閲覧
+- シェア機能（記録作成→シェアURL生成→閲覧）のフロー
+- 管理者ダッシュボードの閲覧
+
+**Phase 3: CI/CD**
+- GitHub Actionsでテスト自動実行
+- RuboCop、Brakeman も統合
+- PRマージ前の自動チェック
+
+#### 使用するGem
+
+```ruby
+group :development, :test do
+  gem "rspec-rails"        # RSpecのRails統合
+  gem "factory_bot_rails"  # テストデータ作成
+  gem "faker"              # ダミーデータ生成
+end
+
+group :test do
+  gem "capybara"           # システムテスト（ブラウザ操作）
+  gem "selenium-webdriver" # ブラウザドライバ
+end
+```
+
+#### ディレクトリ構成
+
+```
+spec/
+├── factories/           # FactoryBotのファクトリ定義
+├── models/              # モデルテスト
+├── system/              # システムテスト（E2E）
+├── support/             # テストヘルパー、共通設定
+└── rails_helper.rb      # Rails用RSpec設定
+└── spec_helper.rb       # RSpec基本設定
+```
+
+#### テスト実行コマンド
+
+- 全テスト実行: `bundle exec rspec`
+- モデルテストのみ: `bundle exec rspec spec/models`
+- システムテストのみ: `bundle exec rspec spec/system`
+- 特定ファイル: `bundle exec rspec spec/models/user_spec.rb`
 
 ### 日報管理と CLAUDE.md の連動
 
@@ -295,7 +373,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - ✅ カテゴリー削除に伴うバグ修正（練習記録保存、シェアページ、ヘルプアイコン重複）
   - ✅ データマイグレーション3段階実施（lesson_id型変更、外部キー制約）
   - ✅ 練習履歴テーブルの共通化（DRY化、コード削減率53%）
-- 🔜 **Day 25**: 最終調整・ドキュメント整備
+- 🔜 **Day 25**: テスト基盤整備・ドキュメント整備
+  - 🔜 RSpec環境のセットアップ
+  - 🔜 モデルテストの実装（User, LessonRecord, Lesson, Category, KeymapSet, Share）
+  - 🔜 システムテスト（E2E）の実装
+  - 🔜 GitHub Actions CI/CD設定
+  - 🔜 25日間の振り返り
 
 ---
 
@@ -370,15 +453,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Day 22: **タブ化実装完了 + キーマップ改善**（Turbo Frames + Stimulus、ユーザーフィードバック対応、空欄表示の一貫性）
 - Day 23: **成績評価システム + シェア機能完成**（5段階カワウソグレード、X/Twitter連携、OGP対応、レイアウトDRY化）
 - Day 24: **セキュリティ強化 + ユーザー体験向上**（予約語システム、24時間制限、練習履歴無制限化、期間フィルター、データマイグレーション3段階、DRY化53%削減）
+- Day 25: **テスト基盤整備**（進行中）
 
 ### 次のステップ（Day 25）
 
-**Day 25**: 最終調整・ドキュメント整備
-- 🔜 feature/username-restriction と feature/minor-improvements ブランチの PR マージ
-- 🔜 パフォーマンス最適化（N+1 クエリなど）
-- 🔜 コードリファクタリング
-- 🔜 セキュリティチェック（Brakeman, bundler-audit）
-- 🔜 最終バグ修正
+**Day 25**: テスト基盤整備・ドキュメント整備
+- 🔜 RSpec環境のセットアップ（gem追加、初期化）
+- 🔜 モデルテストの実装（User, LessonRecord, Lesson, Category, KeymapSet, Share）
+- 🔜 システムテスト（E2E）の実装（主要フロー）
+- 🔜 GitHub Actions CI/CD設定
 - 🔜 ドキュメント整備（README、CHANGELOG など）
 - 🔜 25日間の振り返り
 
