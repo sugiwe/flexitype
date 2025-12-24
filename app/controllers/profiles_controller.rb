@@ -14,5 +14,8 @@ class ProfilesController < ApplicationController
     # 公開する統計情報
     @total_records = @user.lesson_records.count
     @average_accuracy = @user.lesson_records.average(:accuracy)&.round(1) || 0
+
+    # 作成したレッスン（公開されているもののみ）
+    @published_lessons = @user.published_lessons
   end
 end
