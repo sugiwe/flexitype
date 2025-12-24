@@ -127,8 +127,7 @@ class My::KeymapsController < My::ApplicationController
 
       keymaps_params.each do |layer, keymap_hash|
         keymap_hash.each do |position, char|
-          next if char.blank?
-
+          # 空文字も含めて常に保存（デフォルトキーマップを上書きするため）
           keymap = current_user.keymaps.find_or_initialize_by(
             keymap_set: @keymap_set,
             layer: layer.to_i,
