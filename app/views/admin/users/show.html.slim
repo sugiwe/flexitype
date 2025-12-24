@@ -107,20 +107,8 @@
   - else
     p.text-gray-500.dark:text-gray-400.text-sm キーマップがまだ登録されていません
 
-/ 作成したレッスン
-- if @published_lessons.any?
-  .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6.mb-6
-    h3.text-xl.font-semibold.text-gray-800.dark:text-white.mb-4 作成したレッスン
-    .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-4
-      - @published_lessons.each do |lesson|
-        = link_to lesson_path(id: lesson.id), class: "block bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border-2 border-blue-200 dark:border-blue-700 rounded-lg p-4 hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500 transition transform hover:-translate-y-1" do
-          .flex.items-start.justify-between.mb-2
-            h4.text-base.font-bold.text-gray-800.dark:text-white = lesson.name
-            .px-2.py-1.bg-blue-100.dark:bg-blue-800.text-blue-700.dark:text-blue-200.text-xs.rounded-full.font-semibold
-              = "#{lesson.count}問"
-          p.text-sm.text-gray-600.dark:text-gray-300.line-clamp-2.mb-2 = lesson.description
-          .text-xs.text-gray-500.dark:text-gray-400
-            = lesson.category.name
+/ 作成したレッスン（共通パーシャル使用）
+= render "shared/published_lessons", published_lessons: @published_lessons
 
 / 練習履歴一覧
 .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
