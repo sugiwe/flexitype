@@ -39,12 +39,12 @@
     .flex.justify-between.py-2.border-b.border-gray-200.dark:border-gray-600
       span.text-gray-600.dark:text-gray-400 最終ログイン
       span.text-gray-800.dark:text-gray-200
-        - if @user.last_sign_in_at.present?
-          = @user.last_sign_in_at.strftime("%Y年%m月%d日 %H:%M")
+        - if @user.current_sign_in_at.present?
+          = @user.current_sign_in_at.strftime("%Y年%m月%d日 %H:%M")
           br
           span.text-xs.text-gray-500.dark:text-gray-400
             | （
-            = time_ago_in_words(@user.last_sign_in_at)
+            = time_ago_in_words(@user.current_sign_in_at)
             | 前）
         - else
           span.text-gray-400 未ログイン
