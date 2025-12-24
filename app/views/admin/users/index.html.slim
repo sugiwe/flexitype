@@ -51,8 +51,8 @@
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.keymap_sets.count
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.sign_in_count
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
-                - if user.last_sign_in_at.present?
-                  = time_ago_in_words(user.last_sign_in_at)
+                - if user.current_sign_in_at.present?
+                  = time_ago_in_words(user.current_sign_in_at)
                   | 前
                 - else
                   span.text-gray-400 未ログイン
@@ -97,8 +97,8 @@
           .flex.justify-between
             span.text-gray-600.dark:text-gray-400 最終ログイン
             span.text-gray-800.dark:text-gray-200
-              - if user.last_sign_in_at.present?
-                = time_ago_in_words(user.last_sign_in_at)
+              - if user.current_sign_in_at.present?
+                = time_ago_in_words(user.current_sign_in_at)
                 | 前
               - else
                 span.text-gray-400 未ログイン

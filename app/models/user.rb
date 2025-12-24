@@ -73,6 +73,16 @@ class User < ApplicationRecord
     premium? || admin?
   end
 
+  # 表示用の名前（公式アカウントは「Typnix公式」）
+  def display_name
+    admin? ? "Typnix公式" : name
+  end
+
+  # 公開されたレッスンのみ取得
+  def published_lessons
+    lessons.published.includes(:category).order(created_at: :desc)
+  end
+
   # ユーザー名を変更可能かどうか
   def can_change_username?
     username_changed_at.nil? || username_changed_at < 24.hours.ago

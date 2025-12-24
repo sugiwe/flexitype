@@ -137,7 +137,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### データ管理
 
 - キーマップ: DB に保存 (ユーザーごと、KeymapSet)
-- 練習履歴: DB に保存（LessonRecord）
+- 練習履歴: DB に保存（LessonRecord、無制限）
 - レッスン: DB に保存（Category、Lesson - Day 21でYAMLから移行完了）
 - UI 設定: LocalStorage (テーマ選択、デスクトップバナー表示状態など)
 
@@ -153,16 +153,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 1. ✅ **ユーザー認証**（Google Identity Services、メール許可リスト制）
 2. ✅ **キーマップ管理**（複数管理、KeymapSet、slug 対応、6 レイヤー）
 3. ✅ **タイピング練習**（レッスンシステム、指ガイド、レイヤー自動判定、2 段表示）
-4. ✅ **練習履歴・統計**（自動クリーンアップ、レスポンシブ UI、ページネーション）
+4. ✅ **練習履歴・統計**（無制限保存、期間フィルター、レスポンシブ UI、ページネーション）
 5. ✅ **レッスン管理**（Category・Lessonモデル、ユーザー作成レッスン、visible_toスコープ）
 6. ✅ **管理者ダッシュボード**（ユーザー統計、人気レッスンランキング、詳細: `CLAUDE_ADMIN_DASHBOARD.md`）
 7. ✅ **レスポンシブ対応**（モバイル・PC 両対応、ハンバーガーメニュー）
 8. ✅ **ダークモード**（Light/Dark/System、LocalStorage 永続化）
 9. ✅ **URL 構造整理**（RESTful 設計、`/my`名前空間、`/@username`プロフィール）
-10. ✅ **ユーザー名機能**（`/@username`形式、Gmail 互換バリデーション）
+10. ✅ **ユーザー名機能**（`/@username`形式、Gmail 互換バリデーション、24時間変更制限、予約語チェック）
 11. ✅ **SEO/SNS 対応**（OGP、Twitter Card）
 12. ✅ **セキュリティ強化**（Brakeman 0 警告、CSP 設定、Strong Parameters）
 13. ✅ **本番環境デプロイ**（https://typnix.com、SSL/TLS、Kamal）
+14. ✅ **成績評価・シェア機能**（5段階カワウソグレード、X/Twitter連携）
 
 ---
 
@@ -181,6 +182,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `/` - トップページ（レッスン一覧）
 - `/lessons/:id` - レッスンページ（数値 ID ベース）
 - `/@:username` - ユーザープロフィール
+- `/shares/:token` - シェアページ（練習結果のランディングページ）
 - `/terms` - 利用規約
 - `/privacy` - プライバシーポリシー
 - `/about` - About ページ
@@ -188,11 +190,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 #### 個人ページ（認証必要、`/my`配下）
 
 - `/my` - マイページ（設定ダッシュボード）
-- `/my/account/edit` - アカウント設定（username 編集）
+- `/my/account/edit` - アカウント設定（username 編集、24時間制限）
 - `/my/keymaps` - キーマップ一覧
 - `/my/keymaps/:slug/edit` - キーマップ編集
 - `/my/lessons` - レッスン管理（課金ユーザー向け）
-- `/my/history` - 練習履歴
+- `/my/history` - 練習履歴（期間フィルター付き）
 
 #### 管理者ページ（認証+管理者権限必須、`/admin`配下）
 
@@ -217,6 +219,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Content Security Policy (CSP)**: `config/initializers/content_security_policy.rb`
   - Google ログインとの競合を解消（nonce 無効化、`:unsafe_inline`有効化）
   - インラインスタイル（`style=`属性）は使用禁止
+- **ユーザー名変更制限**: 24時間の冷却期間、予約語チェック（`config/initializers/reserved_usernames.rb`）
 
 ---
 
@@ -240,12 +243,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 詳細は各モデルファイルおよび `CLAUDE_FEATURES.md` を参照。
 
-- **User**: Google 認証、履歴制限、ログイン追跡、premium判定
+- **User**: Google 認証、ログイン追跡、premium判定、username_changed_at（24時間制限）
 - **KeymapSet**: キーマップセット（名前、説明、公開設定、slug、keyboard_type）
 - **Keymap**: キー配置（レイヤー、位置、文字、keymap_set_id）
 - **Category**: レッスンカテゴリー（名前、説明、表示順、published、requires_login、premium）
-- **Lesson**: レッスン（user_id、category_id、items (JSONB)、is_public、visible_toスコープ、カテゴリーからrequires_login/premium継承）
-- **LessonRecord**: 練習履歴（正答率、所要時間、ミス数、completed_at、WPM計算、5段階グレード判定）
+- **Lesson**: レッスン（user_id、category_id、items (JSONB)、is_public、visible_toスコープ）
+- **LessonRecord**: 練習履歴（lesson_id (bigint, 外部キー制約)、正答率、所要時間、ミス数、completed_at、WPM計算、5段階グレード判定、無制限保存）
 - **Share**: シェア機能（lesson_record_id、token、OGP対応のランディングページ）
 
 ---
@@ -267,7 +270,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Phase 6**: 履歴機能（Day 16）
   - LessonRecord モデル、自動クリーンアップ、履歴一覧ページ
 
-### Phase 7: ブラッシュアップ（Day 17-25、進行中）
+### Phase 7: ブラッシュアップ（Day 17-25、完了）
 
 - ✅ **Day 17**: URL 構造整理、ユーザー名機能（`/@username`）
 - ✅ **Day 18**: KeymapSet 基盤実装、UI/UX 改善（詳細: `CLAUDE_KEYMAP_EXPANSION.md`）
@@ -286,12 +289,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - ✅ 5段階カワウソグレードシステム（正答率 × WPM）
   - ✅ シェア機能（X/Twitter連携、OGP対応）
   - ✅ レイアウトファイルのDRY化（パーシャル化）
-- 🔜 **Day 24**: 最終調整・リファクタリング
+- ✅ **Day 24**: セキュリティ強化とユーザー体験向上
+  - ✅ ユーザー名変更制限機能（24時間冷却期間、予約語チェック）
+  - ✅ 練習履歴の無制限化と期間フィルター（全期間・直近1ヶ月・直近1週間）
+  - ✅ カテゴリー削除に伴うバグ修正（練習記録保存、シェアページ、ヘルプアイコン重複）
+  - ✅ データマイグレーション3段階実施（lesson_id型変更、外部キー制約）
+  - ✅ 練習履歴テーブルの共通化（DRY化、コード削減率53%）
 - 🔜 **Day 25**: 最終調整・ドキュメント整備
 
 ---
 
-## 🎯 現在の進捗状況（Day 23 完了）
+## 🎯 現在の進捗状況（Day 24 完了）
 
 ### 完了した主要マイルストーン
 
@@ -325,6 +333,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - X（旧Twitter）シェア機能
   - レイアウトファイルのDRY化（_head.html.slim、_gtm_noscript.html.slim）
   - 動的OGP画像生成は保留（TODO、静的テンプレート使用）
+- ✅ **Day 24**: セキュリティ強化とユーザー体験向上
+  - ユーザー名変更制限機能（24時間冷却期間、予約語チェック）
+    - username_changed_at カラム追加
+    - 予約語リスト作成（100+ の予約語、config/initializers/reserved_usernames.rb）
+    - バリデーション実装（予約語、24時間制限）
+    - UI改善（変更不可時のグレーアウト、警告メッセージ）
+  - 練習履歴の無制限化と期間フィルター
+    - history_limit カラム削除（無制限化）
+    - 期間フィルター実装（全期間・直近1ヶ月・直近1週間）
+    - Turbo Framesによるタブ切り替え（Stimulusなし、サーバー側でアクティブ状態管理）
+    - 統計情報の期間連動
+  - カテゴリー削除に伴うバグ修正（3件）
+    - 練習記録保存エラー（lesson_id: NULL問題、3箇所修正）
+    - シェアページ500エラー（category_name メソッド追加）
+    - ヘルプアイコン重複表示（重複セクション削除）
+  - データマイグレーション3段階実施
+    - Phase 1: データクリーンアップ（古いデータ削除、nilデータ自動マッチング）
+    - Phase 2: スキーマクリーンアップ（lesson_id型変更 string → bigint）
+    - Phase 3: データ整合性確保（NOT NULL、外部キー制約、インデックス）
+  - 練習履歴テーブルの共通化
+    - shared/_lesson_records_table.html.slim 作成
+    - 管理者ページと個人ページで共通化（コード削減率53%）
+    - WPM・グレードカラム追加、所要時間表示改善
 
 ### 技術的マイルストーン
 
@@ -338,19 +369,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Day 21: **レッスンDB化完了 + カテゴリー管理機能完成 + アーキテクチャ改善**（delegate パターン活用、published 機能、本番環境データ移行の教訓）
 - Day 22: **タブ化実装完了 + キーマップ改善**（Turbo Frames + Stimulus、ユーザーフィードバック対応、空欄表示の一貫性）
 - Day 23: **成績評価システム + シェア機能完成**（5段階カワウソグレード、X/Twitter連携、OGP対応、レイアウトDRY化）
+- Day 24: **セキュリティ強化 + ユーザー体験向上**（予約語システム、24時間制限、練習履歴無制限化、期間フィルター、データマイグレーション3段階、DRY化53%削減）
 
-### 次のステップ（Phase 7 以降）
+### 次のステップ（Day 25）
 
-#### Day 24-25: 最終調整（詳細: `CLAUDE_LESSON_DB_PLAN.md`）
-
-**Day 24**: 最終調整・リファクタリング
-- 🔜 feature/grade-system ブランチの PR 作成・マージ
+**Day 25**: 最終調整・ドキュメント整備
+- 🔜 feature/username-restriction と feature/minor-improvements ブランチの PR マージ
 - 🔜 パフォーマンス最適化（N+1 クエリなど）
 - 🔜 コードリファクタリング
 - 🔜 セキュリティチェック（Brakeman, bundler-audit）
-- 🔜 本番環境でシェア機能のOGPプレビュー確認
-
-**Day 25**: 最終調整・ドキュメント整備
 - 🔜 最終バグ修正
 - 🔜 ドキュメント整備（README、CHANGELOG など）
 - 🔜 25日間の振り返り
@@ -371,7 +398,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **`CLAUDE_KEYMAP_EXPANSION.md`** - キーマップ拡張設計（✅ Phase 1 完了、Phase 2-3 は将来実装）
 - **`CLAUDE_ADSENSE.md`** - Google AdSense 導入設計（✅ Day 20 サイト所有権確認完了、審査中）
 
-### 実装完了（Day 21-23）
+### 実装完了（Day 21-24）
 
 - **`CLAUDE_LESSON_DB_PLAN.md`** - レッスンDB化と機能拡張計画
   - ✅ Day 21: レッスンのDB化（YAML → PostgreSQL）完了
@@ -379,7 +406,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - ✅ Day 21: カテゴリー管理機能（Admin::CategoriesController）完了
   - ✅ Day 22: テストユーザーのフィードバックを元に改善完了
   - ✅ Day 23: 成績評価システム + シェア機能完了
-  - 🔜 Day 24: 最終調整・リファクタリング
+  - ✅ Day 24: セキュリティ強化 + ユーザー体験向上完了
   - 🔜 Day 25: 最終調整・ドキュメント整備
 
 ### 将来実装（Day 26以降）
@@ -461,7 +488,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **無料/有料機能の分け方（案）:**
 - 公式レッスン（基礎）: 無料 / 公式レッスン（全カテゴリ）: 有料
 - キーマップ登録: 2つまで（無料） / 5つまで（有料）
-- 練習履歴: 50件（無料） / 無制限（有料）
+- 練習履歴: 無制限（無料・有料共通、Day 24で無制限化完了）
 - 自作レッスン作成: 2つまで・非公開のみ（無料） / 5つまで・公開可能（有料）
 - 統計グラフ: 有料のみ
 
@@ -514,7 +541,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクトの成果
 
-**達成状況（Day 23時点）:**
+**達成状況（Day 24時点）:**
 
 - ✅ 25 日間で独自ドメインへのデプロイ完了（Day 14 で達成、11 日前倒し）
 - ✅ 主要機能（練習、キーマップ設定、履歴、レッスン管理、管理者ダッシュボード、成績評価、シェア機能）がすべて完成
@@ -527,15 +554,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ 5段階カワウソグレードシステム（ユーザーフィードバック重視の設計）
 - ✅ X（旧Twitter）シェア機能（OGP対応、SNS認知拡大の基盤）
 - ✅ Turbo Frames + Stimulus によるモダンなSPA風UI（タブ化実装）
+- ✅ ユーザー名変更制限（24時間冷却期間、予約語チェック）
+- ✅ 練習履歴無制限化（期間フィルター付き）
+- ✅ データマイグレーション3段階アプローチ（外部キー制約、型変更）
+- ✅ DRY原則の徹底（パーシャル化、コード削減率53%）
 
 **技術的な成長:**
 
 - Rails 8.1.1 の最新機能を活用（Turbo対応、form_withの挙動変化への対応）
 - Hotwire（Turbo + Stimulus）による快適な UX（タブ化、非同期フォーム送信）
 - Kamal によるモダンなデプロイフロー（継続的デプロイ、ヘルスチェック）
-- セキュリティベストプラクティスの実践（Brakeman 0警告、Strong Parameters、CSRF対策）
+- セキュリティベストプラクティスの実践（Brakeman 0警告、Strong Parameters、CSRF対策、予約語システム）
 - DRY原則の徹底（パーシャル化、delegate パターン、メソッド重複回避）
-- ユーザーフィードバック駆動開発（Day 22-23で積極的に対応）
+- ユーザーフィードバック駆動開発（Day 22-24で積極的に対応）
+- データマイグレーションのベストプラクティス（3段階アプローチ、PostgreSQLキャスト機能、外部キー制約）
+- Turbo Framesの活用パターン（サーバー側アクティブ状態管理 vs クライアント側管理）
 
 ---
 

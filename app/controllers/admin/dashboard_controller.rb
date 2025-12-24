@@ -13,12 +13,12 @@ class Admin::DashboardController < Admin::ApplicationController
     @lesson_categories_count = Category.count
 
     # アクティブユーザー統計
-    @active_users_7days = User.where("last_sign_in_at >= ?", 7.days.ago).count
-    @active_users_30days = User.where("last_sign_in_at >= ?", 30.days.ago).count
+    @active_users_7days = User.where("current_sign_in_at >= ?", 7.days.ago).count
+    @active_users_30days = User.where("current_sign_in_at >= ?", 30.days.ago).count
     @records_this_week = LessonRecord.where("completed_at >= ?", 1.week.ago).count
 
     # 最新10名のユーザー（最終ログイン日時の降順）
-    @recent_users = User.order(last_sign_in_at: :desc).limit(10)
+    @recent_users = User.order(current_sign_in_at: :desc).limit(10)
 
     # 最新10件の練習履歴（完了日時の降順）
     @recent_records = LessonRecord.includes(:user).order(completed_at: :desc).limit(10)

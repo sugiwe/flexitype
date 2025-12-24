@@ -75,6 +75,14 @@ export default class extends Controller {
 
     // 初期状態をアクティブに設定
     this.setActiveState(true)
+
+    // ページ離脱の警告を設定
+    this.setupNavigationWarning()
+  }
+
+  disconnect() {
+    // クリーンアップ: ページ離脱警告を解除
+    this.removeNavigationWarning()
   }
 
   // 単語表示エリアクリック時に入力欄にフォーカス
@@ -255,13 +263,16 @@ export default class extends Controller {
       this.saveHistory(accuracy, elapsedSeconds)
     }
 
+    // 完了時は警告を解除（ページ遷移を許可）
+    this.removeNavigationWarning()
+
     // 画面を切り替え
     this.lessonScreenTarget.classList.add('hidden')
     this.completionScreenTarget.classList.remove('hidden')
   }
 
   // グレードを計算（カワウソテーマ・5段階）
-  // Rubyの LessonRecord::GRADES から data-typing-grades-value 経由で取得
+  // Rubyの LessonGrades::DEFINITIONS から data-typing-grades-value 経由で取得
   calculateGrade(accuracy, wpm) {
     const grades = this.gradesValue
 
@@ -291,7 +302,6 @@ export default class extends Controller {
         },
         body: JSON.stringify({
           lesson_record: {
-            category: this.lessonInfoValue.category_key,
             lesson_id: this.lessonInfoValue.lesson_id,
             lesson_name: this.lessonInfoValue.lesson_name,
             word_count: this.words.length,
@@ -373,6 +383,9 @@ export default class extends Controller {
 
     // 入力欄にフォーカス
     this.inputTarget.focus()
+
+    // 警告を再設定
+    this.setupNavigationWarning()
   }
 
   // 表示を更新
@@ -643,6 +656,53 @@ export default class extends Controller {
         }
       }
     }
+  }
+
+  // ページ離脱警告の設定
+  setupNavigationWarning() {
+    // 1. ブラウザを閉じる・リロード・戻るボタン時の警告
+    this.handleBeforeUnload = (event) => {
+      if (this.isLessonInProgress()) {
+        event.preventDefault()
+        event.returnValue = '' // Chrome用（標準メッセージが表示される）
+        return '' // 他のブラウザ用
+      }
+    }
+    window.addEventListener('beforeunload', this.handleBeforeUnload)
+
+    // 2. Turboナビゲーション（アプリ内リンククリック）時の警告
+    this.handleBeforeVisit = (event) => {
+      if (this.isLessonInProgress()) {
+        if (!confirm('画面を移動すると練習は記録されません。移動しますか？')) {
+          event.preventDefault()
+        }
+      }
+    }
+    document.addEventListener('turbo:before-visit', this.handleBeforeVisit)
+  }
+
+  // ページ離脱警告の解除
+  removeNavigationWarning() {
+    if (this.handleBeforeUnload) {
+      window.removeEventListener('beforeunload', this.handleBeforeUnload)
+      this.handleBeforeUnload = null
+    }
+    if (this.handleBeforeVisit) {
+      document.removeEventListener('turbo:before-visit', this.handleBeforeVisit)
+      this.handleBeforeVisit = null
+    }
+  }
+
+  // 練習中かどうかを判定
+  isLessonInProgress() {
+    // 完了画面が表示されている = 練習完了 = 警告不要
+    const isCompleted = !this.completionScreenTarget.classList.contains('hidden')
+    if (isCompleted) {
+      return false
+    }
+
+    // まだ全単語を完了していない = 練習中 = 警告必要
+    return this.currentWordValue < this.wordsValue.length
   }
 
   // ヘルパー: 単語リスト取得

@@ -1,4 +1,6 @@
 class ProfilesController < ApplicationController
+  include UserStatistics
+
   def show
     # /@username 形式のユーザープロフィール表示
     username = params[:username]
@@ -11,8 +13,7 @@ class ProfilesController < ApplicationController
       return
     end
 
-    # 公開する統計情報
-    @total_records = @user.lesson_records.count
-    @average_accuracy = @user.lesson_records.average(:accuracy)&.round(1) || 0
+    # 統計情報を読み込む（Concern使用）
+    load_user_statistics(@user)
   end
 end

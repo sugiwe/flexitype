@@ -17,54 +17,10 @@ class LessonRecord < ApplicationRecord
   # スコープ: 完了日時降順
   scope :recent, -> { order(completed_at: :desc) }
 
-  # グレード定義（カワウソテーマ・5段階）
-  GRADES = {
-    "legendary" => {
-      name: "伝説のカワウソ",
-      emoji: "👑",
-      description: "タイピングの神様！",
-      color: "yellow",
-      accuracy_min: 98,
-      wpm_min: 80
-    },
-    "adult" => {
-      name: "大人のカワウソ",
-      emoji: "🦦",
-      description: "堂々としたタイピング",
-      color: "blue",
-      accuracy_min: 90,
-      wpm_min: 50
-    },
-    "young" => {
-      name: "若手のカワウソ",
-      emoji: "🐾",
-      description: "すくすく成長中！",
-      color: "green",
-      accuracy_min: 80,
-      wpm_min: 30
-    },
-    "child" => {
-      name: "子どものカワウソ",
-      emoji: "🌊",
-      description: "元気いっぱい練習中！",
-      color: "cyan",
-      accuracy_min: 70,
-      wpm_min: 15
-    },
-    "baby" => {
-      name: "赤ちゃんカワウソ",
-      emoji: "🐣",
-      description: "よちよちスタート！",
-      color: "gray",
-      accuracy_min: 0,
-      wpm_min: 0
-    }
-  }.freeze
-
   # ヘルパーメソッド: グレード情報を取得
   def grade_info
-    return GRADES["baby"] if grade.blank?
-    GRADES.values.find { |g| g[:name] == grade } || GRADES["baby"]
+    return LessonGrades::DEFINITIONS["baby"] if grade.blank?
+    LessonGrades::DEFINITIONS.values.find { |g| g[:name] == grade } || LessonGrades::DEFINITIONS["baby"]
   end
 
   def grade_emoji
@@ -95,15 +51,15 @@ class LessonRecord < ApplicationRecord
     return if accuracy.nil? || wpm.nil?
 
     self.grade = if accuracy >= 98 && wpm >= 80
-      GRADES["legendary"][:name]
+      LessonGrades::DEFINITIONS["legendary"][:name]
     elsif accuracy >= 90 && wpm >= 50
-      GRADES["adult"][:name]
+      LessonGrades::DEFINITIONS["adult"][:name]
     elsif accuracy >= 80 && wpm >= 30
-      GRADES["young"][:name]
+      LessonGrades::DEFINITIONS["young"][:name]
     elsif accuracy >= 70 && wpm >= 15
-      GRADES["child"][:name]
+      LessonGrades::DEFINITIONS["child"][:name]
     else
-      GRADES["baby"][:name]
+      LessonGrades::DEFINITIONS["baby"][:name]
     end
   end
 end

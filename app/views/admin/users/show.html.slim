@@ -39,49 +39,18 @@
     .flex.justify-between.py-2.border-b.border-gray-200.dark:border-gray-600
       span.text-gray-600.dark:text-gray-400 最終ログイン
       span.text-gray-800.dark:text-gray-200
-        - if @user.last_sign_in_at.present?
-          = @user.last_sign_in_at.strftime("%Y年%m月%d日 %H:%M")
+        - if @user.current_sign_in_at.present?
+          = @user.current_sign_in_at.strftime("%Y年%m月%d日 %H:%M")
           br
           span.text-xs.text-gray-500.dark:text-gray-400
             | （
-            = time_ago_in_words(@user.last_sign_in_at)
+            = time_ago_in_words(@user.current_sign_in_at)
             | 前）
         - else
           span.text-gray-400 未ログイン
 
-/ 統計情報
-.grid.grid-cols-1.md:grid-cols-3.gap-6.mb-6
-  / 総練習回数
-  .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
-    .flex.items-center.justify-between
-      div
-        p.text-sm.text-gray-600.dark:text-gray-400 総練習回数
-        p.text-3xl.font-bold.text-green-600.dark:text-green-400.mt-2 = @total_records
-      .w-12.h-12.bg-green-100.dark:bg-green-900.rounded-full.flex.items-center.justify-center
-        svg.w-6.h-6.text-green-600.dark:text-green-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-
-  / 平均正答率
-  .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
-    .flex.items-center.justify-between
-      div
-        p.text-sm.text-gray-600.dark:text-gray-400 平均正答率
-        p.text-3xl.font-bold.text-blue-600.dark:text-blue-400.mt-2
-          = @average_accuracy
-          span.text-base.ml-1 %
-      .w-12.h-12.bg-blue-100.dark:bg-blue-900.rounded-full.flex.items-center.justify-center
-        svg.w-6.h-6.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-
-  / 総キーマップ数
-  .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
-    .flex.items-center.justify-between
-      div
-        p.text-sm.text-gray-600.dark:text-gray-400 総キーマップ数
-        p.text-3xl.font-bold.text-yellow-600.dark:text-yellow-400.mt-2 = @total_keymaps
-      .w-12.h-12.bg-yellow-100.dark:bg-yellow-900.rounded-full.flex.items-center.justify-center
-        svg.w-6.h-6.text-yellow-600.dark:text-yellow-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+/ 統計情報（共通パーシャル使用）
+= render "shared/user_statistics", total_records: @total_records, average_accuracy: @average_accuracy, total_keymaps: @total_keymaps
 
 / キーマップ一覧
 .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6.mb-6
@@ -107,74 +76,11 @@
   - else
     p.text-gray-500.dark:text-gray-400.text-sm キーマップがまだ登録されていません
 
+/ 作成したレッスン（共通パーシャル使用）
+= render "shared/published_lessons", published_lessons: @published_lessons
+
 / 練習履歴一覧
 .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
   h3.text-xl.font-semibold.text-gray-800.dark:text-white.mb-4 練習履歴
 
-  - if @lesson_records.any?
-    / PC: テーブル表示
-    .hidden.md:block.overflow-x-auto
-      table.min-w-full.divide-y.divide-gray-200.dark:divide-gray-600
-        thead.bg-gray-50.dark:bg-gray-700
-          tr
-            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 日時
-            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider レッスン
-            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 単語数
-            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 正答率
-            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider 所要時間
-            th.px-4.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-300.uppercase.tracking-wider ミス数
-        tbody.bg-white.dark:bg-gray-800.divide-y.divide-gray-200.dark:divide-gray-600
-          - @lesson_records.each do |record|
-            tr.hover:bg-gray-50.dark:hover:bg-gray-700
-              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = record.completed_at.strftime("%Y/%m/%d %H:%M")
-              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
-                - if record.lesson_name.present?
-                  = record.lesson_name
-                - else
-                  span.text-gray-400 不明
-              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = record.word_count
-              td.px-4.py-3.text-sm
-                - accuracy_class = record.accuracy >= 90 ? "text-green-600 dark:text-green-400" : record.accuracy >= 70 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"
-                span class=accuracy_class = "#{record.accuracy}%"
-              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
-                - if record.duration_seconds.present?
-                  = "#{record.duration_seconds}秒"
-                - else
-                  span.text-gray-400 不明
-              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = record.mistake_count
-
-    / モバイル: カード表示
-    .md:hidden.space-y-4
-      - @lesson_records.each do |record|
-        .bg-gray-50.dark:bg-gray-700.rounded-lg.p-4
-          .flex.justify-between.items-start.mb-3
-            div
-              p.font-medium.text-gray-800.dark:text-white
-                - if record.lesson_name.present?
-                  = record.lesson_name
-                - else
-                  span.text-gray-400 不明
-              p.text-xs.text-gray-600.dark:text-gray-400.mt-1 = record.completed_at.strftime("%Y/%m/%d %H:%M")
-            - accuracy_class = record.accuracy >= 90 ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" : record.accuracy >= 70 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-            span.px-2.py-1.text-xs.font-medium.rounded class=accuracy_class = "#{record.accuracy}%"
-          .grid.grid-cols-3.gap-2.text-sm
-            div
-              p.text-gray-600.dark:text-gray-400.text-xs 単語数
-              p.text-gray-800.dark:text-gray-200.font-medium = record.word_count
-            div
-              p.text-gray-600.dark:text-gray-400.text-xs 所要時間
-              p.text-gray-800.dark:text-gray-200.font-medium
-                - if record.duration_seconds.present?
-                  = "#{record.duration_seconds}秒"
-                - else
-                  span.text-gray-400 不明
-            div
-              p.text-gray-600.dark:text-gray-400.text-xs ミス数
-              p.text-gray-800.dark:text-gray-200.font-medium = record.mistake_count
-
-    / ページネーション
-    .mt-6
-      = paginate @lesson_records
-
-  - else
-    p.text-gray-500.dark:text-gray-400.text-sm 練習履歴がまだありません
+  = render "shared/lesson_records_table", lesson_records: @lesson_records, show_pagination: true

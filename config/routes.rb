@@ -5,6 +5,15 @@ Rails.application.routes.draw do
   post "/auth/google", to: "sessions#create"
   delete "/logout", to: "sessions#destroy"
 
+  # Development-only authentication bypass
+  if Rails.env.development?
+    namespace :dev do
+      get "sessions", to: "sessions#index"
+      post "sessions", to: "sessions#create"
+      delete "sessions", to: "sessions#destroy"
+    end
+  end
+
   # Public pages
   root "home#index"
   resources :lessons, only: [ :show ]
