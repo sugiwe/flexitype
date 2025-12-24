@@ -11,5 +11,8 @@ class Admin::UsersController < Admin::ApplicationController
     @total_records = @user.lesson_records.count
     @average_accuracy = @user.lesson_records.average(:accuracy)&.round(1) || 0
     @total_keymaps = @user.keymap_sets.count
+
+    # 作成したレッスン（公開されているもののみ）
+    @published_lessons = @user.published_lessons
   end
 end
