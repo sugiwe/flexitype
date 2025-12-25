@@ -227,109 +227,229 @@ end
 
 ---
 
-### 実装すべき主要フロー（優先順）
+### システムテストの優先順位と実装方針（Day 25決定版）
 
-#### 🥇 **優先度A: タイピング練習フロー**（最重要）
+#### 優先度の決定基準
 
-Typnixの**コア機能**をE2Eでテスト：
+システムテストは実行時間が長く、実装コストも高いため、以下の基準で優先順位を決定しました：
 
+1. **ビジネス価値** - ユーザーにとっての重要度
+2. **リスク** - 壊れた時の影響度
+3. **変更頻度** - コード変更が多い箇所ほど優先
+4. **実装コスト** - 時間対効果
+
+---
+
+### Phase 1: クリティカルパス（最優先、Day 25実装予定）
+
+#### 🥇 **1. 認証フロー（Google OAuth）**
+
+**優先度**: 最高
+**理由**: 全ての機能の前提条件
+**リスク**: 壊れるとアプリ全体が使えない
+**実装コスト**: 中（OmniAuthモック設定が必要）
+**実装時間**: 約30分
+
+**テスト内容**:
+- ゲストユーザーがログインできる
+- ログアウトできる
+- ログイン後にマイページにアクセスできる
+
+**実装例**:
 ```ruby
-# spec/system/typing_practice_spec.rb（未実装）
-describe "タイピング練習フロー" do
-  it "ログイン → レッスン選択 → タイピング → 結果保存 → 履歴確認" do
-    # 1. ログイン（Googleログインはモック）
+# spec/system/authentication_spec.rb
+describe "認証フロー" do
+  it "Googleログイン → ログアウト" do
+    # OmniAuthモックを使用
     visit root_path
-    # Google OAuth処理（テスト環境ではモック）
+    click_button "Googleでログイン"
+    expect(page).to have_content("ログイン成功")
 
-    # 2. レッスン一覧から「基礎トレーニング」を選択
-    click_link "基礎トレーニング"
+    click_button "ログアウト"
+    expect(page).to have_content("ログアウトしました")
+  end
+end
+```
 
-    # 3. タイピング画面が表示される
-    expect(page).to have_selector(".typing-area")
+---
 
-    # 4. キーボード入力をシミュレート
-    find(".typing-input").send_keys("hello world")
+#### 🥈 **2. レッスン閲覧フロー**
 
-    # 5. 結果画面が表示される
-    expect(page).to have_content("結果")
-    expect(page).to have_selector(".grade-badge")
+**優先度**: 高
+**理由**: アプリのコア機能の入り口
+**リスク**: 高（レッスンが表示されないとタイピング練習ができない）
+**実装コスト**: 低（通常のページ遷移）
+**実装時間**: 約20分
 
-    # 6. 「シェアする」ボタンでX/Twitter投稿画面が開く
-    click_button "X（旧Twitter）でシェア"
+**テスト内容**:
+- レッスン一覧が表示される
+- レッスンを選択してタイピング画面に遷移できる
+- タイピング画面が正しく表示される
 
-    # 7. 練習履歴に記録が保存される
-    visit my_history_path
+**実装例**:
+```ruby
+# spec/system/lessons_spec.rb
+describe "レッスン閲覧フロー" do
+  it "レッスン一覧 → レッスン詳細" do
+    visit root_path
     expect(page).to have_content("基礎トレーニング")
+
+    click_link "基礎トレーニング"
+    expect(page).to have_selector(".typing-area")
   end
 end
 ```
 
-#### 🥈 **優先度B: キーマップ編集フロー**
+---
 
-複数キーマップ管理のCRUD操作をテスト：
+#### 🥉 **3. 練習履歴閲覧フロー**
 
+**優先度**: 中
+**理由**: ユーザーの継続利用を促す
+**リスク**: 中（記録は保存されているが閲覧できない）
+**実装コスト**: 低（Turbo Frames動作確認）
+**実装時間**: 約20分
+
+**テスト内容**:
+- 練習履歴一覧が表示される
+- 期間フィルターが動作する（Turbo Frames）
+- ページネーションが動作する
+
+**実装例**:
 ```ruby
-# spec/system/keymap_management_spec.rb（未実装）
-describe "キーマップ編集フロー" do
-  it "キーマップ作成 → 編集 → 保存 → 削除" do
-    # 1. マイページ → キーマップ一覧
-    visit my_keymaps_path
-
-    # 2. 「新規作成」ボタンをクリック
-    click_link "新規作成"
-
-    # 3. キーマップ名を入力
-    fill_in "keymap_set_name", with: "テスト用キーマップ"
-
-    # 4. キー配置を編集（レイヤー1-6）
-    fill_in "keymap_position_0_layer_0", with: "a"
-
-    # 5. 保存ボタンをクリック
-    click_button "保存"
-
-    # 6. 一覧に新しいキーマップが表示される
-    expect(page).to have_content("テスト用キーマップ")
-
-    # 7. 削除ボタンで削除できる（最古のものは削除不可）
-    first(".keymap-delete-button").click
-    expect(page).to have_content("削除できません")
-  end
-end
-```
-
-#### 🥉 **優先度C: 練習履歴フロー**
-
-期間フィルター + Turbo Framesの動作確認：
-
-```ruby
-# spec/system/history_filter_spec.rb（未実装）
-describe "練習履歴フロー" do
-  it "期間フィルター切り替え → Turbo Frames動作確認" do
-    # 1. マイページ → 練習履歴
+# spec/system/history_spec.rb
+describe "練習履歴閲覧フロー" do
+  it "期間フィルター切り替え" do
+    # 事前にデータを作成
+    login_as_user
     visit my_history_path
 
-    # 2. 期間フィルター（全期間・直近1ヶ月・直近1週間）をクリック
     click_link "直近1ヶ月"
-
-    # 3. Turbo Framesで非同期にデータが更新される
     expect(page).to have_selector("[data-turbo-frame='history-content']")
-
-    # 4. 統計情報が期間に応じて変わる
-    expect(page).to have_content("総練習回数")
-
-    # 5. ページネーション（Kaminari）が正しく動作する
-    click_link "次へ"
-    expect(page).to have_current_path(/page=2/)
   end
+end
+
+```
+
+**Phase 1合計実装時間**: 約70分
+
+---
+
+### Phase 2: 重要なユーザーフロー（将来実装）
+
+#### 4. キーマップ閲覧・選択フロー
+
+**優先度**: 中
+**理由**: 分割キーボード特化の差別化要素
+**リスク**: 中（デフォルトキーマップで代用可能）
+**実装コスト**: 低（通常のフォーム操作）
+
+**テスト内容**:
+- キーマップ一覧が表示される
+- キーマップを選択できる
+- 選択したキーマップがアクティブになる
+
+---
+
+### Phase 3: 補助的な機能（低優先度）
+
+#### 5. キーマップ編集フロー（CRUD）
+
+**優先度**: 低
+**理由**: 高度なユーザー向け機能
+**リスク**: 低（閲覧・選択ができれば最低限OK）
+**実装コスト**: 中（複雑なフォーム操作）
+
+#### 6. シェア機能
+
+**優先度**: 低
+**理由**: SNS拡散のための機能
+**リスク**: 低（コア機能ではない）
+**実装コスト**: 低（リンク生成の確認）
+
+#### 7. 管理者ダッシュボード
+
+**優先度**: 低
+**理由**: 管理者専用機能
+**リスク**: 低（一般ユーザーには影響なし）
+**実装コスト**: 低（権限チェックのみ）
+
+---
+
+### スキップ推奨（コスト > 効果）
+
+#### ❌ タイピング入力の完全シミュレーション
+
+**スキップ理由**:
+- JavaScriptの複雑な動作確認が困難
+- キーボードイベントの再現が不安定
+- **代替案**: モデルテスト（WPM計算、グレード判定）で代用
+
+**モデルテストでカバー済み**:
+- WPM計算ロジック ✅
+- グレード判定ロジック ✅
+- 正答率計算 ✅
+
+#### ❌ レスポンシブ対応のテスト
+
+**スキップ理由**:
+- ビジュアル確認は手動の方が効率的
+- 実装コストが高い（複数デバイスサイズのテスト）
+- **代替案**: 手動で確認、スクリーンショットテストツール（Percy等）
+
+---
+
+### 実装方針と技術的アプローチ
+
+#### Google OAuthのモック設定
+
+システムテストでGoogle OAuthを使うには、OmniAuthのテストモードを有効にします：
+
+```ruby
+# spec/support/omniauth.rb
+OmniAuth.config.test_mode = true
+OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new({
+  provider: 'google_oauth2',
+  uid: '123456789',
+  info: {
+    email: 'test@example.com',
+    name: 'Test User'
+  },
+  credentials: {
+    token: 'mock_token',
+    expires_at: Time.now + 1.week
+  }
+})
+```
+
+#### ヘルパーメソッドの作成
+
+認証が必要なテストで共通利用するヘルパー：
+
+```ruby
+# spec/support/system_helpers.rb
+module SystemHelpers
+  def login_as_user(user = nil)
+    user ||= create(:user)
+    OmniAuth.config.mock_auth[:google_oauth2].info.email = user.email
+    visit root_path
+    click_button "Googleでログイン"
+    user
+  end
+end
+
+RSpec.configure do |config|
+  config.include SystemHelpers, type: :system
 end
 ```
 
-#### その他の実装予定フロー
+#### Capybara設定
 
-- **認証フロー**: Google OAuth動作確認（モック使用）
-- **管理者ダッシュボード**: 権限チェック、統計表示
-- **レスポンシブ対応**: モバイル/PC切り替え
-- **エラーハンドリング**: 404/500ページ、不正アクセス
+```ruby
+# spec/support/capybara.rb
+Capybara.default_max_wait_time = 3
+Capybara.server = :puma, { Silent: true }
+```
 
 ---
 
@@ -351,14 +471,25 @@ end
 5. ⏳ **スコープ** - `visible_to`, `published`, `recent`（未完了）
 6. ⏳ **一意性制約** - email, username, token（未完了）
 
-### システムテストで検証できること
+### システムテストで検証できること（Phase別）
 
-1. ❌ **認証フロー** - Google OAuth動作確認（未実装）
-2. ❌ **タイピング練習フロー** - 最重要！（未実装）
-3. ❌ **キーマップ編集フロー** - CRUD操作（未実装）
-4. ❌ **練習履歴フロー** - 期間フィルター、Turbo Frames（未実装）
-5. ❌ **管理者ダッシュボード** - 権限チェック（未実装）
-6. ❌ **レスポンシブ対応** - モバイル/PC切り替え（未実装）
+#### Phase 1: クリティカルパス（Day 25実装予定）
+
+1. 🔜 **認証フロー** - Google OAuth動作確認（実装予定）
+2. 🔜 **レッスン閲覧フロー** - レッスン一覧→詳細（実装予定）
+3. 🔜 **練習履歴フロー** - 期間フィルター、Turbo Frames（実装予定）
+
+#### Phase 2-3: その他のフロー（将来実装）
+
+4. ❌ **キーマップ閲覧・選択フロー** - 選択、アクティブ化（未実装）
+5. ❌ **キーマップ編集フロー** - CRUD操作（未実装）
+6. ❌ **シェア機能** - リンク生成、OGP（未実装）
+7. ❌ **管理者ダッシュボード** - 権限チェック（未実装）
+
+#### スキップ推奨
+
+8. ❌ **タイピング入力の完全シミュレーション** - JavaScript動作が複雑（モデルテストで代用）
+9. ❌ **レスポンシブ対応** - ビジュアル確認が必要（手動確認推奨）
 
 ---
 
