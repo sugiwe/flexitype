@@ -9,6 +9,12 @@ class LessonsController < ApplicationController
       return
     end
 
+    # 要ログインレッスンのアクセス制御
+    if @lesson.requires_login && !logged_in?
+      redirect_to root_path, alert: "このレッスンを利用するにはログインが必要です。"
+      return
+    end
+
     # 練習用の単語/文章を取得（ランダム）
     @words = @lesson.items.shuffle.take(@lesson.count)
 
