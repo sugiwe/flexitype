@@ -38,7 +38,7 @@ class SharesController < ApplicationController
 
   # X（旧Twitter）へのシェアURL
   def twitter_share_url(share)
-    text = "Typnixで「#{share.grade_name}」を獲得しました！正答率#{share.accuracy}%、WPM #{share.wpm} 🦦"
+    text = "Typnixで「#{share.grade_name}」を獲得しました！正答率#{share.accuracy}%、WPM #{share.wpm} 🦦 #typnix #タイピング"
     url = share_url(share.token)
     "https://x.com/intent/post?text=#{CGI.escape(text)}&url=#{CGI.escape(url)}"
   end
