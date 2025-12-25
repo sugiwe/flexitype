@@ -3,7 +3,7 @@ class User < ApplicationRecord
   has_many :keymaps, dependent: :destroy
   has_many :lessons, dependent: :destroy
   has_many :lesson_records, dependent: :destroy
-  belongs_to :active_keymap_set, class_name: "KeymapSet"
+  belongs_to :active_keymap_set, class_name: "KeymapSet", optional: true
 
   after_create :create_default_keymap_set
 
@@ -17,6 +17,7 @@ class User < ApplicationRecord
                        length: { minimum: 3, maximum: 30 }
   validate :username_not_reserved
   validate :username_change_allowed, if: :username_changed?
+  validate :must_have_active_keymap_set_after_creation
 
   # Google IDトークンのペイロードからユーザーを検索または作成
   def self.from_google(payload)
@@ -113,6 +114,15 @@ class User < ApplicationRecord
 
     next_change = next_username_change_at.strftime("%Y年%m月%d日 %H時%M分")
     errors.add(:username, "は24時間に1回しか変更できません（次回変更可能: #{next_change}）")
+  end
+
+  # アクティブキーマップセットが必須であることをチェック
+  # ただし、作成直後（after_createコールバック実行前）は除外
+  def must_have_active_keymap_set_after_creation
+    return if new_record? # 新規作成時はチェックしない
+    return if active_keymap_set_id.present?
+
+    errors.add(:active_keymap_set, "は必須です")
   end
 
   # 初期キーマップセットを作成し、アクティブに設定

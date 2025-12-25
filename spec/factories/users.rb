@@ -6,19 +6,8 @@ FactoryBot.define do
     username { Faker::Internet.username(specifier: 3..15, separators: %w[. _ -]) }
     icon_url { Faker::Internet.url }
 
-    # build時はactive_keymap_setを仮設定（バリデーションテスト用）
-    after(:build) do |user|
-      user.active_keymap_set ||= build(:keymap_set, user: user)
-    end
-
-    # create時はafter_createコールバックが既に実行されているはず
-    # しかし、念のため確認して、なければ作成
-    after(:create) do |user|
-      unless user.active_keymap_set
-        keymap_set = create(:keymap_set, user: user)
-        user.update!(active_keymap_set: keymap_set)
-      end
-    end
+    # create時はafter_createコールバックが実行されて自動的にactive_keymap_setが作成される
+    # （optional: trueなので、作成時は一時的にNULLでもOK、after_createで設定される）
 
     # 管理者用のファクトリ（variant）
     trait :admin do
