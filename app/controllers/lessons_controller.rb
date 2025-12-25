@@ -21,5 +21,10 @@ class LessonsController < ApplicationController
     # キーマップを読み込む（ユーザーのキーマップまたはデフォルト）
     user_id = logged_in? ? current_user.id : nil
     @keymaps = Keymap.all_layers_for_user_or_default(user_id)
+
+    # グレード定義に画像パスを追加してJavaScriptに渡す
+    @grades_with_paths = LessonGrades::DEFINITIONS.transform_values do |grade|
+      grade.merge(image_path: view_context.asset_path(grade[:image]))
+    end
   end
 end

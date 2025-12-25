@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "lessonScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay", "displayArea", "gradeEmoji", "gradeName", "gradeDescription", "wpmDisplay"]
+  static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "lessonScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay", "displayArea", "gradeImage", "gradeName", "gradeDescription", "wpmDisplay"]
   static values = {
     words: Array,
     currentWord: Number,
@@ -254,7 +254,9 @@ export default class extends Controller {
     this.wpmDisplayTarget.textContent = wpm
 
     // グレード情報を表示
-    this.gradeEmojiTarget.textContent = grade.emoji
+    // 画像パスを設定（コントローラーから渡された完全なパスを使用）
+    this.gradeImageTarget.src = grade.image_path
+    this.gradeImageTarget.alt = grade.name
     this.gradeNameTarget.textContent = grade.name
     this.gradeDescriptionTarget.textContent = grade.description
 

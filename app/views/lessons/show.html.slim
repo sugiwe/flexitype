@@ -5,20 +5,32 @@
     = @lesson.category.name
     |  •
     = @lesson.description
+  / 作成者情報
+  .flex.items-center.gap-2.mt-2
+    - if @lesson.user.icon_url.present?
+      img.w-5.h-5.rounded-full src=@lesson.user.icon_url alt=@lesson.user.display_name
+    - if @lesson.official?
+      .flex.items-center.gap-1
+        svg.w-4.h-4.text-blue-600.dark:text-blue-400 fill="currentColor" viewBox="0 0 20 20"
+          path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"
+        span.text-xs.font-medium.text-gray-700.dark:text-gray-300 Typnix公式
+    - else
+      span.text-xs.text-gray-600.dark:text-gray-400 = "@#{@lesson.user.username}"
 
 / メインエリア
-.bg-white.dark:bg-gray-800.rounded-lg.shadow-lg.p-8.transition-colors data-controller="typing" data-typing-words-value=@words.to_json data-typing-keymaps-value=@keymaps.to_json data-typing-lesson-info-value=@lesson.to_lesson_info.to_json data-typing-logged-in-value=logged_in? data-typing-grades-value=LessonGrades::DEFINITIONS.to_json
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-lg.p-8.transition-colors data-controller="typing" data-typing-words-value=@words.to_json data-typing-keymaps-value=@keymaps.to_json data-typing-lesson-info-value=@lesson.to_lesson_info.to_json data-typing-logged-in-value=logged_in? data-typing-grades-value=@grades_with_paths.to_json
   / セッション完了画面（初期は非表示）
   .hidden data-typing-target="completionScreen"
     .text-center.py-12
+      / メッセージ
+      p.text-lg.text-gray-600.dark:text-gray-300.mb-8 お疲れ様でした！あなたのランクは…
+
       / グレードバッジ
       .mb-8
-        .text-8xl.mb-4 data-typing-target="gradeEmoji" 🥚
-        h2.text-4xl.font-bold.mb-2 data-typing-target="gradeName" たまごカワウソ
-        p.text-lg.text-gray-600.dark:text-gray-300 data-typing-target="gradeDescription" これから成長するよ！
-
-      h3.text-2xl.font-bold.text-gray-800.dark:text-white.mb-2 お疲れ様でした！
-      p.text-lg.text-gray-600.dark:text-gray-300.mb-8 全ての単語を入力しました！
+        .mb-4.flex.justify-center
+          = image_tag "grade_1_baby.png", alt: "グレード", class: "w-40 h-40", data: { typing_target: "gradeImage" }
+        h2.text-4xl.font-bold.mb-2 data-typing-target="gradeName" グレード
+        p.text-lg.text-gray-600.dark:text-gray-300 data-typing-target="gradeDescription" 成績を計算中...
 
       / 統計情報（4列グリッド）
       .grid.grid-cols-2.md:grid-cols-4.gap-4.max-w-3xl.mx-auto.mb-10
