@@ -14,6 +14,12 @@ Rails.application.routes.draw do
     end
   end
 
+  # Test-only session management
+  if Rails.env.test?
+    post "/test/sessions", to: "test_sessions#create"
+    delete "/test/sessions", to: "test_sessions#destroy"
+  end
+
   # Public pages
   root "home#index"
   resources :lessons, only: [ :show ]
