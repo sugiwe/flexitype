@@ -96,7 +96,7 @@ export default class extends Controller {
     this.keyCharTargets.forEach(target => {
       const keyElement = target.closest(".key")
       const position = keyElement.dataset.position
-      const char = layerData[position] || "-"
+      const char = layerData[position] || ""
       target.innerHTML = this.formatKeyDisplay(char)
 
       // blankの場合は親要素に背景を設定
@@ -129,7 +129,7 @@ export default class extends Controller {
 
   // format_key_displayヘルパーのJavaScript版（2段表示対応）
   formatKeyDisplay(char) {
-    if (!char || char === '-') return '<div class="text-xs"></div>'
+    if (!char) return '<div class="text-xs"></div>'
 
     // blankの場合は✕マーク（背景は親要素で設定）
     if (char.toLowerCase() === 'blank') {
