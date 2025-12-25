@@ -18,6 +18,11 @@ class Share < ApplicationRecord
     lesson_record.grade_info[:name]
   end
 
+  # グレード画像を取得
+  def grade_image
+    lesson_record.grade_info[:image]
+  end
+
   # カテゴリー名を取得
   def category_name
     lesson_record.lesson.category.name
