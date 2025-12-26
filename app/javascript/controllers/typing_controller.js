@@ -611,29 +611,21 @@ export default class extends Controller {
 
     // 2段表示のキーで、上段の文字を入力する場合はShiftキーもハイライト
     const needsShift = this.needsShiftKey(nextChar, displayChar)
-    let shiftKeyPosition = null
+
+    // 1. 目的の文字キー: 同じレイヤー内で同じ文字のキーを全て探してハイライト
+    const mainKeyPositions = this.findAllMatchingKeys(nextChar, targetLayer)
+    mainKeyPositions.forEach(pos => this.highlightKey(pos))
+
+    // 2. Shiftキー: Layer 0で'shift'を全て探してハイライト
     if (needsShift) {
-      shiftKeyPosition = this.findShiftKeyPosition()
+      const shiftPositions = this.findAllMatchingKeys('shift', 0)
+      shiftPositions.forEach(pos => this.highlightKey(pos))
     }
 
-    // Layer 0以外の場合は、レイヤーボタンもハイライト
-    let layerKeyPosition = null
+    // 3. レイヤーキー: Layer 0でレイヤーキーを全て探してハイライト
     if (targetLayer > 0) {
-      // レイヤーボタンの位置を探す
-      layerKeyPosition = this.findLayerKeyPosition(targetLayer)
-    }
-
-    // 目的の文字キーをハイライト
-    this.highlightKey(targetPosition)
-
-    // Shiftキーもハイライト（2段表示の上段の場合）
-    if (shiftKeyPosition) {
-      this.highlightKey(shiftKeyPosition)
-    }
-
-    // レイヤーボタンもハイライト（Layer 0以外の場合）
-    if (layerKeyPosition) {
-      this.highlightKey(layerKeyPosition)
+      const layerKeyPositions = this.findAllLayerKeyPositions(targetLayer)
+      layerKeyPositions.forEach(pos => this.highlightKey(pos))
     }
   }
 
@@ -656,22 +648,50 @@ export default class extends Controller {
     return nextChar === upperChar
   }
 
-  // Shiftキーの位置を探す
-  findShiftKeyPosition() {
-    const currentLayerData = this.keymapsValue[0] || this.keymapsValue["0"] || {}
+  // 指定レイヤーで指定文字に一致する全キーの位置を返す
+  // @param targetChar - 探す文字（例: 'a', 'shift', '1'）
+  // @param layer - 探すレイヤー番号
+  // @return Array<string> - マッチしたキーの位置の配列
+  findAllMatchingKeys(targetChar, layer) {
+    const layerData = this.keymapsValue[layer] || this.keymapsValue[layer.toString()] || {}
+    const positions = []
 
-    for (const [position, char] of Object.entries(currentLayerData)) {
-      if (char && char.toLowerCase() === 'shift') {
-        return position
+    for (const [position, char] of Object.entries(layerData)) {
+      if (this.isCharMatch(char, targetChar)) {
+        positions.push(position)
       }
     }
 
-    return null
+    return positions
   }
 
-  // レイヤーボタンの位置を探す
-  findLayerKeyPosition(layer) {
-    // Layer 1-5 のボタン位置を探す
+  // 文字マッチング判定（2段表示対応）
+  // @param keyChar - キーに割り当てられた文字（例: "Q q", "! 1", "shift"）
+  // @param targetChar - 探す文字
+  // @return boolean - マッチするかどうか
+  isCharMatch(keyChar, targetChar) {
+    if (!keyChar) return false
+
+    const keyCharLower = keyChar.toLowerCase()
+    const targetCharLower = targetChar.toLowerCase()
+
+    // 2段表示の場合（"Q q"や"! 1"など）
+    if (keyChar.includes(' ') || keyChar.includes('|')) {
+      const delimiter = keyChar.includes(' ') ? ' ' : '|'
+      const parts = keyChar.split(delimiter)
+      // 上段または下段のいずれかがマッチすればOK
+      return parts.some(part => part.toLowerCase() === targetCharLower)
+    }
+
+    // 通常の1段表示の場合
+    return keyCharLower === targetCharLower
+  }
+
+  // 指定レイヤーに対応するレイヤーキーの位置を全て返す
+  // @param layer - レイヤー番号（1-5）
+  // @return Array<string> - マッチしたレイヤーキーの位置の配列
+  findAllLayerKeyPositions(layer) {
+    // Layer 1-5 のボタン候補
     // 基本の候補: layer1, lyr1 など
     const layerKeys = [`layer${layer}`, `lyr${layer}`]
 
@@ -682,15 +702,16 @@ export default class extends Controller {
       layerKeys.push('raise')
     }
 
+    const positions = []
     const currentLayerData = this.keymapsValue[0] || this.keymapsValue["0"] || {}
 
     for (const [position, char] of Object.entries(currentLayerData)) {
-      if (layerKeys.includes(char.toLowerCase())) {
-        return position
+      if (char && layerKeys.includes(char.toLowerCase())) {
+        positions.push(position)
       }
     }
 
-    return null
+    return positions
   }
 
   // 指定されたキーをハイライト
