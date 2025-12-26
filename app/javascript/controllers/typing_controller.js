@@ -651,7 +651,6 @@ export default class extends Controller {
     const delimiter = displayChar.includes(' ') ? ' ' : '|'
     const parts = displayChar.split(delimiter)
     const upperChar = parts[0] // 上段の文字
-    const lowerChar = parts[1] // 下段の文字
 
     // 次の文字が上段の文字と一致する場合、Shift必要
     return nextChar === upperChar
@@ -673,7 +672,15 @@ export default class extends Controller {
   // レイヤーボタンの位置を探す
   findLayerKeyPosition(layer) {
     // Layer 1-5 のボタン位置を探す
-    const layerKeys = [`layer${layer}`, `lyr${layer}`, 'lower', 'raise']
+    // 基本の候補: layer1, lyr1 など
+    const layerKeys = [`layer${layer}`, `lyr${layer}`]
+
+    // Layer 1と2の場合のみ、lower/raiseも候補に追加（QMK慣習）
+    if (layer === 1) {
+      layerKeys.push('lower')
+    } else if (layer === 2) {
+      layerKeys.push('raise')
+    }
 
     const currentLayerData = this.keymapsValue[0] || this.keymapsValue["0"] || {}
 
