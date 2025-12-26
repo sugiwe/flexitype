@@ -61,14 +61,14 @@ class My::LessonsController < My::ApplicationController
         .joins(:category)
         .where(categories: { tab: tab_key.to_s })
         .includes(:category, :user)
-        .order(created_at: :desc)
+        .ordered
     else
       # 一般ユーザー: 自分が作成したレッスンのみ
       current_user.lessons
         .joins(:category)
         .where(categories: { tab: tab_key.to_s })
         .includes(:category, :user)
-        .order(created_at: :desc)
+        .ordered
     end
   end
 
@@ -86,7 +86,7 @@ class My::LessonsController < My::ApplicationController
   def lesson_params
     # paramsを取得
     permitted_params = params.require(:lesson).permit(
-      :name, :description, :category_id, :count, :is_public, :items
+      :name, :description, :category_id, :count, :is_public, :items, :display_order
     )
 
     # itemsをテキストエリアの改行区切りから配列に変換

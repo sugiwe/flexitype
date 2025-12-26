@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_25_045723) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_26_011734) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -82,11 +82,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_25_045723) do
     t.integer "count", default: 20, null: false
     t.datetime "created_at", null: false
     t.text "description"
+    t.integer "display_order", default: 0, null: false
     t.boolean "is_public", default: false, null: false
     t.jsonb "items", default: [], null: false
     t.string "name", limit: 100, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["category_id", "display_order"], name: "index_lessons_on_category_id_and_display_order"
     t.index ["category_id"], name: "index_lessons_on_category_id"
     t.index ["is_public"], name: "index_lessons_on_is_public"
     t.index ["user_id", "name"], name: "index_lessons_on_user_id_and_name"
