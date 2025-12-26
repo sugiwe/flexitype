@@ -29,11 +29,16 @@
     = f.text_area :items, value: @lesson.items&.join("\n"), rows: 10, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm", placeholder: "hello\nworld\nruby\nrails"
     p.mt-1.text-sm.text-gray-500.dark:text-gray-400 1行に1つの単語または文章を入力してください
 
-  / 問題数
-  .mb-6
-    = f.label :count, "問題数", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-    = f.number_field :count, min: 1, max: 100, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-    p.mt-1.text-sm.text-gray-500.dark:text-gray-400 練習時に表示する問題数（1〜100）
+  / 問題数と表示順
+  .grid.grid-cols-2.gap-4.mb-6
+    div
+      = f.label :count, "問題数", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+      = f.number_field :count, min: 1, max: 100, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+      p.mt-1.text-sm.text-gray-500.dark:text-gray-400 練習時に表示する問題数（1〜100）
+    div
+      = f.label :display_order, "表示順", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+      = f.number_field :display_order, min: 0, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+      p.mt-1.text-sm.text-gray-500.dark:text-gray-400 数字が小さいほど上に表示されます
 
   / 公開設定
   .mb-6

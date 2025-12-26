@@ -13,6 +13,7 @@ class Lesson < ApplicationRecord
   validates :count, numericality: { greater_than: 0, less_than_or_equal_to: 100 }
 
   # スコープ
+  scope :ordered, -> { order(display_order: :asc, id: :asc) }
   scope :official, -> { joins(:user).where(users: { admin: true }) }
   scope :user_created, -> { joins(:user).where.not(users: { admin: true }) }
   scope :published, -> { where(is_public: true) }
