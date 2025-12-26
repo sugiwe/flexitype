@@ -134,7 +134,8 @@
           h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 アルファベット
           .grid.gap-1.5.keyboard-grid-13col
             - ('a'..'z').each_with_index do |char, i|
-              .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.rounded.w-14.h-14.flex.flex-col.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char="#{char.upcase}|#{char}"
+              - data_char_value = char.upcase + ' ' + char
+              .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.rounded.w-14.h-14.flex.flex-col.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=data_char_value
                 .text-xs.text-gray-400.dark:text-gray-500.mb-1 = char.upcase
                 .text-base.font-semibold.text-gray-700.dark:text-gray-200 = char
 
@@ -143,7 +144,8 @@
           h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 数字（2段）
           .grid.gap-1.5.keyboard-grid-10col
             - [['1', '!'], ['2', '@'], ['3', '#'], ['4', '$'], ['5', '%'], ['6', '^'], ['7', '&'], ['8', '*'], ['9', '('], ['0', ')']].each do |pair|
-              .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.rounded.w-14.h-14.flex.flex-col.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char="#{pair[1]}|#{pair[0]}"
+              - data_char_value = pair[1] + ' ' + pair[0]
+              .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.rounded.w-14.h-14.flex.flex-col.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=data_char_value
                 .text-xs.text-gray-400.dark:text-gray-500.mb-1 = pair[1]
                 .text-base.font-semibold.text-gray-700.dark:text-gray-200 = pair[0]
 
@@ -181,7 +183,8 @@
           h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 記号（2段）
           .grid.gap-1.5.keyboard-grid-14col
             - [['-', '_'], ['=', '+'], ['[', '{'], [']', '}'], [';', ':'], ["'", '"'], [',', '<'], ['.', '>'], ['/', '?'], ['\\', '|']].each do |pair|
-              .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.rounded.w-14.h-14.flex.flex-col.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char="#{pair[1]}|#{pair[0]}"
+              - data_char_value = pair[1] + ' ' + pair[0]
+              .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.rounded.w-14.h-14.flex.flex-col.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=data_char_value
                 .text-xs.text-gray-400.dark:text-gray-500.mb-1 = pair[1]
                 .text-base.font-semibold.text-gray-700.dark:text-gray-200 = pair[0]
             / 矢印キー
