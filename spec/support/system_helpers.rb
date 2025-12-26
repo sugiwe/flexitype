@@ -19,8 +19,14 @@ module SystemHelpers
   def login_as_user(user = nil)
     user ||= create(:user)
 
-    # Test用エンドポイントを使ってセッションを設定
-    page.driver.post "/test/sessions", user_id: user.id
+    # JavaScript使用時（Selenium）は、GETでセッションを設定
+    # rack_test使用時は、POSTでセッションを設定
+    if page.driver.is_a?(Capybara::RackTest::Driver)
+      page.driver.post "/test/sessions", user_id: user.id
+    else
+      # Seleniumドライバーの場合は、GET経由でセッションを設定
+      visit "/test/sessions?user_id=#{user.id}"
+    end
 
     user
   end

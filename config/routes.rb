@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   # Test-only session management
   if Rails.env.test?
     post "/test/sessions", to: "test_sessions#create"
+    get "/test/sessions", to: "test_sessions#show"
     delete "/test/sessions", to: "test_sessions#destroy"
   end
 
