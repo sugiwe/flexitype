@@ -10,6 +10,13 @@ class TestSessionsController < ApplicationController
     head :ok
   end
 
+  # GETでセッションを設定（JavaScriptドライバー用）
+  def show
+    user_id = params[:user_id]
+    session[:user_id] = user_id
+    render plain: "Logged in as user #{user_id}"
+  end
+
   def destroy
     session[:user_id] = nil
     head :ok
