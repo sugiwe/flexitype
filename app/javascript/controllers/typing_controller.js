@@ -119,9 +119,11 @@ export default class extends Controller {
       Object.entries(layerData).forEach(([position, char]) => {
         if (!char) return
 
-        // "Q|q" のような形式の場合、パイプで分割
+        // "Q q" (半角スペース) または "Q|q" (パイプ) のような形式の場合、分割
         let chars = []
-        if (char.includes('|')) {
+        if (char.includes(' ')) {
+          chars = char.split(' ')
+        } else if (char.includes('|')) {
           chars = char.split('|')
         } else {
           chars = [char]
@@ -141,7 +143,7 @@ export default class extends Controller {
           this.keyMapping[normalized].push({
             layer: layer,
             position: position,
-            displayChar: char // 表示用の元の文字（"Q/q"など）
+            displayChar: char // 表示用の元の文字（"Q q"など）
           })
         })
       })
@@ -522,10 +524,12 @@ export default class extends Controller {
       return `<div class="text-xs text-gray-700 dark:text-gray-200">${specialKeys[lowerChar]}</div>`
     }
 
-    // "Q|q" や "!|1" 形式の場合は2段表示
+    // "Q q" や "! 1" 形式（半角スペース区切り）、または "Q|q" や "!|1" 形式（|区切り、後方互換性）の場合は2段表示
     // 上段: 小さめ・グレー、下段: 大きめ・太字・黒
-    if (char.includes('|')) {
-      const parts = char.split('|')
+    if (char.includes(' ') || char.includes('|')) {
+      // 半角スペース区切りを優先、なければ|区切り
+      const delimiter = char.includes(' ') ? ' ' : '|'
+      const parts = char.split(delimiter)
       const upper = parts[0] || ''
       const lower = parts[1] || ''
 
@@ -596,44 +600,118 @@ export default class extends Controller {
     const targetMapping = keyMappings[0]
     const targetLayer = targetMapping.layer
     const targetPosition = targetMapping.position
+    const displayChar = targetMapping.displayChar
 
-    console.log(`Next char: "${nextChar}", found in Layer ${targetLayer} at ${targetPosition}`)
+    console.log(`Next char: "${nextChar}", found in Layer ${targetLayer} at ${targetPosition}, display: "${displayChar}"`)
 
     // レイヤー切り替えが必要な場合はキーボード表示を更新
     if (targetLayer !== this.currentLayer) {
       this.switchKeyboardLayer(targetLayer)
     }
 
-    // Layer 0以外の場合は、レイヤーボタンもハイライト
-    let layerKeyPosition = null
-    if (targetLayer > 0) {
-      // レイヤーボタンの位置を探す
-      layerKeyPosition = this.findLayerKeyPosition(targetLayer)
+    // 2段表示のキーで、上段の文字を入力する場合はShiftキーもハイライト
+    const needsShift = this.needsShiftKey(nextChar, displayChar)
+
+    // 1. 目的の文字キー: 同じレイヤー内で同じ文字のキーを全て探してハイライト
+    const mainKeyPositions = this.findAllMatchingKeys(nextChar, targetLayer)
+    mainKeyPositions.forEach(pos => this.highlightKey(pos))
+
+    // 2. Shiftキー: Layer 0で'shift'を全て探してハイライト
+    if (needsShift) {
+      const shiftPositions = this.findAllMatchingKeys('shift', 0)
+      shiftPositions.forEach(pos => this.highlightKey(pos))
     }
 
-    // 目的の文字キーをハイライト
-    this.highlightKey(targetPosition)
-
-    // レイヤーボタンもハイライト（Layer 0以外の場合）
-    if (layerKeyPosition) {
-      this.highlightKey(layerKeyPosition)
+    // 3. レイヤーキー: Layer 0でレイヤーキーを全て探してハイライト
+    if (targetLayer > 0) {
+      const layerKeyPositions = this.findAllLayerKeyPositions(targetLayer)
+      layerKeyPositions.forEach(pos => this.highlightKey(pos))
     }
   }
 
-  // レイヤーボタンの位置を探す
-  findLayerKeyPosition(layer) {
-    // Layer 1-5 のボタン位置を探す
-    const layerKeys = [`layer${layer}`, `lyr${layer}`, 'lower', 'raise']
+  // Shiftキーが必要かどうかを判定
+  // @param nextChar - 次に入力する文字
+  // @param displayChar - キーの表示文字（"Q q"や"! 1"など）
+  // @return true: Shiftキーが必要、false: 不要
+  needsShiftKey(nextChar, displayChar) {
+    // 2段表示でない場合はShift不要
+    if (!displayChar.includes(' ') && !displayChar.includes('|')) {
+      return false
+    }
 
-    const currentLayerData = this.keymapsValue[0] || this.keymapsValue["0"] || {}
+    // 区切り文字を判定
+    const delimiter = displayChar.includes(' ') ? ' ' : '|'
+    const parts = displayChar.split(delimiter)
+    const upperChar = parts[0] // 上段の文字
 
-    for (const [position, char] of Object.entries(currentLayerData)) {
-      if (layerKeys.includes(char.toLowerCase())) {
-        return position
+    // 次の文字が上段の文字と一致する場合、Shift必要
+    return nextChar === upperChar
+  }
+
+  // 指定レイヤーで指定文字に一致する全キーの位置を返す
+  // @param targetChar - 探す文字（例: 'a', 'shift', '1'）
+  // @param layer - 探すレイヤー番号
+  // @return Array<string> - マッチしたキーの位置の配列
+  findAllMatchingKeys(targetChar, layer) {
+    const layerData = this.keymapsValue[layer] || this.keymapsValue[layer.toString()] || {}
+    const positions = []
+
+    for (const [position, char] of Object.entries(layerData)) {
+      if (this.isCharMatch(char, targetChar)) {
+        positions.push(position)
       }
     }
 
-    return null
+    return positions
+  }
+
+  // 文字マッチング判定（2段表示対応）
+  // @param keyChar - キーに割り当てられた文字（例: "Q q", "! 1", "shift"）
+  // @param targetChar - 探す文字
+  // @return boolean - マッチするかどうか
+  isCharMatch(keyChar, targetChar) {
+    if (!keyChar) return false
+
+    const keyCharLower = keyChar.toLowerCase()
+    const targetCharLower = targetChar.toLowerCase()
+
+    // 2段表示の場合（"Q q"や"! 1"など）
+    if (keyChar.includes(' ') || keyChar.includes('|')) {
+      const delimiter = keyChar.includes(' ') ? ' ' : '|'
+      const parts = keyChar.split(delimiter)
+      // 上段または下段のいずれかがマッチすればOK
+      return parts.some(part => part.toLowerCase() === targetCharLower)
+    }
+
+    // 通常の1段表示の場合
+    return keyCharLower === targetCharLower
+  }
+
+  // 指定レイヤーに対応するレイヤーキーの位置を全て返す
+  // @param layer - レイヤー番号（1-5）
+  // @return Array<string> - マッチしたレイヤーキーの位置の配列
+  findAllLayerKeyPositions(layer) {
+    // Layer 1-5 のボタン候補
+    // 基本の候補: layer1, lyr1 など
+    const layerKeys = [`layer${layer}`, `lyr${layer}`]
+
+    // Layer 1と2の場合のみ、lower/raiseも候補に追加（QMK慣習）
+    if (layer === 1) {
+      layerKeys.push('lower')
+    } else if (layer === 2) {
+      layerKeys.push('raise')
+    }
+
+    const positions = []
+    const currentLayerData = this.keymapsValue[0] || this.keymapsValue["0"] || {}
+
+    for (const [position, char] of Object.entries(currentLayerData)) {
+      if (char && layerKeys.includes(char.toLowerCase())) {
+        positions.push(position)
+      }
+    }
+
+    return positions
   }
 
   // 指定されたキーをハイライト

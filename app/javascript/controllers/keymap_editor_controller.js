@@ -169,10 +169,12 @@ export default class extends Controller {
       return `<div class="text-xs text-gray-700 dark:text-gray-200">${specialKeys[lowerChar]}</div>`
     }
 
-    // "Q|q" や "!|1" 形式の場合は2段表示
+    // "Q q" や "! 1" 形式（半角スペース区切り）、または "Q|q" や "!|1" 形式（|区切り、後方互換性）の場合は2段表示
     // 上段: 小さめ・グレー、下段: 大きめ・太字・黒
-    if (char.includes('|')) {
-      const parts = char.split('|')
+    if (char.includes(' ') || char.includes('|')) {
+      // 半角スペース区切りを優先、なければ|区切り
+      const delimiter = char.includes(' ') ? ' ' : '|'
+      const parts = char.split(delimiter)
       const upper = parts[0] || ''
       const lower = parts[1] || ''
 

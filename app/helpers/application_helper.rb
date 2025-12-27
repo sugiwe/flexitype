@@ -72,10 +72,12 @@ module ApplicationHelper
       return content_tag(:div, special_keys[char_str.downcase], class: "text-xs text-gray-700 dark:text-gray-200")
     end
 
-    # "Q|q" や "!|1" 形式の場合は2段表示
+    # "Q q" や "! 1" 形式（半角スペース区切り）、または "Q|q" や "!|1" 形式（|区切り、後方互換性）の場合は2段表示
     # 上段: 小さめ・グレー、下段: 大きめ・太字・黒
-    if char_str.include?("|")
-      parts = char_str.split("|")
+    if char_str.include?(" ") || char_str.include?("|")
+      # 半角スペース区切りを優先、なければ|区切り
+      delimiter = char_str.include?(" ") ? " " : "|"
+      parts = char_str.split(delimiter)
       upper = parts[0] || ""
       lower = parts[1] || ""
 
