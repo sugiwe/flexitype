@@ -264,10 +264,8 @@ export default class extends Controller {
     this.gradeNameTarget.textContent = grade.name
     this.gradeDescriptionTarget.textContent = grade.description
 
-    // ログインユーザーの場合、履歴を保存
-    if (this.loggedInValue) {
-      this.saveHistory(accuracy, elapsedSeconds)
-    }
+    // 履歴を保存（未ログインユーザーも保存可能）
+    this.saveHistory(accuracy, elapsedSeconds)
 
     // 完了時は警告を解除（ページ遷移を許可）
     this.removeNavigationWarning()
@@ -297,10 +295,10 @@ export default class extends Controller {
     }
   }
 
-  // 履歴を保存
+  // 履歴を保存（未ログインユーザーも保存可能）
   async saveHistory(accuracy, durationSeconds) {
     try {
-      const response = await fetch('/my/history', {
+      const response = await fetch('/lesson_records', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
