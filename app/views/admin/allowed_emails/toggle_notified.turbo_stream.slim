@@ -1,0 +1,3 @@
+/ Turbo Stream: 連絡済みステータスの更新
+= turbo_stream.replace "notified_status_#{@allowed_email.id}" do
+  = render partial: "notified_button", locals: { allowed_email: @allowed_email }

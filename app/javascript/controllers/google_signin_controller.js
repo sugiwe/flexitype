@@ -89,7 +89,12 @@ export default class extends Controller {
       if (data.success) {
         window.location.href = data.redirect_url
       } else {
-        alert('ログインに失敗しました: ' + (data.error || '不明なエラー'))
+        // use_flashがtrueの場合、フラッシュメッセージを使用するためページをリロード
+        if (data.use_flash) {
+          window.location.reload()
+        } else {
+          alert('ログインに失敗しました: ' + (data.error || '不明なエラー'))
+        }
       }
     })
     .catch(error => {

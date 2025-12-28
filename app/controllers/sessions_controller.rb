@@ -9,10 +9,15 @@ class SessionsController < ApplicationController
       payload = validator.check(params[:credential], client_id)
       email = payload["email"]
 
-      # 許可リストチェック
-      unless User.email_allowed?(email)
-        render json: { error: "このメールアドレスはログインを許可されていません" }, status: :forbidden
-        return
+      # 🔑 ログイン制限チェック（将来的に削除予定）
+      # RESTRICT_LOGIN=falseの場合、この制限はスキップされる
+      if Authentication.restrict_login?
+        unless AllowedEmail.allowed?(email)
+          # フラッシュメッセージを使用するため、セッションに保存してリダイレクト
+          flash[:alert] = "このメールアドレスはログインを許可されていません"
+          render json: { success: false, error: "このメールアドレスはログインを許可されていません", use_flash: true }, status: :forbidden
+          return
+        end
       end
 
       user = User.from_google(payload)
@@ -28,7 +33,8 @@ class SessionsController < ApplicationController
 
       render json: { success: true, redirect_url: root_path }
     rescue GoogleIDToken::ValidationError => e
-      render json: { error: "認証に失敗しました: #{e.message}" }, status: :unauthorized
+      flash[:alert] = "認証に失敗しました"
+      render json: { success: false, error: "認証に失敗しました: #{e.message}", use_flash: true }, status: :unauthorized
     end
   end
 
