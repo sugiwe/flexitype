@@ -6,7 +6,7 @@ module Admin
   # 管理者が許可メールアドレスの追加・削除を行うためのCRUDインターフェース。
   # このコントローラーは将来的に削除予定（全員ログインOKになる予定）。
   class AllowedEmailsController < Admin::ApplicationController
-    before_action :set_allowed_email, only: [ :destroy ]
+    before_action :set_allowed_email, only: [ :destroy, :toggle_notified ]
 
     # GET /admin/allowed_emails
     def index
@@ -34,6 +34,20 @@ module Admin
       email = @allowed_email.email
       @allowed_email.destroy!
       redirect_to admin_allowed_emails_path, notice: "#{email} を許可リストから削除しました"
+    end
+
+    # PATCH /admin/allowed_emails/:id/toggle_notified
+    def toggle_notified
+      if @allowed_email.notified_at.present?
+        @allowed_email.update!(notified_at: nil)
+      else
+        @allowed_email.update!(notified_at: Time.current)
+      end
+
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to admin_allowed_emails_path }
+      end
     end
 
     private
