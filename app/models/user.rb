@@ -45,17 +45,6 @@ class User < ApplicationRecord
     username
   end
 
-  # 許可リストに含まれているかチェック
-  def self.email_allowed?(email)
-    allowed_emails = Rails.application.config.allowed_emails
-
-    # 開発環境では空なら全員許可、本番環境では空なら全員拒否（安全性重視）
-    return true if allowed_emails.empty? && !Rails.env.production?
-
-    allowed_emails.include?(email)
-  end
-
-
   # 管理者かどうかを判定
   def admin?
     admin_emails = ENV["ADMIN_EMAILS"]&.split(",")&.map(&:strip) || []
