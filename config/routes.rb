@@ -52,5 +52,6 @@ Rails.application.routes.draw do
     root to: "dashboard#index"  # /admin
     resources :users, only: [ :index, :show ]  # /admin/users, /admin/users/:id
     resources :categories, except: [ :show ]  # /admin/categories (CRUD, show不要)
+    resources :allowed_emails, only: [ :index, :new, :create, :destroy ]  # /admin/allowed_emails (許可メールアドレス管理)
   end
 end

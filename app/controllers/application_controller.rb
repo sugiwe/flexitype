@@ -14,6 +14,17 @@ class ApplicationController < ActionController::Base
   end
 
   def logged_in?
-    current_user.present?
+    return false unless current_user.present?
+
+    # 🔑 ログイン制限チェック（将来的に削除予定）
+    # RESTRICT_LOGIN=falseの場合、この制限はスキップされる
+    if Authentication.restrict_login?
+      unless AllowedEmail.allowed?(current_user.email)
+        Rails.logger.info "Login restricted: #{current_user.email} is not in allowed list"
+        return false
+      end
+    end
+
+    true
   end
 end
