@@ -72,12 +72,22 @@ module ApplicationHelper
       return content_tag(:div, special_keys[char_str.downcase], class: "text-xs text-gray-700 dark:text-gray-200")
     end
 
-    # "Q q" や "! 1" 形式（半角スペース区切り）、または "Q|q" や "!|1" 形式（|区切り、後方互換性）の場合は2段表示
+    # "Q q" や "! 1" 形式（半角スペース区切り）の場合は2段表示
     # 上段: 小さめ・グレー、下段: 大きめ・太字・黒
-    if char_str.include?(" ") || char_str.include?("|")
-      # 半角スペース区切りを優先、なければ|区切り
-      delimiter = char_str.include?(" ") ? " " : "|"
-      parts = char_str.split(delimiter)
+    if char_str.include?(" ")
+      parts = char_str.split(" ")
+      upper = parts[0] || ""
+      lower = parts[1] || ""
+
+      return content_tag(:div, class: "flex flex-col items-center justify-center h-full") do
+        content_tag(:div, upper, class: "text-xs text-gray-400 dark:text-gray-400 mb-1") +
+        content_tag(:div, lower, class: "text-base font-semibold text-gray-700 dark:text-gray-200")
+      end
+    # 【後方互換性】"Q|q" や "!|1" 形式（|区切り）もサポート（既存データ用）
+    # 注意: 新規保存時は半角スペース区切りを使用すること
+    # 単体の「|」文字との衝突を避けるため、2文字以上かつ「|」を含む場合のみ適用
+    elsif char_str.include?("|") && char_str.length > 1
+      parts = char_str.split("|")
       upper = parts[0] || ""
       lower = parts[1] || ""
 
