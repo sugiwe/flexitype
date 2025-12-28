@@ -169,12 +169,26 @@ export default class extends Controller {
       return `<div class="text-xs text-gray-700 dark:text-gray-200">${specialKeys[lowerChar]}</div>`
     }
 
-    // "Q q" や "! 1" 形式（半角スペース区切り）、または "Q|q" や "!|1" 形式（|区切り、後方互換性）の場合は2段表示
+    // "Q q" や "! 1" 形式（半角スペース区切り）の場合は2段表示
     // 上段: 小さめ・グレー、下段: 大きめ・太字・黒
-    if (char.includes(' ') || char.includes('|')) {
-      // 半角スペース区切りを優先、なければ|区切り
-      const delimiter = char.includes(' ') ? ' ' : '|'
-      const parts = char.split(delimiter)
+    if (char.includes(' ')) {
+      const parts = char.split(' ')
+      const upper = parts[0] || ''
+      const lower = parts[1] || ''
+
+      return `
+        <div class="flex flex-col items-center justify-center h-full">
+          <div class="text-xs text-gray-400 dark:text-gray-400 mb-1">${upper}</div>
+          <div class="text-base font-semibold text-gray-700 dark:text-gray-200">${lower}</div>
+        </div>
+      `
+    }
+
+    // 【後方互換性】"Q|q" や "!|1" 形式（|区切り）もサポート（既存データ用）
+    // 注意: 新規保存時は半角スペース区切りを使用すること
+    // 単体の「|」文字との衝突を避けるため、2文字以上かつ「|」を含む場合のみ適用
+    if (char.includes('|') && char.length > 1) {
+      const parts = char.split('|')
       const upper = parts[0] || ''
       const lower = parts[1] || ''
 

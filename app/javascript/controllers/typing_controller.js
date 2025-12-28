@@ -119,11 +119,13 @@ export default class extends Controller {
       Object.entries(layerData).forEach(([position, char]) => {
         if (!char) return
 
-        // "Q q" (半角スペース) または "Q|q" (パイプ) のような形式の場合、分割
+        // "Q q" (半角スペース) のような形式の場合、分割
         let chars = []
         if (char.includes(' ')) {
           chars = char.split(' ')
-        } else if (char.includes('|')) {
+        // 【後方互換性】"Q|q" (パイプ区切り) もサポート（既存データ用）
+        // 単体の「|」文字との衝突を避けるため、2文字以上かつ「|」を含む場合のみ適用
+        } else if (char.includes('|') && char.length > 1) {
           chars = char.split('|')
         } else {
           chars = [char]
