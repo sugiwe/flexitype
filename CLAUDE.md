@@ -64,6 +64,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Category**: タブ機能、公開制御、表示順
 - **KeymapSet**: slug生成、バリデーション、ユーザー関連付け
 - **Share**: トークン生成、delegate動作、OGP情報
+- **AllowedEmail**: バリデーション、正規化、.allowed?メソッド、フィーチャーフラグ動作（Day 28で実装完了）
 
 **Phase 2: システムテスト（E2E）**
 - ログイン→タイピング練習→記録保存のフロー
@@ -439,6 +440,21 @@ spec/
     - shared/_lesson_records_table.html.slim 作成
     - 管理者ページと個人ページで共通化（コード削減率53%）
     - WPM・グレードカラム追加、所要時間表示改善
+- ✅ **Day 25-27**: テスト基盤整備・バグ修正
+  - RSpec環境のセットアップ完了
+  - モデルテストの実装（User, LessonRecord, Lesson, Category, KeymapSet, Share）
+  - システムテスト（E2E）Phase 1実装完了（認証・レッスン・履歴）
+  - キーマップ関連のバグ修正3件（バックスラッシュ登録、Shiftキーハイライト、Layer 4-5ハイライト）
+  - 同一キーの複数配置対応（汎用的なハイライトロジック）
+- ✅ **Day 28**: 運用効率化・安定稼働基盤実装
+  - ALLOWED_EMAILSのDB化（環境変数からPostgreSQLへ移行）
+  - フィーチャーフラグパターン実装（`RESTRICT_LOGIN`環境変数で制御）
+  - AllowedEmailモデル作成（バリデーション、正規化、大文字小文字区別なし）
+  - 管理者画面CRUD実装（`/admin/allowed_emails`）
+  - 認証ロジック変更（`ApplicationController#logged_in?`にチェック追加）
+  - AllowedEmailモデルのRSpecテスト（13例、全てパス）
+  - 品質チェック（RuboCop 0違反、Brakeman 0警告）
+  - 運用効率化ドキュメント作成（`CLAUDE_STABILITY_AND_OPERATIONS.md`）
 
 ### 技術的マイルストーン
 
@@ -453,17 +469,20 @@ spec/
 - Day 22: **タブ化実装完了 + キーマップ改善**（Turbo Frames + Stimulus、ユーザーフィードバック対応、空欄表示の一貫性）
 - Day 23: **成績評価システム + シェア機能完成**（5段階カワウソグレード、X/Twitter連携、OGP対応、レイアウトDRY化）
 - Day 24: **セキュリティ強化 + ユーザー体験向上**（予約語システム、24時間制限、練習履歴無制限化、期間フィルター、データマイグレーション3段階、DRY化53%削減）
-- Day 25: **テスト基盤整備**（進行中）
+- Day 25-27: **テスト基盤整備・バグ修正**（RSpec環境セットアップ、モデルテスト、システムテストPhase 1、キーマップバグ修正3件）
+- Day 28: **運用効率化・安定稼働基盤実装**（ALLOWED_EMAILSのDB化、フィーチャーフラグパターン、管理者画面CRUD、RSpec 13例全てパス）
 
-### 次のステップ（Day 25）
+### 次のステップ（Day 29以降）
 
-**Day 25**: テスト基盤整備・ドキュメント整備
-- 🔜 RSpec環境のセットアップ（gem追加、初期化）
-- 🔜 モデルテストの実装（User, LessonRecord, Lesson, Category, KeymapSet, Share）
-- 🔜 システムテスト（E2E）の実装（主要フロー）
+**運用効率化・安定稼働施策（優先度高）**
+- 🔜 データベースバックアップ自動化（cron設定、7日間保持、見積もり: 10分）
+- 🔜 エラートラッキング（Sentry導入、見積もり: 1-2時間）
+- 🔜 デプロイ前の自動テスト実行スクリプト作成
+
+**テスト拡充（中優先度）**
+- 🔜 システムテストPhase 2実装（キーマップ作成・編集、シェア機能）
 - 🔜 GitHub Actions CI/CD設定
-- 🔜 ドキュメント整備（README、CHANGELOG など）
-- 🔜 25日間の振り返り
+- 🔜 継続的なテストカバレッジ向上
 
 #### その他の進行中タスク
 
@@ -480,17 +499,13 @@ spec/
 - **`CLAUDE_ADMIN_DASHBOARD.md`** - 管理者ダッシュボード設計（✅ Day 20 完了）
 - **`CLAUDE_KEYMAP_EXPANSION.md`** - キーマップ拡張設計（✅ Phase 1 完了、Phase 2-3 は将来実装）
 - **`CLAUDE_ADSENSE.md`** - Google AdSense 導入設計（✅ Day 20 サイト所有権確認完了、審査中）
-
-### 実装完了（Day 21-24）
-
-- **`CLAUDE_LESSON_DB_PLAN.md`** - レッスンDB化と機能拡張計画
-  - ✅ Day 21: レッスンのDB化（YAML → PostgreSQL）完了
-  - ✅ Day 21: ユーザー作成レッスン機能（`/my/lessons` CRUD）完了
-  - ✅ Day 21: カテゴリー管理機能（Admin::CategoriesController）完了
-  - ✅ Day 22: テストユーザーのフィードバックを元に改善完了
-  - ✅ Day 23: 成績評価システム + シェア機能完了
-  - ✅ Day 24: セキュリティ強化 + ユーザー体験向上完了
-  - 🔜 Day 25: 最終調整・ドキュメント整備
+- **`CLAUDE_LESSON_DB_PLAN.md`** - レッスンDB化と機能拡張計画（✅ Day 21-24 完了）
+- **`CLAUDE_STABILITY_AND_OPERATIONS.md`** - アプリの安定稼働と運用効率化ガイド（✅ Day 28 完了）
+  - ALLOWED_EMAILSのDB化（フィーチャーフラグパターン）
+  - データベースバックアップ自動化の手順
+  - ゼロダウンタイムデプロイの確保
+  - エラートラッキング（Sentry導入）の手順
+  - Rate Limiting、パフォーマンス監視など
 
 ### 将来実装（Day 26以降）
 
