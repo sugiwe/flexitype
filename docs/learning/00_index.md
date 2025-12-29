@@ -19,29 +19,36 @@
 
 ## 📖 学習の進め方
 
-### 推奨学習順序
+このリポジトリには**2種類の学習教材**があります：
 
-**初級編（Rails規約の基礎）**
-1. [Rails規約の基礎](01_basics/01_rails_conventions.md) - RESTful設計、命名規則
-2. [MVC設計の実践](01_basics/02_mvc_architecture.md) - コントローラー、モデル、ビューの役割分担
-3. [ルーティング設計](01_basics/03_routing_basics.md) - URL構造、名前空間
+### 📘 体系的な知識習得: Rails Application Development Guide
+
+**[Rails Application Development Guide](guides/rails_application_development.md)**（全12章、約3500行）
+
+Typnixプロジェクトの実装から抽出した、体系的なRails開発知識。リファレンスとしても使用可能。
+
+**推奨される方:**
+- Railsの全体像を体系的に理解したい
+- 特定のトピック（Hotwire、セキュリティなど）を深く学びたい
+- 実装中の参照資料として使いたい
+
+**推定読了時間**: 2〜3時間（通し読み）、必要な章のみ参照も可
+
+### 📗 トピック別学習: 個別教材とレビューテスト
+
+実践的な個別トピックと、手を動かして学ぶレビューテスト。
+
+**推奨学習順序:**
 
 **中級編（実践的なパターン）**
-4. [Concernパターン](02_intermediate/01_concerns_pattern.md) - コードの共通化、DRY原則
-5. [共通パーシャルの活用](02_intermediate/02_dry_principle.md) - ビューの重複削減
-6. [Turbo Framesの活用](02_intermediate/03_turbo_frames.md) - モダンなSPA風UI
-7. [認証の実装](02_intermediate/04_authentication.md) - Google認証、ゲストユーザーパターン
-
-**上級編（アーキテクチャ設計）**
-8. [リファクタリングパターン](03_advanced/01_refactoring_patterns.md) - 実際の改善事例
-9. [フィーチャーフラグ](03_advanced/02_feature_flags.md) - 削除容易性の確保
-10. [データベースマイグレーション戦略](03_advanced/03_database_migrations.md) - 3段階アプローチ
-11. [セキュリティベストプラクティス](03_advanced/04_security_practices.md) - Brakeman 0警告達成
+1. [Concernパターン](topics/02_intermediate/01_concerns_pattern.md) - コードの共通化、DRY原則
+2. [共通パーシャルの活用](topics/02_intermediate/02_shared_partials.md) - ビューの重複削減
 
 **レビューテスト（実践問題）**
-- [Review #01: Concernパターンの導入](04_reviews/review_01_concern_pattern.md)
-- [Review #02: コントローラー命名の統一](04_reviews/review_02_controller_naming.md)
-- [Review #03: 共通パーシャル化](04_reviews/review_03_shared_partial.md)
+- [Review #01: Concernパターンの導入](reviews/review_01_concern_pattern.md)
+- [Review #03: 共通パーシャル化](reviews/review_03_shared_partial.md)
+
+**推定学習時間**: 各トピック 1〜2時間、レビューテスト 30分〜1時間
 
 ## 🗂️ 教材の構成
 
@@ -83,24 +90,17 @@
 
 ```
 docs/learning/
-├── 00_index.md                    # 本ファイル（全体目次）
-├── 01_basics/                     # 初級編
-│   ├── 01_rails_conventions.md
-│   ├── 02_mvc_architecture.md
-│   └── 03_routing_basics.md
-├── 02_intermediate/               # 中級編
-│   ├── 01_concerns_pattern.md
-│   ├── 02_dry_principle.md
-│   ├── 03_turbo_frames.md
-│   └── 04_authentication.md
-├── 03_advanced/                   # 上級編
-│   ├── 01_refactoring_patterns.md
-│   ├── 02_feature_flags.md
-│   ├── 03_database_migrations.md
-│   └── 04_security_practices.md
-└── 04_reviews/                    # レビューテスト
+├── 00_index.md                              # 本ファイル（全体目次）
+├── guides/                                  # 体系的ガイド
+│   └── rails_application_development.md   # Rails開発ガイド（全12章、3500行）
+├── topics/                                  # 個別トピック
+│   ├── 01_basics/                          # 初級編（未作成）
+│   ├── 02_intermediate/                    # 中級編
+│   │   ├── 01_concerns_pattern.md
+│   │   └── 02_shared_partials.md
+│   └── 03_advanced/                        # 上級編（未作成）
+└── reviews/                                 # レビューテスト
     ├── review_01_concern_pattern.md
-    ├── review_02_controller_naming.md
     └── review_03_shared_partial.md
 ```
 
@@ -122,12 +122,15 @@ docs/learning/
 
 ## 📊 学習時間の目安
 
-- **初級編**: 各30分〜1時間（全3トピック = 1.5〜3時間）
-- **中級編**: 各1〜2時間（全4トピック = 4〜8時間）
-- **上級編**: 各2〜3時間（全4トピック = 8〜12時間）
-- **レビューテスト**: 各30分〜1時間（全3問 = 1.5〜3時間）
+### Rails Application Development Guide
+- **通し読み**: 2〜3時間
+- **特定章のみ参照**: 各10〜30分
 
-**合計**: 15〜26時間
+### 個別トピックとレビューテスト
+- **中級編トピック**: 各1〜2時間（全2トピック = 2〜4時間）
+- **レビューテスト**: 各30分〜1時間（全2問 = 1〜2時間）
+
+**合計（全教材）**: 5〜9時間
 
 ## 🔗 関連リソース
 
@@ -147,6 +150,33 @@ docs/learning/
 
 ---
 
-**最終更新**: 2025-12-29
+## 📚 教材一覧
+
+### ガイド
+- **[Rails Application Development Guide](guides/rails_application_development.md)** - Rails開発の体系的知識（全12章）
+  - Chapter 1: Rails基礎とプロジェクト設計
+  - Chapter 2: プロジェクト構造とディレクトリ設計
+  - Chapter 3: データベース設計とモデル層
+  - Chapter 4: ルーティングとURL設計
+  - Chapter 5: コントローラーとビジネスロジック
+  - Chapter 6: ビュー層の設計
+  - Chapter 7: Hotwire (Turbo + Stimulus)
+  - Chapter 8: 認証と認可
+  - Chapter 9: テスト戦略
+  - Chapter 10: セキュリティ
+  - Chapter 11: デプロイと運用
+  - Chapter 12: 保守とリファクタリング
+
+### トピック
+- **[Concernパターン](topics/02_intermediate/01_concerns_pattern.md)** - コードの共通化とDRY原則
+- **[共通パーシャルの活用](topics/02_intermediate/02_shared_partials.md)** - ビューの重複削減
+
+### レビューテスト
+- **[Review #01: Concernパターンの導入](reviews/review_01_concern_pattern.md)** - PR形式の実践問題
+- **[Review #03: 共通パーシャル化](reviews/review_03_shared_partial.md)** - DRY原則の実践
+
+---
+
+**最終更新**: 2025-12-30
 **対応Railsバージョン**: Rails 8.1.1
 **プロジェクト**: Typnix (Flexitype)
