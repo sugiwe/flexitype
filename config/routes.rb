@@ -60,5 +60,6 @@ Rails.application.routes.draw do
         patch :toggle_notified  # /admin/allowed_emails/:id/toggle_notified
       end
     end
+    resources :lesson_records, only: [ :index ]  # /admin/lesson_records (練習履歴一覧)
   end
 end

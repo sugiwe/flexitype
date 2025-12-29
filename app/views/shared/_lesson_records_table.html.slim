@@ -1,5 +1,5 @@
 / 練習履歴テーブル（PC版・モバイル版対応、共通パーシャル）
-/ 使い方: = render "shared/lesson_records_table", lesson_records: @lesson_records, show_pagination: true
+/ 使い方: = render "shared/lesson_records_table", lesson_records: @lesson_records, show_pagination: true, show_user: false
 
 - if lesson_records.any?
   / テーブル（PC）
@@ -8,6 +8,8 @@
       thead
         tr.border-b.border-gray-200.dark:border-gray-700
           th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 日時
+          - if local_assigns[:show_user]
+            th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider ユーザー
           th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider レッスン
           th.px-6.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 単語数
           th.px-6.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 正答率
@@ -20,6 +22,19 @@
           tr.hover:bg-gray-50.dark:hover:bg-gray-700.transition-colors
             td.px-6.py-4.whitespace-nowrap.text-sm.text-gray-900.dark:text-gray-100
               = l(record.completed_at, format: :short)
+            - if local_assigns[:show_user]
+              td.px-6.py-4
+                .flex.items-center
+                  - if record.user.icon_url.present?
+                    img.w-8.h-8.rounded-full.mr-3 src=record.user.icon_url alt=record.user.name
+                  - else
+                    .w-8.h-8.rounded-full.bg-gray-300.dark:bg-gray-600.flex.items-center.justify-center.mr-3
+                      span.text-sm.font-medium.text-gray-600.dark:text-gray-300 = record.user.name[0].upcase
+                  - if defined?(admin_user_path)
+                    = link_to admin_user_path(record.user), class: "text-sm.font-medium.text-blue-600.dark:text-blue-400.hover:underline" do
+                      = record.user.name
+                  - else
+                    span.text-sm.font-medium.text-gray-900.dark:text-gray-100 = record.user.name
             td.px-6.py-4.text-sm
               .font-medium.text-gray-900.dark:text-gray-100
                 - if record.lesson_name.present?
@@ -64,14 +79,29 @@
   .md:hidden.divide-y.divide-gray-200.dark:divide-gray-700
     - lesson_records.each do |record|
       .p-4
-        .flex.justify-between.items-start.mb-3
+        - if local_assigns[:show_user]
+          .flex.items-center.mb-3
+            - if record.user.icon_url.present?
+              img.w-10.h-10.rounded-full.mr-3 src=record.user.icon_url alt=record.user.name
+            - else
+              .w-10.h-10.rounded-full.bg-gray-300.dark:bg-gray-600.flex.items-center.justify-center.mr-3
+                span.text-base.font-medium.text-gray-600.dark:text-gray-300 = record.user.name[0].upcase
+            div
+              - if defined?(admin_user_path)
+                = link_to admin_user_path(record.user), class: "font-medium.text-gray-800.dark:text-white.hover:underline" do
+                  = record.user.name
+              - else
+                span.font-medium.text-gray-800.dark:text-white = record.user.name
+              .text-xs.text-gray-500.dark:text-gray-400.mt-1 = l(record.completed_at, format: :short)
+        .flex.justify-between.items-start.mb-3 class=(local_assigns[:show_user] ? '' : 'mb-3')
           div
             .font-medium.text-gray-900.dark:text-gray-100
               - if record.lesson_name.present?
                 = record.lesson_name
               - else
                 span.text-gray-400 不明
-            .text-xs.text-gray-500.dark:text-gray-400.mt-1 = l(record.completed_at, format: :short)
+            - unless local_assigns[:show_user]
+              .text-xs.text-gray-500.dark:text-gray-400.mt-1 = l(record.completed_at, format: :short)
           - if record.accuracy && record.accuracy >= 90
             span.inline-flex.px-2.py-1.text-sm.font-semibold.rounded-full.bg-green-100.dark:bg-green-900.text-green-800.dark:text-green-200
               = "#{record.accuracy}%"
