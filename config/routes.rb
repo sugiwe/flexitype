@@ -46,7 +46,7 @@ Rails.application.routes.draw do
     root to: "dashboard#index"  # /my
     resources :keymaps, only: [ :index, :new, :create, :edit, :update, :destroy ], param: :slug
     resources :lessons, only: [ :index, :new, :create, :edit, :update, :destroy ]  # /my/lessons (公式レッスン + 自作レッスン + 公開レッスン管理)
-    resources :history, only: [ :index, :create ]  # /my/history, POST /my/history
+    resources :history, only: [ :index, :create ], controller: "lesson_records"  # /my/history (URL), My::LessonRecordsController (コントローラー)
     resource :account, only: [ :edit, :update ]  # /my/account/edit, PATCH /my/account
   end
 

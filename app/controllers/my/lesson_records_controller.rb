@@ -1,4 +1,4 @@
-class My::HistoryController < My::ApplicationController
+class My::LessonRecordsController < My::ApplicationController
   include LessonRecordCreation
 
   def index
