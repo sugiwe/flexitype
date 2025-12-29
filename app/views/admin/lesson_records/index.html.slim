@@ -1,0 +1,16 @@
+/ 管理者 - 練習履歴一覧
+
+.mb-6
+  h2.text-3xl.font-bold.text-gray-800.dark:text-white 練習履歴一覧
+  p.text-sm.text-gray-600.dark:text-gray-400.mt-2 全ユーザーの練習履歴を確認できます
+
+/ 戻るリンク
+.mb-6
+  = link_to admin_root_path, class: "inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:underline" do
+    svg.w-4.h-4.mr-1 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+      path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"
+    | ダッシュボードに戻る
+
+/ 練習履歴テーブル（共通パーシャル使用、ユーザー列表示）
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-md.overflow-hidden
+  = render "shared/lesson_records_table", lesson_records: @lesson_records, show_pagination: true, show_user: true
