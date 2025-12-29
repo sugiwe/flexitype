@@ -2304,3 +2304,1237 @@ span.px-2.py-1.rounded.text-xs.font-semibold class=grade_config[grade]
 - メンテナンス容易
 
 ---
+
+# Chapter 7: Hotwire (Turbo + Stimulus)
+
+## 7.1 Turbo Framesの基礎
+
+### Turbo Framesとは
+
+Turbo Framesは、ページの一部だけを更新する仕組みです。JavaScriptを最小限に抑えながら、SPA（Single Page Application）のようなUXを実現できます。
+
+**Typnixでの実装例（Day 22: タブ化）:**
+
+```slim
+/ app/views/lessons/index.html.slim
+.mb-6
+  / タブナビゲーション
+  .border-b.border-gray-200.dark:border-gray-700
+    nav.-mb-px.flex.space-x-8
+      = link_to root_path(tab: 'basics'),
+        data: { turbo_frame: "lessons_content" },
+        class: tab_class('basics') do
+        | 基礎
+
+      = link_to root_path(tab: 'english'),
+        data: { turbo_frame: "lessons_content" },
+        class: tab_class('english') do
+        | 英語
+
+      = link_to root_path(tab: 'japanese'),
+        data: { turbo_frame: "lessons_content" },
+        class: tab_class('japanese') do
+        | 日本語
+
+/ Turbo Frameでコンテンツをラップ
+= turbo_frame_tag "lessons_content" do
+  = render "lessons_list", lessons: @lessons, categories: @categories
+```
+
+**コントローラー側:**
+
+```ruby
+# app/controllers/lessons_controller.rb
+class LessonsController < ApplicationController
+  def index
+    @tab = params[:tab] || 'basics'
+    @categories = Category.published.where(tab: @tab)
+    @lessons = Lesson.published.joins(:category).where(categories: { tab: @tab })
+  end
+end
+```
+
+**メリット:**
+- ページ全体をリロードせずに一部だけ更新
+- JavaScriptコードが不要（data属性のみ）
+- URLが変わるため、ブラウザの戻る/進むが機能する
+
+### Turbo Framesの設計パターン
+
+**パターン1: サーバー側でアクティブ状態を管理（Typnixの選択）**
+
+```ruby
+# app/controllers/my/lesson_records_controller.rb
+class My::LessonRecordsController < My::ApplicationController
+  def index
+    @period = params[:period] || "all"  # サーバー側で状態管理
+    @filtered_records = current_user.lesson_records.for_period(@period)
+    @lesson_records = @filtered_records.recent.page(params[:page]).per(20)
+  end
+end
+```
+
+```slim
+/ app/views/my/lesson_records/index.html.slim
+= turbo_frame_tag "history_content" do
+  / タブ
+  nav
+    = link_to my_history_index_path(period: 'all'),
+      data: { turbo_frame: "history_content" },
+      class: "#{@period == 'all' ? 'active' : ''}" do
+      | 全期間
+
+    = link_to my_history_index_path(period: 'month'),
+      data: { turbo_frame: "history_content" },
+      class: "#{@period == 'month' ? 'active' : ''}" do
+      | 直近1ヶ月
+
+  / コンテンツ
+  = render "shared/lesson_records_table", lesson_records: @lesson_records
+```
+
+**メリット:**
+- Stimulusコントローラー不要
+- サーバー側で一元管理
+- URLパラメータでブックマーク可能
+
+**パターン2: クライアント側で状態管理（Stimulus使用）**
+
+```javascript
+// app/javascript/controllers/tabs_controller.js
+import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+  static targets = ["tab", "panel"]
+
+  connect() {
+    this.showTab(0)
+  }
+
+  select(event) {
+    event.preventDefault()
+    const index = this.tabTargets.indexOf(event.currentTarget)
+    this.showTab(index)
+  }
+
+  showTab(index) {
+    this.tabTargets.forEach((tab, i) => {
+      tab.classList.toggle('active', i === index)
+    })
+    this.panelTargets.forEach((panel, i) => {
+      panel.classList.toggle('hidden', i !== index)
+    })
+  }
+}
+```
+
+**メリット:**
+- サーバーリクエスト不要
+- 高速な切り替え
+- オフライン対応可能
+
+**Typnixの判断:**
+- タブ切り替えでデータが変わる場合: サーバー側管理
+- 単なる表示切り替え: クライアント側管理
+
+## 7.2 Turbo Streamsによる部分更新
+
+### Turbo Streamsの基本
+
+Turbo Streamsは、サーバーから複数のDOM操作を指示できる仕組みです。
+
+**Typnixでの実装例（Day 28: 通知フラグトグル）:**
+
+```ruby
+# config/routes.rb
+namespace :admin do
+  resources :allowed_emails do
+    member do
+      patch :toggle_contacted
+    end
+  end
+end
+
+# app/controllers/admin/allowed_emails_controller.rb
+class Admin::AllowedEmailsController < Admin::ApplicationController
+  def toggle_contacted
+    @allowed_email = AllowedEmail.find(params[:id])
+    @allowed_email.update(contacted: !@allowed_email.contacted)
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to admin_allowed_emails_path }
+    end
+  end
+end
+```
+
+**Turbo Streamsビュー:**
+
+```slim
+/ app/views/admin/allowed_emails/toggle_contacted.turbo_stream.slim
+= turbo_stream.replace "allowed_email_#{@allowed_email.id}" do
+  = render "allowed_email_row", allowed_email: @allowed_email
+```
+
+**HTML側:**
+
+```slim
+/ app/views/admin/allowed_emails/index.html.slim
+tbody
+  - @allowed_emails.each do |email|
+    = render "allowed_email_row", allowed_email: email
+
+/ app/views/admin/allowed_emails/_allowed_email_row.html.slim
+tr id="allowed_email_#{allowed_email.id}"
+  td.px-4.py-2 = allowed_email.email
+  td.px-4.py-2
+    - if allowed_email.contacted?
+      span.px-2.py-1.rounded.text-xs.bg-green-100.text-green-800 連絡済み
+    - else
+      span.px-2.py-1.rounded.text-xs.bg-gray-100.text-gray-800 未連絡
+  td.px-4.py-2.text-right
+    = button_to "トグル",
+      toggle_contacted_admin_allowed_email_path(allowed_email),
+      method: :patch,
+      data: { turbo_method: :patch },
+      class: "btn-sm"
+```
+
+**Turbo Streamsのアクション:**
+
+| アクション | 説明 | 用途 |
+|----------|------|------|
+| `append` | 要素を末尾に追加 | チャット、通知追加 |
+| `prepend` | 要素を先頭に追加 | タイムライン |
+| `replace` | 要素を置換 | 状態更新、編集 |
+| `update` | 要素の中身を更新 | カウンター、ステータス |
+| `remove` | 要素を削除 | 削除機能 |
+| `before` | 要素の前に挿入 | リスト挿入 |
+| `after` | 要素の後に挿入 | リスト挿入 |
+
+### Turbo Streamsの設計ポイント
+
+**1. ターゲット要素の選択**
+
+```slim
+/ ❌ 悪い例: 構造要素をターゲットに
+tbody id="emails_table"
+  - @emails.each do |email|
+    tr
+      td = email.email
+
+/ Turbo Streamsで tbody を replace すると、tbody ごと置き換わる
+= turbo_stream.replace "emails_table" do
+  tbody id="emails_table"  # tbody タグを含める必要がある
+    - @emails.each do |email|
+      tr
+        td = email.email
+
+/ ✅ 良い例: 置換可能な要素をターゲットに
+tr id="email_#{email.id}"
+  td = email.email
+
+/ Turbo Streamsで tr を replace（シンプル）
+= turbo_stream.replace "email_#{email.id}" do
+  tr id="email_#{email.id}"
+    td = email.email
+```
+
+**2. パーシャルの再利用**
+
+```ruby
+# app/controllers/admin/allowed_emails_controller.rb
+def create
+  @allowed_email = AllowedEmail.new(allowed_email_params)
+
+  if @allowed_email.save
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.prepend("allowed_emails",
+          partial: "allowed_email_row",
+          locals: { allowed_email: @allowed_email })
+      end
+      format.html { redirect_to admin_allowed_emails_path }
+    end
+  end
+end
+```
+
+## 7.3 Stimulusコントローラー
+
+### Stimulusの基本
+
+StimulusはHTMLに直接JavaScriptの動作を紐付けるフレームワークです。
+
+**Typnixでの実装例（テーマ切り替え）:**
+
+```javascript
+// app/javascript/controllers/theme_controller.js
+import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+  static targets = ["toggle"]
+
+  connect() {
+    this.updateTheme()
+  }
+
+  toggle() {
+    const themes = ['light', 'dark', 'system']
+    const currentIndex = themes.indexOf(this.currentTheme)
+    const nextTheme = themes[(currentIndex + 1) % themes.length]
+
+    localStorage.setItem('theme', nextTheme)
+    this.updateTheme()
+  }
+
+  updateTheme() {
+    const theme = localStorage.getItem('theme') || 'system'
+    const isDark = theme === 'dark' ||
+      (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+
+    document.documentElement.classList.toggle('dark', isDark)
+
+    // トグルボタンのアイコン更新
+    if (this.hasToggleTarget) {
+      this.updateToggleIcon(theme)
+    }
+  }
+
+  updateToggleIcon(theme) {
+    const icons = {
+      light: '☀️',
+      dark: '🌙',
+      system: '💻'
+    }
+    this.toggleTarget.textContent = icons[theme]
+  }
+
+  get currentTheme() {
+    return localStorage.getItem('theme') || 'system'
+  }
+}
+```
+
+**HTML側:**
+
+```slim
+/ app/views/layouts/partials/_header.html.slim
+.flex.items-center data-controller="theme"
+  button data-action="click->theme#toggle" data-theme-target="toggle" class="btn"
+    | 💻
+```
+
+### Stimulusの設計パターン
+
+**パターン1: ターゲットを使ったDOM参照**
+
+```javascript
+// app/javascript/controllers/typing_controller.js
+import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+  static targets = ["input", "display", "timer", "accuracy"]
+
+  connect() {
+    this.startTime = null
+    this.correctCount = 0
+    this.mistakeCount = 0
+  }
+
+  start() {
+    this.startTime = Date.now()
+    this.inputTarget.focus()
+    this.updateTimer()
+  }
+
+  checkInput() {
+    const typed = this.inputTarget.value
+    const expected = this.displayTarget.dataset.text
+
+    if (typed === expected) {
+      this.correctCount++
+    } else {
+      this.mistakeCount++
+    }
+
+    this.updateAccuracy()
+  }
+
+  updateAccuracy() {
+    const total = this.correctCount + this.mistakeCount
+    const accuracy = total > 0 ? (this.correctCount / total * 100).toFixed(1) : 0
+    this.accuracyTarget.textContent = `${accuracy}%`
+  }
+
+  updateTimer() {
+    if (!this.startTime) return
+
+    const elapsed = Math.floor((Date.now() - this.startTime) / 1000)
+    this.timerTarget.textContent = `${elapsed}秒`
+
+    requestAnimationFrame(() => this.updateTimer())
+  }
+}
+```
+
+**パターン2: Valuesを使った状態管理**
+
+```javascript
+// app/javascript/controllers/counter_controller.js
+import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+  static values = {
+    count: { type: Number, default: 0 },
+    step: { type: Number, default: 1 }
+  }
+
+  increment() {
+    this.countValue += this.stepValue
+  }
+
+  decrement() {
+    this.countValue -= this.stepValue
+  }
+
+  countValueChanged() {
+    // countValue が変更されたときに自動実行
+    this.element.textContent = this.countValue
+  }
+}
+```
+
+```slim
+/ HTML
+div data-controller="counter" data-counter-count-value="10" data-counter-step-value="5"
+  button data-action="click->counter#decrement" -
+  span 10
+  button data-action="click->counter#increment" +
+```
+
+---
+
+# Chapter 8: 認証と認可
+
+## 8.1 Google認証の実装
+
+### Google Identity Servicesの統合
+
+**Typnixでの実装:**
+
+```ruby
+# app/controllers/sessions_controller.rb
+class SessionsController < ApplicationController
+  def create
+    id_token = params[:credential]
+
+    begin
+      validator = GoogleIDToken::Validator.new
+      payload = validator.check(id_token, ENV['GOOGLE_CLIENT_ID'])
+
+      @user = User.find_or_create_by(google_uid: payload['sub']) do |u|
+        u.email = payload['email']
+        u.name = payload['name']
+      end
+
+      session[:user_id] = @user.id
+      @user.update(last_login_at: Time.current)
+
+      redirect_to root_path, notice: "ログインしました"
+    rescue GoogleIDToken::ValidationError => e
+      redirect_to root_path, alert: "認証に失敗しました"
+    end
+  end
+
+  def destroy
+    session[:user_id] = nil
+    redirect_to root_path, notice: "ログアウトしました"
+  end
+end
+```
+
+**環境変数管理:**
+
+```yaml
+# config/credentials.yml.enc (暗号化)
+google:
+  client_id: YOUR_CLIENT_ID
+  client_secret: YOUR_CLIENT_SECRET
+```
+
+```ruby
+# config/initializers/google_auth.rb
+ENV['GOOGLE_CLIENT_ID'] = Rails.application.credentials.dig(:google, :client_id)
+```
+
+### フィーチャーフラグによるログイン制限
+
+**Typnixでの実装（Day 28）:**
+
+```ruby
+# app/controllers/application_controller.rb
+class ApplicationController < ActionController::Base
+  helper_method :current_user, :logged_in?
+
+  private
+
+  def current_user
+    @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
+  end
+
+  def logged_in?
+    current_user.present? && allowed_to_login?
+  end
+
+  def allowed_to_login?
+    # フィーチャーフラグで制御
+    return true unless ENV["RESTRICT_LOGIN"] == "true"
+
+    AllowedEmail.allowed?(current_user.email)
+  end
+
+  def require_login
+    unless logged_in?
+      redirect_to root_path, alert: "ログインが必要です"
+    end
+  end
+end
+```
+
+**AllowedEmailモデル:**
+
+```ruby
+# app/models/allowed_email.rb
+class AllowedEmail < ApplicationRecord
+  validates :email, presence: true, uniqueness: { case_sensitive: false }
+
+  before_save :normalize_email
+
+  def self.allowed?(email)
+    return true if email.blank?
+    where("LOWER(email) = ?", email.downcase).exists?
+  end
+
+  private
+
+  def normalize_email
+    self.email = email.downcase.strip
+  end
+end
+```
+
+**メリット:**
+- 環境変数1つで制御（`RESTRICT_LOGIN=true`）
+- 本番では制限、開発では開放
+- 削除容易性（環境変数を削除するだけ）
+
+## 8.2 権限管理
+
+### シンプルなロールベース認可
+
+**Typnixでの実装:**
+
+```ruby
+# app/models/user.rb
+class User < ApplicationRecord
+  # admin カラム（boolean）で管理
+  def admin?
+    admin
+  end
+end
+
+# app/controllers/admin/application_controller.rb
+class Admin::ApplicationController < ApplicationController
+  before_action :require_login
+  before_action :require_admin
+
+  private
+
+  def require_admin
+    unless current_user&.admin?
+      redirect_to root_path, alert: "管理者権限が必要です"
+    end
+  end
+end
+```
+
+### リソースベース認可
+
+```ruby
+# app/controllers/my/lessons_controller.rb
+class My::LessonsController < My::ApplicationController
+  before_action :set_lesson, only: [ :edit, :update, :destroy ]
+  before_action :authorize_lesson, only: [ :edit, :update, :destroy ]
+
+  private
+
+  def set_lesson
+    @lesson = Lesson.find(params[:id])
+  end
+
+  def authorize_lesson
+    unless @lesson.user_id == current_user.id
+      redirect_to my_lessons_path, alert: "権限がありません"
+    end
+  end
+end
+```
+
+### スコープによる権限制御
+
+```ruby
+# app/models/lesson.rb
+class Lesson < ApplicationRecord
+  scope :visible_to, ->(user) {
+    if user&.admin?
+      all
+    elsif user
+      where(user_id: user.id)
+        .or(where(is_public: true, categories: { published: true }))
+        .or(where(user_id: nil, categories: { published: true }))
+    else
+      joins(:category)
+        .where(is_public: true, categories: { published: true, requires_login: false })
+        .where(user_id: nil)
+    end
+  }
+end
+
+# 使用例
+@lessons = Lesson.visible_to(current_user)
+```
+
+---
+
+# Chapter 9: テスト戦略
+
+## 9.1 RSpecの基本設定
+
+### テスト環境のセットアップ
+
+**Typnixでの設定（Day 25）:**
+
+```ruby
+# Gemfile
+group :development, :test do
+  gem "rspec-rails"
+  gem "factory_bot_rails"
+  gem "faker"
+end
+
+group :test do
+  gem "capybara"
+  gem "selenium-webdriver"
+end
+```
+
+```ruby
+# spec/rails_helper.rb
+RSpec.configure do |config|
+  config.include FactoryBot::Syntax::Methods
+
+  config.use_transactional_fixtures = true
+
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
+  end
+end
+```
+
+### FactoryBotによるテストデータ作成
+
+```ruby
+# spec/factories/users.rb
+FactoryBot.define do
+  factory :user do
+    sequence(:email) { |n| "user#{n}@example.com" }
+    sequence(:google_uid) { |n| "google_uid_#{n}" }
+    name { Faker::Name.name }
+    admin { false }
+
+    trait :admin do
+      admin { true }
+    end
+
+    trait :with_username do
+      username { Faker::Internet.username(specifier: 5..10, separators: ['-']) }
+    end
+  end
+end
+
+# spec/factories/lesson_records.rb
+FactoryBot.define do
+  factory :lesson_record do
+    association :user
+    association :lesson
+
+    word_count { rand(10..50) }
+    correct_count { rand(word_count * 0.7..word_count) }
+    mistake_count { word_count - correct_count }
+    accuracy { (correct_count.to_f / word_count * 100).round(1) }
+    duration_seconds { rand(30..300) }
+    completed_at { Time.current }
+
+    trait :high_accuracy do
+      accuracy { 98.0 }
+    end
+
+    trait :low_accuracy do
+      accuracy { 50.0 }
+    end
+  end
+end
+```
+
+## 9.2 モデルテスト
+
+### バリデーションのテスト
+
+```ruby
+# spec/models/user_spec.rb
+RSpec.describe User, type: :model do
+  describe "validations" do
+    it { should validate_presence_of(:email) }
+    it { should validate_uniqueness_of(:email) }
+    it { should validate_presence_of(:google_uid) }
+
+    describe "username validation" do
+      let(:user) { create(:user, username: "valid-user") }
+
+      it "allows valid usernames" do
+        user.username = "test-user-123"
+        expect(user).to be_valid
+      end
+
+      it "rejects invalid characters" do
+        user.username = "Test_User"
+        expect(user).not_to be_valid
+        expect(user.errors[:username]).to include(/小文字英数字/)
+      end
+
+      it "rejects reserved usernames" do
+        user.username = "admin"
+        expect(user).not_to be_valid
+        expect(user.errors[:username]).to include(/予約されている/)
+      end
+
+      it "enforces 24-hour cooldown" do
+        user.update(username: "new-name", username_changed_at: Time.current)
+        user.username = "another-name"
+        expect(user).not_to be_valid
+      end
+    end
+  end
+end
+```
+
+### ビジネスロジックのテスト
+
+```ruby
+# spec/models/lesson_record_spec.rb
+RSpec.describe LessonRecord, type: :model do
+  describe "#wpm" do
+    let(:record) { create(:lesson_record, typed_chars: 300, duration_seconds: 60) }
+
+    it "calculates WPM correctly" do
+      expect(record.wpm).to eq(60)
+    end
+
+    it "returns nil if duration is zero" do
+      record.duration_seconds = 0
+      expect(record.wpm).to be_nil
+    end
+  end
+
+  describe "#grade" do
+    it "returns プロ級 for high performance" do
+      record = create(:lesson_record, accuracy: 98.0, wpm: 80)
+      expect(record.grade).to eq("プロ級")
+    end
+
+    it "returns 入門者 for low performance" do
+      record = create(:lesson_record, accuracy: 70.0, wpm: 20)
+      expect(record.grade).to eq("入門者")
+    end
+  end
+
+  describe "scopes" do
+    let!(:old_record) { create(:lesson_record, completed_at: 2.weeks.ago) }
+    let!(:recent_record) { create(:lesson_record, completed_at: 1.day.ago) }
+
+    it "filters by period" do
+      expect(LessonRecord.for_period("week")).to include(recent_record)
+      expect(LessonRecord.for_period("week")).not_to include(old_record)
+    end
+  end
+end
+```
+
+## 9.3 システムテスト（E2E）
+
+### Capybaraによるブラウザテスト
+
+```ruby
+# spec/system/lesson_practice_spec.rb
+RSpec.describe "Lesson Practice", type: :system do
+  let(:user) { create(:user, :with_username) }
+  let(:lesson) { create(:lesson, :published) }
+
+  before do
+    driven_by(:selenium_chrome_headless)
+  end
+
+  it "allows user to practice and save record" do
+    # ログイン
+    visit root_path
+    click_button "ログイン"
+    # ... Google認証のモック ...
+
+    # レッスンページへ
+    visit lesson_path(lesson)
+    expect(page).to have_content(lesson.name)
+
+    # タイピング練習
+    click_button "練習開始"
+    fill_in "typing-input", with: "test text"
+    click_button "完了"
+
+    # 結果表示
+    expect(page).to have_content("練習完了")
+    expect(page).to have_content("正答率")
+    expect(page).to have_content("WPM")
+
+    # 記録保存
+    expect {
+      click_button "記録を保存"
+      sleep 1
+    }.to change(LessonRecord, :count).by(1)
+  end
+end
+```
+
+---
+
+# Chapter 10: セキュリティ
+
+## 10.1 Brakemanによるセキュリティチェック
+
+### セキュリティスキャンの自動化
+
+**Typnixでの運用:**
+
+```bash
+# Gemfile
+group :development do
+  gem "brakeman"
+end
+
+# コミット前の必須チェック
+$ bundle exec brakeman --no-pager
+
+# 結果: 0 warnings（Day 15達成、継続維持）
+```
+
+**主要なチェック項目:**
+- SQL Injection
+- Cross-Site Scripting (XSS)
+- Cross-Site Request Forgery (CSRF)
+- Mass Assignment
+- Command Injection
+- File Access
+- Dangerous Evaluation
+
+### 実際の修正例
+
+**問題: Mass Assignment脆弱性**
+
+```ruby
+# ❌ 悪い例
+def create
+  @user = User.create(params[:user])  # 危険！
+end
+
+# ✅ 良い例: Strong Parameters
+def create
+  @user = User.create(user_params)
+end
+
+private
+
+def user_params
+  params.require(:user).permit(:name, :email)
+end
+```
+
+## 10.2 Content Security Policy (CSP)
+
+### CSP設定の実装
+
+**Typnixでの設定（Day 19改善）:**
+
+```ruby
+# config/initializers/content_security_policy.rb
+Rails.application.configure do
+  config.content_security_policy do |policy|
+    policy.default_src :self, :https
+    policy.font_src    :self, :https, :data
+    policy.img_src     :self, :https, :data
+    policy.object_src  :none
+
+    # Google認証との競合を解消
+    policy.script_src  :self, :https, :unsafe_inline, "https://accounts.google.com"
+    policy.style_src   :self, :https, :unsafe_inline
+
+    policy.frame_src   "https://accounts.google.com"
+    policy.connect_src :self, :https
+  end
+
+  # nonce無効化（Google認証との競合回避）
+  config.content_security_policy_nonce_generator = nil
+end
+```
+
+**設計判断:**
+- `unsafe_inline`は最小限に
+- インラインスタイル（`style=`属性）は使用禁止
+- Tailwind CSSクラスのみ使用
+
+## 10.3 その他のセキュリティ対策
+
+### CSRF対策
+
+```ruby
+# app/controllers/application_controller.rb
+class ApplicationController < ActionController::Base
+  protect_from_forgery with: :exception
+end
+```
+
+```slim
+/ すべてのフォームに自動挿入
+= form_with model: @lesson do |f|
+  / csrf_meta_tags が自動的にトークンを追加
+  = f.text_field :name
+```
+
+### 予約語システム（Day 24）
+
+```ruby
+# config/initializers/reserved_usernames.rb
+module ReservedUsernames
+  RESERVED_LIST = %w[
+    admin administrator root system
+    support help info contact
+    api www mail ftp
+    my account settings profile
+    about terms privacy policy
+    new edit create update destroy
+  ].freeze
+
+  def self.reserved?(username)
+    RESERVED_LIST.include?(username.to_s.downcase)
+  end
+end
+
+# app/models/user.rb
+class User < ApplicationRecord
+  validate :username_not_reserved
+
+  private
+
+  def username_not_reserved
+    return if username.blank?
+    if ReservedUsernames.reserved?(username)
+      errors.add(:username, "は予約されているため使用できません")
+    end
+  end
+end
+```
+
+---
+
+# Chapter 11: デプロイと運用
+
+## 11.1 Kamalによるデプロイ
+
+### Kamal設定
+
+**Typnixでの設定:**
+
+```yaml
+# config/deploy.yml
+service: typnix
+image: your-username/typnix
+
+servers:
+  web:
+    hosts:
+      - your-server-ip
+    labels:
+      traefik.http.routers.typnix.rule: Host(`typnix.com`)
+      traefik.http.routers.typnix.tls.certresolver: letsencrypt
+
+registry:
+  username: your-username
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+env:
+  secret:
+    - RAILS_MASTER_KEY
+  clear:
+    RAILS_ENV: production
+```
+
+**デプロイコマンド:**
+
+```bash
+# 初回デプロイ
+$ kamal setup
+
+# 更新デプロイ
+$ kamal deploy
+
+# ログ確認
+$ kamal app logs
+
+# コンテナ再起動
+$ kamal app restart
+```
+
+### ゼロダウンタイムデプロイ
+
+**Kamalの動作:**
+1. 新しいコンテナをビルド
+2. ヘルスチェック（`/up`エンドポイント）
+3. ヘルスチェック成功後、トラフィックを切り替え
+4. 旧コンテナを停止
+
+```ruby
+# config/routes.rb
+get "up", to: "rails/health#show", as: :rails_health_check
+```
+
+## 11.2 データベースバックアップ
+
+### 自動バックアップスクリプト
+
+```bash
+# scripts/backup_database.sh
+#!/bin/bash
+
+BACKUP_DIR="/var/backups/postgresql"
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_FILE="$BACKUP_DIR/typnix_$DATE.sql.gz"
+
+mkdir -p $BACKUP_DIR
+
+# PostgreSQLダンプ
+pg_dump -U typnix_user -d typnix_production | gzip > $BACKUP_FILE
+
+# 7日以上古いバックアップを削除
+find $BACKUP_DIR -name "*.sql.gz" -mtime +7 -delete
+
+echo "Backup completed: $BACKUP_FILE"
+```
+
+**Cron設定:**
+
+```bash
+# 毎日午前3時に実行
+0 3 * * * /path/to/scripts/backup_database.sh >> /var/log/backup.log 2>&1
+```
+
+## 11.3 モニタリングとエラートラッキング
+
+### エラートラッキング（Sentry）
+
+```ruby
+# Gemfile
+gem "sentry-ruby"
+gem "sentry-rails"
+
+# config/initializers/sentry.rb
+Sentry.init do |config|
+  config.dsn = ENV['SENTRY_DSN']
+  config.breadcrumbs_logger = [:active_support_logger, :http_logger]
+  config.traces_sample_rate = 0.5
+  config.environment = Rails.env
+end
+```
+
+### パフォーマンス監視
+
+```ruby
+# config/environments/production.rb
+config.log_level = :info
+
+# スロークエリログ
+config.active_record.warn_on_records_fetched_greater_than = 100
+
+# N+1問題の検出
+config.after_initialize do
+  Bullet.enable = true
+  Bullet.alert = false
+  Bullet.bullet_logger = true
+  Bullet.rails_logger = true
+end
+```
+
+---
+
+# Chapter 12: 保守とリファクタリング
+
+## 12.1 リファクタリングの実践
+
+### Concernパターンへの移行（Day 29）
+
+**Before: コード重複**
+
+```ruby
+# 2つのコントローラーで30行 × 2 = 60行
+```
+
+**After: Concern化**
+
+```ruby
+# Concern 20行 + 各コントローラー 3行 × 2 = 26行
+# 削減率: 57%
+```
+
+### 共通パーシャル化（Day 29）
+
+**Before: ビュー重複**
+
+```slim
+# 3つのビューで231行の重複
+```
+
+**After: 共通パーシャル**
+
+```slim
+# 共通パーシャル 108行
+# 削減率: 53%
+```
+
+## 12.2 データマイグレーション戦略
+
+### 3段階アプローチ（Day 24）
+
+**Phase 1: データクリーンアップ**
+- 古いデータ削除
+- データ型変換の準備
+
+**Phase 2: スキーマクリーンアップ**
+- カラム型変更
+- PostgreSQLキャスト機能活用
+
+**Phase 3: データ整合性確保**
+- NOT NULL制約
+- 外部キー制約
+- インデックス追加
+
+**メリット:**
+- 各段階でロールバック可能
+- エラー発生時の影響範囲が限定的
+- 本番環境でのデータ破壊リスク最小化
+
+## 12.3 技術的負債の管理
+
+### TODOコメントの活用
+
+```ruby
+# app/models/share.rb
+class Share < ApplicationRecord
+  # TODO: 動的OGP画像生成
+  # - MiniMagick + ImageMagick でテキストオーバーレイ
+  # - フォント問題の調査が必要
+  # - 優先度: 低（静的テンプレートで代替中）
+
+  def og_image_url
+    "https://typnix.com/og-image-default.png"
+  end
+end
+```
+
+### スキップしたテストの管理
+
+```ruby
+# spec/models/lesson_spec.rb
+RSpec.describe Lesson, type: :model do
+  describe "after_create callbacks" do
+    skip "TODO: after_createコールバックのテスト" do
+      # FactoryBotとNOT NULL制約の相性問題
+      # 解決策: trait を使った段階的データ作成
+    end
+  end
+end
+```
+
+### フィーチャーフラグパターン
+
+```ruby
+# 削除容易性の確保
+def allowed_to_login?
+  return true unless ENV["RESTRICT_LOGIN"] == "true"
+  AllowedEmail.allowed?(current_user.email)
+end
+
+# 環境変数を削除するだけで機能無効化
+```
+
+---
+
+# まとめ: Typnixプロジェクトから学んだこと
+
+## 技術的成果
+
+**29日間の開発で達成:**
+- 独自ドメインへの本番デプロイ（Day 14、11日前倒し）
+- Brakeman 0警告達成（Day 15、継続維持）
+- Rails wayなアーキテクチャ（delegate、Concern、RESTful）
+- モダンなフロントエンド（Hotwire、Tailwind CSS、ダークモード）
+- テスト基盤整備（RSpec、FactoryBot、システムテスト）
+- セキュリティベストプラクティス（CSP、予約語システム、フィーチャーフラグ）
+
+## 設計原則
+
+**1. DRY原則の徹底**
+- Concernパターン: 57%削減
+- 共通パーシャル: 53%削減
+
+**2. Rails way**
+- 設定より規約
+- Fat Model, Skinny Controller
+- RESTful設計
+
+**3. 削除容易性**
+- フィーチャーフラグパターン
+- 環境変数による機能制御
+- TODO管理と技術的負債の可視化
+
+**4. ユーザーフィードバック駆動**
+- Day 22-28で積極的に対応
+- キーマップバグ修正3件
+- UX改善（フラッシュメッセージ、通知フラグ）
+
+## 学習リソース
+
+**プロジェクト内:**
+- [CLAUDE.md](/CLAUDE.md) - 全体仕様
+- [CLAUDE_FEATURES.md](/CLAUDE_FEATURES.md) - 実装済み機能
+- [日報](/docs/daily_reports/) - 29日間の記録
+
+**外部リソース:**
+- [Rails Guides](https://guides.rubyonrails.org/)
+- [Hotwire](https://hotwired.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+
+---
+
+**作成日**: 2025-12-30
+**対象**: Rails 8.1.1 + Hotwire
+**プロジェクト**: Typnix (Flexitype)
