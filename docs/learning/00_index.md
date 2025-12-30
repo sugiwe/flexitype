@@ -44,11 +44,13 @@ Typnixプロジェクトの実装から抽出した、体系的なRails開発知
 1. [Concernパターン](topics/02_intermediate/01_concerns_pattern.md) - コードの共通化、DRY原則
 2. [共通パーシャルの活用](topics/02_intermediate/02_shared_partials.md) - ビューの重複削減
 3. [Hotwire（Turbo Frames + Stimulus）](topics/02_intermediate/03_hotwire.md) - モダンなフロントエンド開発
+7. [ActiveRecordスコープの効果的な使い方](topics/02_intermediate/07_active_record_scopes.md) - クエリの整理とN+1対策
 
 **レビューテスト（実践問題）**
 - [Review #01: Concernパターンの導入](reviews/review_01_concern_pattern.md)
 - [Review #02: 共通パーシャル化](reviews/review_02_shared_partial.md)
 - [Review #03: Hotwireの実践](reviews/review_03_hotwire.md)
+- [Review #07: ActiveRecordスコープの実践](reviews/review_07_active_record_scopes.md)
 
 **推定学習時間**: 各トピック 1〜3時間、レビューテスト 30分〜1時間
 
@@ -100,12 +102,14 @@ docs/learning/
 │   ├── 02_intermediate/                    # 中級編
 │   │   ├── 01_concerns_pattern.md
 │   │   ├── 02_shared_partials.md
-│   │   └── 03_hotwire.md
+│   │   ├── 03_hotwire.md
+│   │   └── 07_active_record_scopes.md
 │   └── 03_advanced/                        # 上級編（未作成）
 └── reviews/                                 # レビューテスト
     ├── review_01_concern_pattern.md
     ├── review_02_shared_partial.md
-    └── review_03_hotwire.md
+    ├── review_03_hotwire.md
+    └── review_07_active_record_scopes.md
 ```
 
 ## 🎓 レビューテストの使い方
@@ -131,10 +135,10 @@ docs/learning/
 - **特定章のみ参照**: 各10〜30分
 
 ### 個別トピックとレビューテスト
-- **中級編トピック**: 各1〜3時間（全3トピック = 3〜9時間）
-- **レビューテスト**: 各30分〜1時間（全3問 = 1.5〜3時間）
+- **中級編トピック**: 各1〜3時間（全4トピック = 4〜12時間）
+- **レビューテスト**: 各30分〜1時間（全4問 = 2〜4時間）
 
-**合計（全教材）**: 6.5〜15時間
+**合計（全教材）**: 8〜19時間
 
 ## 🔗 関連リソース
 
@@ -175,11 +179,13 @@ docs/learning/
 - **[Concernパターン](topics/02_intermediate/01_concerns_pattern.md)** - コードの共通化とDRY原則
 - **[共通パーシャルの活用](topics/02_intermediate/02_shared_partials.md)** - ビューの重複削減
 - **[Hotwire（Turbo Frames + Stimulus）](topics/02_intermediate/03_hotwire.md)** - モダンなフロントエンド開発
+- **[ActiveRecordスコープの効果的な使い方](topics/02_intermediate/07_active_record_scopes.md)** - クエリの整理とN+1対策
 
 ### レビューテスト
 - **[Review #01: Concernパターンの導入](reviews/review_01_concern_pattern.md)** - PR形式の実践問題
 - **[Review #02: 共通パーシャル化](reviews/review_02_shared_partial.md)** - DRY原則の実践
 - **[Review #03: Hotwireの実践](reviews/review_03_hotwire.md)** - Turbo Frames/Streamsの実装
+- **[Review #07: ActiveRecordスコープの実践](reviews/review_07_active_record_scopes.md)** - 権限管理とN+1対策
 
 ---
 
