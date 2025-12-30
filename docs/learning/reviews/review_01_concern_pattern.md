@@ -2,7 +2,7 @@
 
 **難易度**: 🟡 中級
 **推定時間**: 30分〜1時間
-**学習トピック**: [Concernパターン](../02_intermediate/01_concerns_pattern.md)
+**学習トピック**: [Concernパターン](../topics/02_intermediate/01_concerns_pattern.md)
 
 ---
 
@@ -432,14 +432,14 @@ Concernパターンは、**異なる名前空間のコントローラー間で�
 
 ### 次のステップ
 
-- **Q1のみ正解**: [Concernパターンの教材](../02_intermediate/01_concerns_pattern.md)を再度読んで理解を深める
+- **Q1のみ正解**: [Concernパターンの教材](../topics/02_intermediate/01_concerns_pattern.md)を再度読んで理解を深める
 - **Q1-Q2正解**: 実際にコードを書いて動作確認してみる
 - **Q1-Q3正解**: 他のConcernの使用例を探してみる（例: `Authentication`, `ErrorHandling`）
 - **全問正解**: 次のレビューテストに進む
 
 ## 参考資料
 
-- [Concernパターンの教材](../02_intermediate/01_concerns_pattern.md)
+- [Concernパターンの教材](../topics/02_intermediate/01_concerns_pattern.md)
 - [Rails公式ガイド - Concerns](https://guides.rubyonrails.org/routing.html#controller-namespaces-and-routing)
 - Day 29の日報: `docs/daily_reports/2025-12-29.md`
 - 実際のPR: #101

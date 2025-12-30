@@ -1,8 +1,8 @@
-# Review Test #03: 共通パーシャル化によるDRY原則の実践
+# Review Test #02: 共通パーシャル化によるDRY原則の実践
 
 **難易度**: 🟡 中級
 **推定時間**: 30分〜1時間
-**学習トピック**: [共通パーシャル](../02_intermediate/02_shared_partials.md)
+**学習トピック**: [共通パーシャル](../topics/02_intermediate/02_shared_partials.md)
 
 ---
 
@@ -565,8 +565,8 @@ ActionView::Template::Error: undefined local variable or method `show_user'
 
 ## 参考資料
 
-- [共通パーシャルの教材](../02_intermediate/02_shared_partials.md)
-- [Concernパターン](../02_intermediate/01_concerns_pattern.md) - コントローラーの共通化
+- [共通パーシャルの教材](../topics/02_intermediate/02_shared_partials.md)
+- [Concernパターン](../topics/02_intermediate/01_concerns_pattern.md) - コントローラーの共通化
 - Day 29の日報: `docs/daily_reports/2025-12-29.md`
 - 実際のPR: #101
 

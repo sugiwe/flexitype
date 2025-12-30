@@ -46,7 +46,7 @@ Typnixプロジェクトの実装から抽出した、体系的なRails開発知
 
 **レビューテスト（実践問題）**
 - [Review #01: Concernパターンの導入](reviews/review_01_concern_pattern.md)
-- [Review #03: 共通パーシャル化](reviews/review_03_shared_partial.md)
+- [Review #02: 共通パーシャル化](reviews/review_02_shared_partial.md)
 
 **推定学習時間**: 各トピック 1〜2時間、レビューテスト 30分〜1時間
 
@@ -101,7 +101,7 @@ docs/learning/
 │   └── 03_advanced/                        # 上級編（未作成）
 └── reviews/                                 # レビューテスト
     ├── review_01_concern_pattern.md
-    └── review_03_shared_partial.md
+    └── review_02_shared_partial.md
 ```
 
 ## 🎓 レビューテストの使い方
@@ -173,7 +173,7 @@ docs/learning/
 
 ### レビューテスト
 - **[Review #01: Concernパターンの導入](reviews/review_01_concern_pattern.md)** - PR形式の実践問題
-- **[Review #03: 共通パーシャル化](reviews/review_03_shared_partial.md)** - DRY原則の実践
+- **[Review #02: 共通パーシャル化](reviews/review_02_shared_partial.md)** - DRY原則の実践
 
 ---
 
