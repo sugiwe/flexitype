@@ -43,12 +43,14 @@ Typnixプロジェクトの実装から抽出した、体系的なRails開発知
 **中級編（実践的なパターン）**
 1. [Concernパターン](topics/02_intermediate/01_concerns_pattern.md) - コードの共通化、DRY原則
 2. [共通パーシャルの活用](topics/02_intermediate/02_shared_partials.md) - ビューの重複削減
+3. [Hotwire（Turbo Frames + Stimulus）](topics/02_intermediate/03_hotwire.md) - モダンなフロントエンド開発
 
 **レビューテスト（実践問題）**
 - [Review #01: Concernパターンの導入](reviews/review_01_concern_pattern.md)
 - [Review #02: 共通パーシャル化](reviews/review_02_shared_partial.md)
+- [Review #03: Hotwireの実践](reviews/review_03_hotwire.md)
 
-**推定学習時間**: 各トピック 1〜2時間、レビューテスト 30分〜1時間
+**推定学習時間**: 各トピック 1〜3時間、レビューテスト 30分〜1時間
 
 ## 🗂️ 教材の構成
 
@@ -97,11 +99,13 @@ docs/learning/
 │   ├── 01_basics/                          # 初級編（未作成）
 │   ├── 02_intermediate/                    # 中級編
 │   │   ├── 01_concerns_pattern.md
-│   │   └── 02_shared_partials.md
+│   │   ├── 02_shared_partials.md
+│   │   └── 03_hotwire.md
 │   └── 03_advanced/                        # 上級編（未作成）
 └── reviews/                                 # レビューテスト
     ├── review_01_concern_pattern.md
-    └── review_02_shared_partial.md
+    ├── review_02_shared_partial.md
+    └── review_03_hotwire.md
 ```
 
 ## 🎓 レビューテストの使い方
@@ -127,10 +131,10 @@ docs/learning/
 - **特定章のみ参照**: 各10〜30分
 
 ### 個別トピックとレビューテスト
-- **中級編トピック**: 各1〜2時間（全2トピック = 2〜4時間）
-- **レビューテスト**: 各30分〜1時間（全2問 = 1〜2時間）
+- **中級編トピック**: 各1〜3時間（全3トピック = 3〜9時間）
+- **レビューテスト**: 各30分〜1時間（全3問 = 1.5〜3時間）
 
-**合計（全教材）**: 5〜9時間
+**合計（全教材）**: 6.5〜15時間
 
 ## 🔗 関連リソース
 
@@ -170,10 +174,12 @@ docs/learning/
 ### トピック
 - **[Concernパターン](topics/02_intermediate/01_concerns_pattern.md)** - コードの共通化とDRY原則
 - **[共通パーシャルの活用](topics/02_intermediate/02_shared_partials.md)** - ビューの重複削減
+- **[Hotwire（Turbo Frames + Stimulus）](topics/02_intermediate/03_hotwire.md)** - モダンなフロントエンド開発
 
 ### レビューテスト
 - **[Review #01: Concernパターンの導入](reviews/review_01_concern_pattern.md)** - PR形式の実践問題
 - **[Review #02: 共通パーシャル化](reviews/review_02_shared_partial.md)** - DRY原則の実践
+- **[Review #03: Hotwireの実践](reviews/review_03_hotwire.md)** - Turbo Frames/Streamsの実装
 
 ---
 
