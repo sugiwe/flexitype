@@ -50,6 +50,7 @@ Typnixプロジェクトの実装から抽出した、体系的なRails開発知
 
 **上級編（セキュリティ・テスト）**
 6. [セキュリティベストプラクティス](topics/03_advanced/06_security_best_practices.md) - CSP、予約語システム、Brakeman
+8. [RSpecによるテスト戦略](topics/03_advanced/08_rspec_testing_strategy.md) - プラグマティックなテスト、「あるべき姿」哲学
 
 **レビューテスト（実践問題）**
 - [Review #01: Concernパターンの導入](reviews/review_01_concern_pattern.md)
@@ -59,6 +60,7 @@ Typnixプロジェクトの実装から抽出した、体系的なRails開発知
 - [Review #05: RESTfulなURL設計](reviews/review_05_restful_url_design.md)
 - [Review #06: セキュリティベストプラクティス](reviews/review_06_security_best_practices.md)
 - [Review #07: ActiveRecordスコープの実践](reviews/review_07_active_record_scopes.md)
+- [Review #08: RSpecテスト戦略の実践](reviews/review_08_rspec_testing_strategy.md)
 
 **推定学習時間**: 各トピック 1〜3時間、レビューテスト 30分〜1時間
 
@@ -115,7 +117,8 @@ docs/learning/
 │   │   ├── 05_restful_url_design.md
 │   │   └── 07_active_record_scopes.md
 │   └── 03_advanced/                        # 上級編
-│       └── 06_security_best_practices.md
+│       ├── 06_security_best_practices.md
+│       └── 08_rspec_testing_strategy.md
 └── reviews/                                 # レビューテスト
     ├── review_01_concern_pattern.md
     ├── review_02_shared_partial.md
@@ -123,7 +126,8 @@ docs/learning/
     ├── review_04_database_design.md
     ├── review_05_restful_url_design.md
     ├── review_06_security_best_practices.md
-    └── review_07_active_record_scopes.md
+    ├── review_07_active_record_scopes.md
+    └── review_08_rspec_testing_strategy.md
 ```
 
 ## 🎓 レビューテストの使い方
@@ -150,10 +154,10 @@ docs/learning/
 
 ### 個別トピックとレビューテスト
 - **中級編トピック**: 各1〜3時間（全6トピック = 6〜18時間）
-- **上級編トピック**: 各2.5〜3時間（全1トピック = 2.5〜3時間）
-- **レビューテスト**: 各30分〜1時間（全7問 = 3.5〜7時間）
+- **上級編トピック**: 各2.5〜3時間（全2トピック = 5〜6時間）
+- **レビューテスト**: 各30分〜1時間（全8問 = 4〜8時間）
 
-**合計（全教材）**: 14〜31時間
+**合計（全教材）**: 17〜35時間
 
 ## 🔗 関連リソース
 
@@ -202,6 +206,7 @@ docs/learning/
 
 **上級編:**
 - **[セキュリティベストプラクティス](topics/03_advanced/06_security_best_practices.md)** - CSP、予約語システム、Brakeman
+- **[RSpecによるテスト戦略](topics/03_advanced/08_rspec_testing_strategy.md)** - プラグマティックなテスト、「あるべき姿」哲学
 
 ### レビューテスト
 - **[Review #01: Concernパターンの導入](reviews/review_01_concern_pattern.md)** - PR形式の実践問題
@@ -211,6 +216,7 @@ docs/learning/
 - **[Review #05: RESTfulなURL設計](reviews/review_05_restful_url_design.md)** - YAGNI原則の実践
 - **[Review #06: セキュリティベストプラクティス](reviews/review_06_security_best_practices.md)** - CSPとセキュリティ対策
 - **[Review #07: ActiveRecordスコープの実践](reviews/review_07_active_record_scopes.md)** - 権限管理とN+1対策
+- **[Review #08: RSpecテスト戦略の実践](reviews/review_08_rspec_testing_strategy.md)** - プラグマティックなテスト、技術的負債管理
 
 ---
 
