@@ -45,6 +45,7 @@ Typnixプロジェクトの実装から抽出した、体系的なRails開発知
 2. [共通パーシャルの活用](topics/02_intermediate/02_shared_partials.md) - ビューの重複削減
 3. [Hotwire（Turbo Frames + Stimulus）](topics/02_intermediate/03_hotwire.md) - モダンなフロントエンド開発
 4. [データベース設計とマイグレーション戦略](topics/02_intermediate/04_database_design.md) - 3段階マイグレーション、外部キー制約
+5. [RESTfulなURL設計とルーティング](topics/02_intermediate/05_restful_url_design.md) - /my名前空間、YAGNI原則
 7. [ActiveRecordスコープの効果的な使い方](topics/02_intermediate/07_active_record_scopes.md) - クエリの整理とN+1対策
 
 **レビューテスト（実践問題）**
@@ -52,6 +53,7 @@ Typnixプロジェクトの実装から抽出した、体系的なRails開発知
 - [Review #02: 共通パーシャル化](reviews/review_02_shared_partial.md)
 - [Review #03: Hotwireの実践](reviews/review_03_hotwire.md)
 - [Review #04: データベース設計とマイグレーション](reviews/review_04_database_design.md)
+- [Review #05: RESTfulなURL設計](reviews/review_05_restful_url_design.md)
 - [Review #07: ActiveRecordスコープの実践](reviews/review_07_active_record_scopes.md)
 
 **推定学習時間**: 各トピック 1〜3時間、レビューテスト 30分〜1時間
@@ -106,6 +108,7 @@ docs/learning/
 │   │   ├── 02_shared_partials.md
 │   │   ├── 03_hotwire.md
 │   │   ├── 04_database_design.md
+│   │   ├── 05_restful_url_design.md
 │   │   └── 07_active_record_scopes.md
 │   └── 03_advanced/                        # 上級編（未作成）
 └── reviews/                                 # レビューテスト
@@ -113,6 +116,7 @@ docs/learning/
     ├── review_02_shared_partial.md
     ├── review_03_hotwire.md
     ├── review_04_database_design.md
+    ├── review_05_restful_url_design.md
     └── review_07_active_record_scopes.md
 ```
 
@@ -139,10 +143,10 @@ docs/learning/
 - **特定章のみ参照**: 各10〜30分
 
 ### 個別トピックとレビューテスト
-- **中級編トピック**: 各1〜3時間（全5トピック = 5〜15時間）
-- **レビューテスト**: 各30分〜1時間（全5問 = 2.5〜5時間）
+- **中級編トピック**: 各1〜3時間（全6トピック = 6〜18時間）
+- **レビューテスト**: 各30分〜1時間（全6問 = 3〜6時間）
 
-**合計（全教材）**: 9.5〜23時間
+**合計（全教材）**: 11〜27時間
 
 ## 🔗 関連リソース
 
@@ -184,6 +188,7 @@ docs/learning/
 - **[共通パーシャルの活用](topics/02_intermediate/02_shared_partials.md)** - ビューの重複削減
 - **[Hotwire（Turbo Frames + Stimulus）](topics/02_intermediate/03_hotwire.md)** - モダンなフロントエンド開発
 - **[データベース設計とマイグレーション戦略](topics/02_intermediate/04_database_design.md)** - 3段階マイグレーション、外部キー制約
+- **[RESTfulなURL設計とルーティング](topics/02_intermediate/05_restful_url_design.md)** - /my名前空間、YAGNI原則
 - **[ActiveRecordスコープの効果的な使い方](topics/02_intermediate/07_active_record_scopes.md)** - クエリの整理とN+1対策
 
 ### レビューテスト
@@ -191,6 +196,7 @@ docs/learning/
 - **[Review #02: 共通パーシャル化](reviews/review_02_shared_partial.md)** - DRY原則の実践
 - **[Review #03: Hotwireの実践](reviews/review_03_hotwire.md)** - Turbo Frames/Streamsの実装
 - **[Review #04: データベース設計とマイグレーション](reviews/review_04_database_design.md)** - 3段階マイグレーション戦略
+- **[Review #05: RESTfulなURL設計](reviews/review_05_restful_url_design.md)** - YAGNI原則の実践
 - **[Review #07: ActiveRecordスコープの実践](reviews/review_07_active_record_scopes.md)** - 権限管理とN+1対策
 
 ---
