@@ -51,6 +51,7 @@ Typnixプロジェクトの実装から抽出した、体系的なRails開発知
 **上級編（セキュリティ・テスト・アーキテクチャ）**
 6. [セキュリティベストプラクティス](topics/03_advanced/06_security_best_practices.md) - CSP、予約語システム、Brakeman
 8. [RSpecによるテスト戦略](topics/03_advanced/08_rspec_testing_strategy.md) - プラグマティックなテスト、「あるべき姿」哲学
+9. [フィーチャーフラグパターン](topics/03_advanced/09_feature_flag_pattern.md) - 環境変数制御、削除容易性、段階的リリース
 10. [アーキテクチャ改善とリファクタリング](topics/03_advanced/10_architecture_refactoring.md) - Rails way、delegateパターン、DB移行
 
 **レビューテスト（実践問題）**
@@ -62,6 +63,7 @@ Typnixプロジェクトの実装から抽出した、体系的なRails開発知
 - [Review #06: セキュリティベストプラクティス](reviews/review_06_security_best_practices.md)
 - [Review #07: ActiveRecordスコープの実践](reviews/review_07_active_record_scopes.md)
 - [Review #08: RSpecテスト戦略の実践](reviews/review_08_rspec_testing_strategy.md)
+- [Review #09: フィーチャーフラグパターンの実践](reviews/review_09_feature_flag_pattern.md)
 - [Review #10: アーキテクチャ改善の実践](reviews/review_10_architecture_refactoring.md)
 
 **推定学習時間**: 各トピック 1〜3時間、レビューテスト 30分〜1時間
@@ -121,6 +123,7 @@ docs/learning/
 │   └── 03_advanced/                        # 上級編
 │       ├── 06_security_best_practices.md
 │       ├── 08_rspec_testing_strategy.md
+│       ├── 09_feature_flag_pattern.md
 │       └── 10_architecture_refactoring.md
 └── reviews/                                 # レビューテスト
     ├── review_01_concern_pattern.md
@@ -131,6 +134,7 @@ docs/learning/
     ├── review_06_security_best_practices.md
     ├── review_07_active_record_scopes.md
     ├── review_08_rspec_testing_strategy.md
+    ├── review_09_feature_flag_pattern.md
     └── review_10_architecture_refactoring.md
 ```
 
@@ -158,10 +162,10 @@ docs/learning/
 
 ### 個別トピックとレビューテスト
 - **中級編トピック**: 各1〜3時間（全6トピック = 6〜18時間）
-- **上級編トピック**: 各2〜3時間（全3トピック = 6〜9時間）
-- **レビューテスト**: 各30分〜1時間（全9問 = 4.5〜9時間）
+- **上級編トピック**: 各1.5〜3時間（全4トピック = 6〜12時間）
+- **レビューテスト**: 各30分〜1時間（全10問 = 5〜10時間）
 
-**合計（全教材）**: 18.5〜39時間
+**合計（全教材）**: 19〜43時間
 
 ## 🔗 関連リソース
 
@@ -211,6 +215,7 @@ docs/learning/
 **上級編:**
 - **[セキュリティベストプラクティス](topics/03_advanced/06_security_best_practices.md)** - CSP、予約語システム、Brakeman
 - **[RSpecによるテスト戦略](topics/03_advanced/08_rspec_testing_strategy.md)** - プラグマティックなテスト、「あるべき姿」哲学
+- **[フィーチャーフラグパターン](topics/03_advanced/09_feature_flag_pattern.md)** - 環境変数制御、削除容易性、段階的リリース
 - **[アーキテクチャ改善とリファクタリング](topics/03_advanced/10_architecture_refactoring.md)** - Rails way、delegateパターン、DB移行
 
 ### レビューテスト
@@ -222,6 +227,7 @@ docs/learning/
 - **[Review #06: セキュリティベストプラクティス](reviews/review_06_security_best_practices.md)** - CSPとセキュリティ対策
 - **[Review #07: ActiveRecordスコープの実践](reviews/review_07_active_record_scopes.md)** - 権限管理とN+1対策
 - **[Review #08: RSpecテスト戦略の実践](reviews/review_08_rspec_testing_strategy.md)** - プラグマティックなテスト、技術的負債管理
+- **[Review #09: フィーチャーフラグパターンの実践](reviews/review_09_feature_flag_pattern.md)** - 環境変数 vs DB管理、削除容易性
 - **[Review #10: アーキテクチャ改善の実践](reviews/review_10_architecture_refactoring.md)** - Rails way、サービスオブジェクトの判断
 
 ---
