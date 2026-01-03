@@ -1,0 +1,243 @@
+# Rails開発 実践ガイド - Flexitypeプロジェクトから学ぶ
+
+## 📚 この教材について
+
+このガイドは、Flexitypeプロジェクト（タイピング練習アプリ）の29日間の開発過程から抽出した、Ruby on Railsの実践的な学習教材です。
+
+**特徴:**
+- 実際に本番稼働しているアプリケーションのコード
+- Day 1の基礎からDay 29の高度な実装まで、段階的な成長の軌跡
+- 失敗からの改善、リファクタリングの過程が見える
+- Rails 8.1.1 + Hotwire (Turbo + Stimulus) の最新構成
+
+## 🎯 対象読者
+
+- Railsの基本的な文法は理解しているが、実践的な設計パターンを学びたい方
+- 「Rails way」な設計思想を身につけたい方
+- リファクタリングの実例を見たい方
+- 実際のプロダクトでどうコードを書くべきか知りたい方
+
+## 📖 学習の進め方
+
+このリポジトリには**2種類の学習教材**があります：
+
+### 📘 体系的な知識習得: Rails Application Development Guide
+
+**[Rails Application Development Guide](guides/rails_application_development.md)**（全12章、約3500行）
+
+Typnixプロジェクトの実装から抽出した、体系的なRails開発知識。リファレンスとしても使用可能。
+
+**推奨される方:**
+- Railsの全体像を体系的に理解したい
+- 特定のトピック（Hotwire、セキュリティなど）を深く学びたい
+- 実装中の参照資料として使いたい
+
+**推定読了時間**: 2〜3時間（通し読み）、必要な章のみ参照も可
+
+### 📗 トピック別学習: 個別教材とレビューテスト
+
+実践的な個別トピックと、手を動かして学ぶレビューテスト。
+
+**推奨学習順序:**
+
+**中級編（実践的なパターン）**
+1. [Concernパターン](topics/02_intermediate/01_concerns_pattern.md) - コードの共通化、DRY原則
+2. [共通パーシャルの活用](topics/02_intermediate/02_shared_partials.md) - ビューの重複削減
+3. [Hotwire（Turbo Frames + Stimulus）](topics/02_intermediate/03_hotwire.md) - モダンなフロントエンド開発
+4. [データベース設計とマイグレーション戦略](topics/02_intermediate/04_database_design.md) - 3段階マイグレーション、外部キー制約
+5. [RESTfulなURL設計とルーティング](topics/02_intermediate/05_restful_url_design.md) - /my名前空間、YAGNI原則
+7. [ActiveRecordスコープの効果的な使い方](topics/02_intermediate/07_active_record_scopes.md) - クエリの整理とN+1対策
+
+**上級編（セキュリティ・テスト・アーキテクチャ・デプロイ）**
+6. [セキュリティベストプラクティス](topics/03_advanced/06_security_best_practices.md) - CSP、予約語システム、Brakeman
+8. [RSpecによるテスト戦略](topics/03_advanced/08_rspec_testing_strategy.md) - プラグマティックなテスト、「あるべき姿」哲学
+9. [フィーチャーフラグパターン](topics/03_advanced/09_feature_flag_pattern.md) - 環境変数制御、削除容易性、段階的リリース
+10. [アーキテクチャ改善とリファクタリング](topics/03_advanced/10_architecture_refactoring.md) - Rails way、delegateパターン、DB移行
+11. [Kamalによるモダンなデプロイフロー](topics/03_advanced/11_kamal_deployment.md) - ゼロダウンタイム、SSL自動化、Docker
+
+**レビューテスト（実践問題）**
+- [Review #01: Concernパターンの導入](reviews/review_01_concern_pattern.md)
+- [Review #02: 共通パーシャル化](reviews/review_02_shared_partial.md)
+- [Review #03: Hotwireの実践](reviews/review_03_hotwire.md)
+- [Review #04: データベース設計とマイグレーション](reviews/review_04_database_design.md)
+- [Review #05: RESTfulなURL設計](reviews/review_05_restful_url_design.md)
+- [Review #06: セキュリティベストプラクティス](reviews/review_06_security_best_practices.md)
+- [Review #07: ActiveRecordスコープの実践](reviews/review_07_active_record_scopes.md)
+- [Review #08: RSpecテスト戦略の実践](reviews/review_08_rspec_testing_strategy.md)
+- [Review #09: フィーチャーフラグパターンの実践](reviews/review_09_feature_flag_pattern.md)
+- [Review #10: アーキテクチャ改善の実践](reviews/review_10_architecture_refactoring.md)
+- [Review #11: Kamalデプロイの実践](reviews/review_11_kamal_deployment.md)
+
+**推定学習時間**: 各トピック 1〜3時間、レビューテスト 30分〜1時間
+
+## 🗂️ 教材の構成
+
+各教材は以下の構成で統一されています：
+
+```markdown
+# [トピック名]
+
+## 🎯 学習目標
+この教材を学ぶことで何ができるようになるか
+
+## 📚 前提知識
+必要な予備知識
+
+## 📖 本編
+### 概要
+問題の背景、解決したい課題
+
+### 実装前（アンチパターン）
+改善前のコード
+
+### 実装後（ベストプラクティス）
+改善後のコード
+
+### 解説
+なぜこの設計が優れているのか
+
+## 💡 まとめ
+重要ポイントの要約
+
+## 🔗 関連教材
+関連する教材へのリンク
+
+## 📝 演習問題（オプション）
+理解度チェック
+```
+
+## 📂 ディレクトリ構造
+
+```
+docs/learning/
+├── 00_index.md                              # 本ファイル（全体目次）
+├── guides/                                  # 体系的ガイド
+│   └── rails_application_development.md   # Rails開発ガイド（全12章、3500行）
+├── topics/                                  # 個別トピック
+│   ├── 01_basics/                          # 初級編（未作成）
+│   ├── 02_intermediate/                    # 中級編
+│   │   ├── 01_concerns_pattern.md
+│   │   ├── 02_shared_partials.md
+│   │   ├── 03_hotwire.md
+│   │   ├── 04_database_design.md
+│   │   ├── 05_restful_url_design.md
+│   │   └── 07_active_record_scopes.md
+│   └── 03_advanced/                        # 上級編
+│       ├── 06_security_best_practices.md
+│       ├── 08_rspec_testing_strategy.md
+│       ├── 09_feature_flag_pattern.md
+│       ├── 10_architecture_refactoring.md
+│       └── 11_kamal_deployment.md
+└── reviews/                                 # レビューテスト
+    ├── review_01_concern_pattern.md
+    ├── review_02_shared_partial.md
+    ├── review_03_hotwire.md
+    ├── review_04_database_design.md
+    ├── review_05_restful_url_design.md
+    ├── review_06_security_best_practices.md
+    ├── review_07_active_record_scopes.md
+    ├── review_08_rspec_testing_strategy.md
+    ├── review_09_feature_flag_pattern.md
+    ├── review_10_architecture_refactoring.md
+    └── review_11_kamal_deployment.md
+```
+
+## 🎓 レビューテストの使い方
+
+レビューテストは「あるあるなツッコミどころのあるPR」を想定した実践的な問題集です。
+
+**進め方:**
+1. PR概要と変更内容を確認
+2. 問題点を自分で考える（3〜5分）
+3. 改善策を考える（5〜10分）
+4. 模範解答を確認
+5. 実際のコードと比較
+
+**難易度:**
+- 🟢 初級: Rails規約の基礎的な知識
+- 🟡 中級: 設計パターンの理解
+- 🔴 上級: アーキテクチャレベルの判断
+
+## 📊 学習時間の目安
+
+### Rails Application Development Guide
+- **通し読み**: 2〜3時間
+- **特定章のみ参照**: 各10〜30分
+
+### 個別トピックとレビューテスト
+- **中級編トピック**: 各1〜3時間（全6トピック = 6〜18時間）
+- **上級編トピック**: 各1.5〜3時間（全5トピック = 7.5〜15時間）
+- **レビューテスト**: 各30分〜1時間（全11問 = 5.5〜11時間）
+
+**合計（全教材）**: 21〜47時間
+
+## 🔗 関連リソース
+
+### プロジェクト内
+- [CLAUDE.md](/CLAUDE.md) - プロジェクト全体の仕様書
+- [日報](/docs/daily_reports/) - 29日間の開発記録
+- [CLAUDE_FEATURES.md](/CLAUDE_FEATURES.md) - 実装済み機能の詳細
+
+### 外部リソース
+- [Rails公式ガイド](https://guides.rubyonrails.org/)
+- [Hotwire公式ドキュメント](https://hotwired.dev/)
+- [RuboCop Style Guide](https://rubocop.org/)
+
+## 💬 フィードバック
+
+教材の改善提案や質問は、GitHubのIssueでお願いします。
+
+---
+
+## 📚 教材一覧
+
+### ガイド
+- **[Rails Application Development Guide](guides/rails_application_development.md)** - Rails開発の体系的知識（全12章）
+  - Chapter 1: Rails基礎とプロジェクト設計
+  - Chapter 2: プロジェクト構造とディレクトリ設計
+  - Chapter 3: データベース設計とモデル層
+  - Chapter 4: ルーティングとURL設計
+  - Chapter 5: コントローラーとビジネスロジック
+  - Chapter 6: ビュー層の設計
+  - Chapter 7: Hotwire (Turbo + Stimulus)
+  - Chapter 8: 認証と認可
+  - Chapter 9: テスト戦略
+  - Chapter 10: セキュリティ
+  - Chapter 11: デプロイと運用
+  - Chapter 12: 保守とリファクタリング
+
+### トピック
+
+**中級編:**
+- **[Concernパターン](topics/02_intermediate/01_concerns_pattern.md)** - コードの共通化とDRY原則
+- **[共通パーシャルの活用](topics/02_intermediate/02_shared_partials.md)** - ビューの重複削減
+- **[Hotwire（Turbo Frames + Stimulus）](topics/02_intermediate/03_hotwire.md)** - モダンなフロントエンド開発
+- **[データベース設計とマイグレーション戦略](topics/02_intermediate/04_database_design.md)** - 3段階マイグレーション、外部キー制約
+- **[RESTfulなURL設計とルーティング](topics/02_intermediate/05_restful_url_design.md)** - /my名前空間、YAGNI原則
+- **[ActiveRecordスコープの効果的な使い方](topics/02_intermediate/07_active_record_scopes.md)** - クエリの整理とN+1対策
+
+**上級編:**
+- **[セキュリティベストプラクティス](topics/03_advanced/06_security_best_practices.md)** - CSP、予約語システム、Brakeman
+- **[RSpecによるテスト戦略](topics/03_advanced/08_rspec_testing_strategy.md)** - プラグマティックなテスト、「あるべき姿」哲学
+- **[フィーチャーフラグパターン](topics/03_advanced/09_feature_flag_pattern.md)** - 環境変数制御、削除容易性、段階的リリース
+- **[アーキテクチャ改善とリファクタリング](topics/03_advanced/10_architecture_refactoring.md)** - Rails way、delegateパターン、DB移行
+- **[Kamalによるモダンなデプロイフロー](topics/03_advanced/11_kamal_deployment.md)** - ゼロダウンタイム、SSL自動化、Docker
+
+### レビューテスト
+- **[Review #01: Concernパターンの導入](reviews/review_01_concern_pattern.md)** - PR形式の実践問題
+- **[Review #02: 共通パーシャル化](reviews/review_02_shared_partial.md)** - DRY原則の実践
+- **[Review #03: Hotwireの実践](reviews/review_03_hotwire.md)** - Turbo Frames/Streamsの実装
+- **[Review #04: データベース設計とマイグレーション](reviews/review_04_database_design.md)** - 3段階マイグレーション戦略
+- **[Review #05: RESTfulなURL設計](reviews/review_05_restful_url_design.md)** - YAGNI原則の実践
+- **[Review #06: セキュリティベストプラクティス](reviews/review_06_security_best_practices.md)** - CSPとセキュリティ対策
+- **[Review #07: ActiveRecordスコープの実践](reviews/review_07_active_record_scopes.md)** - 権限管理とN+1対策
+- **[Review #08: RSpecテスト戦略の実践](reviews/review_08_rspec_testing_strategy.md)** - プラグマティックなテスト、技術的負債管理
+- **[Review #09: フィーチャーフラグパターンの実践](reviews/review_09_feature_flag_pattern.md)** - 環境変数 vs DB管理、削除容易性
+- **[Review #10: アーキテクチャ改善の実践](reviews/review_10_architecture_refactoring.md)** - Rails way、サービスオブジェクトの判断
+- **[Review #11: Kamalデプロイの実践](reviews/review_11_kamal_deployment.md)** - ゼロダウンタイム、SSL/TLS、Docker
+
+---
+
+**最終更新**: 2025-12-30
+**対応Railsバージョン**: Rails 8.1.1
+**プロジェクト**: Typnix (Flexitype)
