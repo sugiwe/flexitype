@@ -48,11 +48,12 @@ Typnixプロジェクトの実装から抽出した、体系的なRails開発知
 5. [RESTfulなURL設計とルーティング](topics/02_intermediate/05_restful_url_design.md) - /my名前空間、YAGNI原則
 7. [ActiveRecordスコープの効果的な使い方](topics/02_intermediate/07_active_record_scopes.md) - クエリの整理とN+1対策
 
-**上級編（セキュリティ・テスト・アーキテクチャ）**
+**上級編（セキュリティ・テスト・アーキテクチャ・デプロイ）**
 6. [セキュリティベストプラクティス](topics/03_advanced/06_security_best_practices.md) - CSP、予約語システム、Brakeman
 8. [RSpecによるテスト戦略](topics/03_advanced/08_rspec_testing_strategy.md) - プラグマティックなテスト、「あるべき姿」哲学
 9. [フィーチャーフラグパターン](topics/03_advanced/09_feature_flag_pattern.md) - 環境変数制御、削除容易性、段階的リリース
 10. [アーキテクチャ改善とリファクタリング](topics/03_advanced/10_architecture_refactoring.md) - Rails way、delegateパターン、DB移行
+11. [Kamalによるモダンなデプロイフロー](topics/03_advanced/11_kamal_deployment.md) - ゼロダウンタイム、SSL自動化、Docker
 
 **レビューテスト（実践問題）**
 - [Review #01: Concernパターンの導入](reviews/review_01_concern_pattern.md)
@@ -65,6 +66,7 @@ Typnixプロジェクトの実装から抽出した、体系的なRails開発知
 - [Review #08: RSpecテスト戦略の実践](reviews/review_08_rspec_testing_strategy.md)
 - [Review #09: フィーチャーフラグパターンの実践](reviews/review_09_feature_flag_pattern.md)
 - [Review #10: アーキテクチャ改善の実践](reviews/review_10_architecture_refactoring.md)
+- [Review #11: Kamalデプロイの実践](reviews/review_11_kamal_deployment.md)
 
 **推定学習時間**: 各トピック 1〜3時間、レビューテスト 30分〜1時間
 
@@ -124,7 +126,8 @@ docs/learning/
 │       ├── 06_security_best_practices.md
 │       ├── 08_rspec_testing_strategy.md
 │       ├── 09_feature_flag_pattern.md
-│       └── 10_architecture_refactoring.md
+│       ├── 10_architecture_refactoring.md
+│       └── 11_kamal_deployment.md
 └── reviews/                                 # レビューテスト
     ├── review_01_concern_pattern.md
     ├── review_02_shared_partial.md
@@ -135,7 +138,8 @@ docs/learning/
     ├── review_07_active_record_scopes.md
     ├── review_08_rspec_testing_strategy.md
     ├── review_09_feature_flag_pattern.md
-    └── review_10_architecture_refactoring.md
+    ├── review_10_architecture_refactoring.md
+    └── review_11_kamal_deployment.md
 ```
 
 ## 🎓 レビューテストの使い方
@@ -162,10 +166,10 @@ docs/learning/
 
 ### 個別トピックとレビューテスト
 - **中級編トピック**: 各1〜3時間（全6トピック = 6〜18時間）
-- **上級編トピック**: 各1.5〜3時間（全4トピック = 6〜12時間）
-- **レビューテスト**: 各30分〜1時間（全10問 = 5〜10時間）
+- **上級編トピック**: 各1.5〜3時間（全5トピック = 7.5〜15時間）
+- **レビューテスト**: 各30分〜1時間（全11問 = 5.5〜11時間）
 
-**合計（全教材）**: 19〜43時間
+**合計（全教材）**: 21〜47時間
 
 ## 🔗 関連リソース
 
@@ -217,6 +221,7 @@ docs/learning/
 - **[RSpecによるテスト戦略](topics/03_advanced/08_rspec_testing_strategy.md)** - プラグマティックなテスト、「あるべき姿」哲学
 - **[フィーチャーフラグパターン](topics/03_advanced/09_feature_flag_pattern.md)** - 環境変数制御、削除容易性、段階的リリース
 - **[アーキテクチャ改善とリファクタリング](topics/03_advanced/10_architecture_refactoring.md)** - Rails way、delegateパターン、DB移行
+- **[Kamalによるモダンなデプロイフロー](topics/03_advanced/11_kamal_deployment.md)** - ゼロダウンタイム、SSL自動化、Docker
 
 ### レビューテスト
 - **[Review #01: Concernパターンの導入](reviews/review_01_concern_pattern.md)** - PR形式の実践問題
@@ -229,6 +234,7 @@ docs/learning/
 - **[Review #08: RSpecテスト戦略の実践](reviews/review_08_rspec_testing_strategy.md)** - プラグマティックなテスト、技術的負債管理
 - **[Review #09: フィーチャーフラグパターンの実践](reviews/review_09_feature_flag_pattern.md)** - 環境変数 vs DB管理、削除容易性
 - **[Review #10: アーキテクチャ改善の実践](reviews/review_10_architecture_refactoring.md)** - Rails way、サービスオブジェクトの判断
+- **[Review #11: Kamalデプロイの実践](reviews/review_11_kamal_deployment.md)** - ゼロダウンタイム、SSL/TLS、Docker
 
 ---
 
