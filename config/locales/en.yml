@@ -28,4 +28,70 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  # Navigation
+  navigation:
+    home: "Home"
+    keymaps: "Keymap Settings"
+    history: "Practice History"
+    lessons: "Lesson Management"
+    admin_dashboard: "Admin Dashboard"
+    category_management: "Category Management"
+    my_page: "My Page"
+    logout: "Logout"
+
+  # Help menu
+  help:
+    about: "About Typnix"
+    terms: "Terms of Service"
+    privacy: "Privacy Policy"
+    contact: "Contact Us"
+
+  # Buttons
+  buttons:
+    save: "Save"
+    cancel: "Cancel"
+    delete: "Delete"
+    edit: "Edit"
+    create: "Create"
+    back: "Back"
+    confirm: "Confirm"
+    close: "Close"
+
+  # Flash messages
+  flash:
+    created: "%{resource} has been created"
+    updated: "%{resource} has been updated"
+    deleted: "%{resource} has been deleted"
+    error: "An error occurred"
+
+  # Others
+  app:
+    name: "Typnix"
+    tagline: "Column-Staggered Keyboard Practice"
+    beta_testing: "Beta Testing"
+    beta_restricted: "Limited access during beta"
+    beta_contact: "Want to join?"
+    beta_contact_link: "Contact us here"
+
+  # ActiveRecord (Rails standard translations)
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "Validation failed: %{errors}"
+        restrict_dependent_destroy:
+          has_one: "Cannot delete record because a dependent %{record} exists"
+          has_many: "Cannot delete record because dependent %{record} exist"
+        blank: "can't be blank"
+        taken: "has already been taken"
+        too_short: "is too short (minimum is %{count} characters)"
+        too_long: "is too long (maximum is %{count} characters)"
+        invalid: "is invalid"
+        required: "is required"
+    attributes:
+      user:
+        google_uid: "Google UID"
+        email: "Email address"
+        name: "Name"
+        username: "Username"
+        icon_url: "Icon URL"
+        active_keymap_set: "Active keymap"
