@@ -19,6 +19,12 @@ module SystemHelpers
   def login_as_user(user = nil)
     user ||= create(:user)
 
+    # ログイン制限が有効な場合、AllowedEmailを作成
+    # NOTE: Day 28でALLOWED_EMAILSをDB化したため、テスト環境でもAllowedEmailが必要
+    if Authentication.restrict_login?
+      AllowedEmail.find_or_create_by!(email: user.email)
+    end
+
     # JavaScript使用時（Selenium）は、GETでセッションを設定
     # rack_test使用時は、POSTでセッションを設定
     if page.driver.is_a?(Capybara::RackTest::Driver)

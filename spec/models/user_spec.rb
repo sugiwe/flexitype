@@ -151,27 +151,8 @@ RSpec.describe User, type: :model do
       end
     end
 
-    describe ".email_allowed?" do
-      before do
-        # 開発環境をシミュレート
-        allow(Rails.env).to receive(:production?).and_return(false)
-      end
-
-      it "許可リストが空の場合、開発環境ではtrueを返すこと" do
-        allow(Rails.application.config).to receive(:allowed_emails).and_return([])
-        expect(User.email_allowed?("any@example.com")).to be true
-      end
-
-      it "許可リストに含まれる場合、trueを返すこと" do
-        allow(Rails.application.config).to receive(:allowed_emails).and_return([ "test@example.com" ])
-        expect(User.email_allowed?("test@example.com")).to be true
-      end
-
-      it "許可リストに含まれない場合、falseを返すこと" do
-        allow(Rails.application.config).to receive(:allowed_emails).and_return([ "test@example.com" ])
-        expect(User.email_allowed?("other@example.com")).to be false
-      end
-    end
+    # NOTE: .email_allowed? メソッドは Day 28 で AllowedEmail モデルに移行されました
+    # テストは spec/models/allowed_email_spec.rb を参照
   end
 
   describe "インスタンスメソッド" do

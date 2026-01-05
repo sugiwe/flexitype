@@ -1,0 +1,84 @@
+#!/bin/bash
+# Typnix デプロイスクリプト
+# 用途: テスト・品質チェックを実行してから本番環境にデプロイ
+# 使用方法: ./bin/deploy
+
+set -e
+
+echo "========================================="
+echo "Typnix デプロイスクリプト"
+echo "========================================="
+echo ""
+
+# 色付きの出力用
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+# 現在のブランチを確認
+CURRENT_BRANCH=$(git branch --show-current)
+echo -e "${YELLOW}📌 現在のブランチ: ${CURRENT_BRANCH}${NC}"
+
+# mainブランチでない場合は警告
+if [ "$CURRENT_BRANCH" != "main" ]; then
+  echo -e "${YELLOW}⚠️  警告: mainブランチではありません${NC}"
+  read -p "このままデプロイを続けますか？ (y/N): " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo -e "${RED}❌ デプロイを中止しました${NC}"
+    exit 1
+  fi
+fi
+
+echo ""
+echo "========================================="
+echo "🔍 Step 1: テスト実行"
+echo "========================================="
+bundle exec rspec
+
+echo ""
+echo "========================================="
+echo "🔍 Step 2: RuboCop（コード品質チェック）"
+echo "========================================="
+bundle exec rubocop
+
+echo ""
+echo "========================================="
+echo "🔍 Step 3: Brakeman（セキュリティチェック）"
+echo "========================================="
+bundle exec brakeman --no-pager
+
+echo ""
+echo "========================================="
+echo "✅ すべてのチェックに合格しました！"
+echo "========================================="
+echo ""
+
+# デプロイ確認
+echo -e "${YELLOW}🚀 本番環境へのデプロイを開始します${NC}"
+read -p "続行しますか？ (y/N): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+  echo -e "${RED}❌ デプロイを中止しました${NC}"
+  exit 1
+fi
+
+echo ""
+echo "========================================="
+echo "🚀 Step 4: Kamalデプロイ実行"
+echo "========================================="
+kamal deploy
+
+echo ""
+echo "========================================="
+echo "✅ デプロイが完了しました！"
+echo "========================================="
+echo ""
+echo "🌐 サイトURL: https://typnix.com"
+echo ""
+echo "次のステップ:"
+echo "  1. サイトにアクセスして動作確認"
+echo "  2. ログを確認: kamal app logs"
+echo "  3. 必要に応じてマイグレーション実行: kamal app exec bin/rails db:migrate"
+echo ""
