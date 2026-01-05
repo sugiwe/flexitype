@@ -1,6 +1,7 @@
 # データベースバックアップ自動化セットアップ手順
 
 **作成日:** 2025-01-04
+**最終更新:** 2025-01-05
 **目的:** PostgreSQLデータベースの定期バックアップを自動化し、データロスを防止する
 
 ---
@@ -13,21 +14,34 @@
 ssh ubuntu@153.120.65.157
 ```
 
-### 2. バックアップディレクトリの作成
+### 2. バックアップディレクトリを作成
 
 ```bash
-# バックアップディレクトリ作成
-sudo mkdir -p /var/backups/flexitype
-
-# 所有権を現在のユーザーに変更
-sudo chown $USER:$USER /var/backups/flexitype
+# ホームディレクトリ配下にバックアップディレクトリを作成
+mkdir -p ~/backups/flexitype
 
 # パーミッション確認
-ls -ld /var/backups/flexitype
-# 出力例: drwxr-xr-x 2 ubuntu ubuntu 4096 Jan  4 12:00 /var/backups/flexitype
+ls -ld ~/backups/flexitype
+# 出力例: drwxrwxr-x 2 ubuntu ubuntu 4096 Jan  5 12:00 /home/ubuntu/backups/flexitype
 ```
 
-### 3. バックアップスクリプトの配置
+### 3. PostgreSQLパスワードファイルを作成
+
+cron実行時にパスワード入力ができないため、`.pgpass`ファイルでパスワードを管理します。
+
+```bash
+# PostgreSQLのパスワードファイルを作成
+cat > ~/.pgpass <<EOF
+localhost:5432:flexitype_production:flexitype:YOUR_PASSWORD_HERE
+EOF
+
+# パーミッションを600に設定（必須：600でないと無視される）
+chmod 600 ~/.pgpass
+```
+
+**重要:** `YOUR_PASSWORD_HERE`の部分を、実際の`flexitype`ユーザーのパスワードに置き換えてください。
+
+### 4. バックアップスクリプトを作成
 
 ```bash
 # ホームディレクトリにスクリプトを作成
@@ -41,18 +55,19 @@ set -e
 
 # 設定
 DB_NAME="flexitype_production"
-BACKUP_DIR="/var/backups/flexitype"
+DB_USER="flexitype"
+BACKUP_DIR="/home/ubuntu/backups/flexitype"
 RETENTION_DAYS=7
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_FILE="${BACKUP_DIR}/flexitype_${DATE}.sql.gz"
-LOG_FILE="/var/log/flexitype_backup.log"
+LOG_FILE="/home/ubuntu/backups/flexitype_backup.log"
 
 # バックアップディレクトリが存在しない場合は作成
 mkdir -p "$BACKUP_DIR"
 
 # バックアップ実行
 echo "[$(date)] Starting backup..." >> "$LOG_FILE"
-pg_dump "$DB_NAME" | gzip > "$BACKUP_FILE"
+pg_dump -U "$DB_USER" -h localhost "$DB_NAME" | gzip > "$BACKUP_FILE"
 
 # バックアップファイルのサイズを確認
 BACKUP_SIZE=$(du -h "$BACKUP_FILE" | cut -f1)
@@ -76,26 +91,31 @@ EOF
 chmod +x ~/backup_db.sh
 ```
 
-### 4. 手動テスト実行
+### 5. 手動テスト実行
 
 ```bash
-# スクリプトを手動で実行してテスト
+# スクリプトを手動で実行してテスト（パスワードが聞かれないことを確認）
 ~/backup_db.sh
 
 # バックアップファイルが作成されたか確認
-ls -lh /var/backups/flexitype/
+ls -lh ~/backups/flexitype/
 
 # ログを確認
-cat /var/log/flexitype_backup.log
+cat ~/backups/flexitype_backup.log
 ```
 
 **期待される出力例:**
 ```
-total 4.0K
--rw-rw-r-- 1 ubuntu ubuntu 3.2K Jan  4 12:00 flexitype_20250104_120000.sql.gz
+total 72K
+-rw-rw-r-- 1 ubuntu ubuntu 69K Jan  5 17:24 flexitype_20250105_172402.sql.gz
+
+[Mon Jan  5 17:24:02 JST 2026] Starting backup...
+[Mon Jan  5 17:24:18 JST 2026] Backup completed: /home/ubuntu/backups/flexitype/flexitype_20250105_172402.sql.gz (Size: 72K)
+[Mon Jan  5 17:24:18 JST 2026] Total backups: 1
+[Mon Jan  5 17:24:18 JST 2026] Backup process completed successfully
 ```
 
-### 5. cron設定（毎日深夜3時に自動実行）
+### 6. cron設定（毎日深夜3時に自動実行）
 
 ```bash
 # crontabを編集
@@ -139,23 +159,23 @@ crontab -l
 
 ```bash
 # バックアップファイルの一覧表示
-ls -lh /var/backups/flexitype/
+ls -lh ~/backups/flexitype/
 
 # 日付順でソート（最新が最後）
-ls -lht /var/backups/flexitype/
+ls -lht ~/backups/flexitype/
 ```
 
 ### ログ確認
 
 ```bash
 # ログファイルの内容を表示
-cat /var/log/flexitype_backup.log
+cat ~/backups/flexitype_backup.log
 
 # 最新の10行のみ表示
-tail -10 /var/log/flexitype_backup.log
+tail -10 ~/backups/flexitype_backup.log
 
 # リアルタイムでログを監視（バックアップ実行中）
-tail -f /var/log/flexitype_backup.log
+tail -f ~/backups/flexitype_backup.log
 ```
 
 ---
@@ -166,14 +186,14 @@ tail -f /var/log/flexitype_backup.log
 
 ```bash
 # 最新5件のバックアップファイルを表示
-ls -lt /var/backups/flexitype/ | head -n 6
+ls -lt ~/backups/flexitype/ | head -n 6
 ```
 
 ### 2. リストア実行
 
 ```bash
-# データベースをリストア（例: 2025年1月4日12時のバックアップ）
-gunzip < /var/backups/flexitype/flexitype_20250104_120000.sql.gz | psql flexitype_production
+# データベースをリストア（例: 2025年1月5日17時のバックアップ）
+gunzip < ~/backups/flexitype/flexitype_20250105_172402.sql.gz | psql -U flexitype -h localhost flexitype_production
 ```
 
 **警告:** リストアは既存のデータを上書きします。必ず事前にバックアップを取ってください。
@@ -221,7 +241,16 @@ sudo cat /etc/postgresql/14/main/pg_hba.conf
 **原因3: ディスク容量不足**
 ```bash
 # ディスク使用状況を確認
-df -h /var/backups/
+df -h ~
+```
+
+**原因4: .pgpassファイルのパーミッションが正しくない**
+```bash
+# パーミッションを確認（600である必要がある）
+ls -l ~/.pgpass
+
+# 正しくない場合は修正
+chmod 600 ~/.pgpass
 ```
 
 ### cronが実行されない場合
@@ -272,13 +301,14 @@ RETENTION_DAYS=30
 
 **実装完了後の状態:**
 - ✅ 毎日深夜3時に自動バックアップが実行される
-- ✅ バックアップファイルは `/var/backups/flexitype/` に保存される
+- ✅ バックアップファイルは `~/backups/flexitype/` に保存される
 - ✅ 7日間以上古いバックアップは自動削除される
-- ✅ バックアップログは `/var/log/flexitype_backup.log` に記録される
+- ✅ バックアップログは `~/backups/flexitype_backup.log` に記録される
+- ✅ `.pgpass`でパスワード管理（cron実行時にパスワード不要）
 
 **定期的な確認（月1回推奨）:**
-1. バックアップファイルが正常に作成されているか確認
-2. ログにエラーが記録されていないか確認
-3. ディスク容量が十分にあるか確認
+1. バックアップファイルが正常に作成されているか確認：`ls -lh ~/backups/flexitype/`
+2. ログにエラーが記録されていないか確認：`tail -20 ~/backups/flexitype_backup.log`
+3. ディスク容量が十分にあるか確認：`df -h ~`
 
-**最終更新:** 2025-01-04
+**最終更新:** 2025-01-05

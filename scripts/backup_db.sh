@@ -7,18 +7,19 @@ set -e
 
 # 設定
 DB_NAME="flexitype_production"
-BACKUP_DIR="/var/backups/flexitype"
+DB_USER="flexitype"
+BACKUP_DIR="/home/ubuntu/backups/flexitype"
 RETENTION_DAYS=7
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_FILE="${BACKUP_DIR}/flexitype_${DATE}.sql.gz"
-LOG_FILE="/var/log/flexitype_backup.log"
+LOG_FILE="/home/ubuntu/backups/flexitype_backup.log"
 
 # バックアップディレクトリが存在しない場合は作成
 mkdir -p "$BACKUP_DIR"
 
 # バックアップ実行
 echo "[$(date)] Starting backup..." >> "$LOG_FILE"
-pg_dump "$DB_NAME" | gzip > "$BACKUP_FILE"
+pg_dump -U "$DB_USER" -h localhost "$DB_NAME" | gzip > "$BACKUP_FILE"
 
 # バックアップファイルのサイズを確認
 BACKUP_SIZE=$(du -h "$BACKUP_FILE" | cut -f1)
