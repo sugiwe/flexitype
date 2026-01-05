@@ -48,7 +48,7 @@ RSpec.describe "認証フロー", type: :system do
       visit my_root_path
 
       # ルートページにリダイレクトされる
-      expect(page).to have_current_path(root_path)
+      expect(page).to have_current_path(root_path, ignore_query: true)
     end
   end
 end

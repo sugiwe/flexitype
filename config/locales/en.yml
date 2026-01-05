@@ -67,7 +67,7 @@ en:
   # Others
   app:
     name: "Typnix"
-    tagline: "Column-Staggered Keyboard Practice"
+    tagline: "Vertical-Layout Keyboard Practice"
     beta_testing: "Beta Testing"
     beta_restricted: "Limited access during beta"
     beta_contact: "Want to join?"
