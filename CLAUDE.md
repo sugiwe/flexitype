@@ -316,6 +316,20 @@ spec/
 - SSL/TLS: Let's Encrypt (Kamal で自動設定、90 日ごとに自動更新)
 - エンドツーエンド暗号化（ブラウザ → Cloudflare → VPS）
 
+### デプロイ手順
+
+**詳細は [`docs/DEPLOY_GUIDE.md`](docs/DEPLOY_GUIDE.md) を参照してください。**
+
+**クイックリファレンス:**
+
+```bash
+# 推奨: 自動テスト付きデプロイ
+./bin/deploy
+
+# 緊急時: テストスキップ
+kamal deploy
+```
+
 ---
 
 ## 📦 主要データモデル
