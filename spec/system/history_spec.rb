@@ -80,7 +80,7 @@ RSpec.describe "練習履歴閲覧フロー", type: :system do
       visit my_history_index_path
 
       # ルートページにリダイレクトされる
-      expect(page).to have_current_path(root_path)
+      expect(page).to have_current_path(root_path, ignore_query: true)
     end
   end
 end

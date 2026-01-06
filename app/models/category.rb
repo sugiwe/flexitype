@@ -4,8 +4,8 @@ class Category < ApplicationRecord
   # タブ定義
   TABS = {
     basics: { key: "basics", name: "基礎トレーニング", icon: "🔰", description: "キー配置と指の練習" },
-    english: { key: "english", name: "英語練習", icon: "🇬🇧", description: "英単語・フレーズの練習" },
-    japanese: { key: "japanese", name: "日本語練習", icon: "🇯🇵", description: "かな・ローマ字入力" },
+    english: { key: "english", name: "英語練習", icon: "🔠", description: "英単語・フレーズの練習" },
+    japanese: { key: "japanese", name: "日本語練習", icon: "🌸", description: "かな・ローマ字入力" },
     programming: { key: "programming", name: "プログラミング", icon: "💻", description: "コード・用語の練習" },
     my_lessons: { key: "my_lessons", name: "マイレッスン", icon: "📝", description: "自作レッスン（準備中）", disabled: true },
     community: { key: "community", name: "コミュニティ", icon: "👥", description: "共有レッスン（準備中）", disabled: true }

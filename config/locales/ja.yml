@@ -1,4 +1,54 @@
 ja:
+  # ナビゲーション
+  navigation:
+    home: "ホーム"
+    keymaps: "キーマップ管理"
+    history: "練習履歴"
+    lessons: "レッスン管理"
+    admin_dashboard: "管理画面"
+    category_management: "カテゴリー管理"
+    my_page: "マイページ"
+    logout: "ログアウト"
+
+  # ヘルプメニュー
+  help:
+    about: "Typnixについて"
+    terms: "利用規約"
+    privacy: "プライバシーポリシー"
+    contact: "お問い合わせ"
+
+  # ボタン
+  buttons:
+    save: "保存"
+    cancel: "キャンセル"
+    delete: "削除"
+    edit: "編集"
+    create: "作成"
+    back: "戻る"
+    confirm: "確認"
+    close: "閉じる"
+
+  # フラッシュメッセージ
+  flash:
+    created: "%{resource}を作成しました"
+    updated: "%{resource}を更新しました"
+    deleted: "%{resource}を削除しました"
+    error: "エラーが発生しました"
+
+  # その他
+  app:
+    name: "Typnix"
+    tagline: "垂直配列タイピング練習アプリ"
+    beta_testing: "ベータ版テスト中"
+    beta_restricted: "限定ユーザーのみログイン可能"
+    beta_contact: "ログイン希望者は"
+    beta_contact_link: "こちらからご連絡ください"
+
+  # メタタグ（SEO・OGP用）
+  meta:
+    title: "Typnix - 垂直配列タイピング練習アプリ | Vertical-Layout Keyboard Practice"
+    description: "垂直配列キーボードに特化したタイピング練習アプリ。ログインユーザーはキーマップ登録や練習の記録も可能 / Typing practice app specialized for vertical-layout keyboards. Once you log in, you can register your keymaps and track your progress"
+
   activerecord:
     errors:
       messages:

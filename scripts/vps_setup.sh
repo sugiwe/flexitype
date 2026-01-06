@@ -94,4 +94,4 @@ echo "1. 一度ログアウト・再ログインしてDockerグループ変更�
 echo "2. PostgreSQLユーザー・データベースの作成"
 echo "3. ローカルマシンから 'kamal setup' を実行"
 echo ""
-echo "詳細は docs/deployment_guide.md を参照してください。"
+echo "詳細は docs/DEPLOY_GUIDE.md を参照してください。"

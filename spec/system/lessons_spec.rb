@@ -18,7 +18,7 @@ RSpec.describe "レッスン閲覧フロー", type: :system do
       visit root_path
       click_link "ホームポジション練習"
 
-      expect(page).to have_current_path(lesson_path(lesson))
+      expect(page).to have_current_path(lesson_path(lesson), ignore_query: true)
 
       # タイピング画面の要素が表示されることを確認
       expect(page).to have_selector("[data-typing-target='lessonScreen']")

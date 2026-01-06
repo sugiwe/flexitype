@@ -82,22 +82,19 @@ export ALLOWED_EMAILS="your-email@example.com"
 
 ## デプロイ
 
-本番環境へのデプロイ方法については、[デプロイガイド](docs/deployment_guide.md)を参照してください。
+本番環境へのデプロイ方法については、[デプロイガイド](docs/DEPLOY_GUIDE.md)を参照してください。
 
 ### クイックスタート
 
 ```bash
-# デプロイ前チェック
-./scripts/pre_deploy_check.sh
+# 推奨: 自動テスト付きデプロイ
+./bin/deploy
 
-# 初回デプロイ
-kamal setup
-
-# 2回目以降のデプロイ
+# 緊急時: テストスキップ
 kamal deploy
 ```
 
-詳細は [docs/deployment_guide.md](docs/deployment_guide.md) を確認してください。
+詳細は [docs/DEPLOY_GUIDE.md](docs/DEPLOY_GUIDE.md) を確認してください。
 
 ## 開発ガイドライン
 
@@ -131,7 +128,7 @@ flexitype/
 │   ├── database.yml      # DB設定
 │   └── typing_words.yml  # タイピング練習用単語データ
 ├── docs/
-│   ├── deployment_guide.md    # デプロイガイド
+│   ├── DEPLOY_GUIDE.md        # デプロイガイド
 │   └── daily_reports/         # 日報
 └── scripts/
     ├── pre_deploy_check.sh    # デプロイ前チェック

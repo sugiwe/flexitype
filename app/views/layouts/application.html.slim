@@ -1,12 +1,12 @@
 doctype html
 html
   head
-    title = content_for(:title) || "Typnix | 垂直配列タイピング練習アプリ"
+    title = content_for(:title) || t('meta.title')
     = render "layouts/head"
 
     / OGP設定（トップページ用）
-    meta property="og:title" content="Typnix | 垂直配列タイピング練習アプリ"
-    meta property="og:description" content="Typnix（タイプニックス）は、垂直配列キーボードに特化したタイピング練習アプリです。自分のキーマップで効率的に練習できます。"
+    meta property="og:title" content=t('meta.title')
+    meta property="og:description" content=t('meta.description')
     meta property="og:type" content="website"
     meta property="og:url" content="https://typnix.com"
     meta property="og:image" content=image_url("ogp.png")
@@ -15,8 +15,8 @@ html
 
     / Twitter Card設定（トップページ用）
     meta name="twitter:card" content="summary_large_image"
-    meta name="twitter:title" content="Typnix | 垂直配列タイピング練習アプリ"
-    meta name="twitter:description" content="Typnix（タイプニックス）は、垂直配列キーボードに特化したタイピング練習アプリです。自分のキーマップで効率的に練習できます。"
+    meta name="twitter:title" content=t('meta.title')
+    meta name="twitter:description" content=t('meta.description')
     meta name="twitter:image" content=image_url("ogp.png")
 
     = yield :head
