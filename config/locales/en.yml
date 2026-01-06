@@ -73,6 +73,11 @@ en:
     beta_contact: "Want to join?"
     beta_contact_link: "Contact us here"
 
+  # Meta tags (SEO & OGP)
+  meta:
+    title: "Typnix - 垂直配列タイピング練習アプリ | Vertical-Layout Keyboard Practice"
+    description: "垂直配列キーボードに特化したタイピング練習アプリ。ログインユーザーはキーマップ登録や練習の記録も可能 / Typing practice app specialized for vertical-layout keyboards. Once you log in, you can register your keymaps and track your progress"
+
   # ActiveRecord (Rails standard translations)
   activerecord:
     errors:
