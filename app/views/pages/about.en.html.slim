@@ -1,0 +1,155 @@
+/ Page header
+.mb-6
+  h2.text-3xl.font-bold.text-gray-800.dark:text-white About Typnix
+  p.text-sm.text-gray-600.dark:text-gray-400.mt-2 Typing Practice App for Vertical-Layout Keyboards
+
+/ Main content
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-8.space-y-8
+
+  / 1. What is Typnix
+  section.mb-12
+    h3.text-2xl.font-bold.text-gray-800.dark:text-white.mb-4.flex.items-center
+      svg.w-6.h-6.mr-2.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      | What is Typnix
+    .text-gray-700.dark:text-gray-300.space-y-3
+      p
+        | Typnix is a typing practice app specialized for vertical-layout keyboards.
+      p
+        | Most typing practice apps are designed for row-staggered layouts and don't support column-staggered or ortholinear keyboards. Typnix features vertical-layout guides and allows you to register your own keyboard layout for practice that matches your actual key positions.
+
+  / Practice screen screenshot
+  section.mb-12
+    .flex.flex-col.items-center
+      = image_tag "lesson_sample.png", alt: "Typnix practice screen", class: "w-full max-w-[720px] rounded-lg shadow-sm border border-gray-100 dark:border-gray-700"
+      p.text-sm.text-gray-500.dark:text-gray-400.mt-3.text-center
+        | Real-time highlighting of the next key to press
+
+  / 2. Main Features
+  section.mb-12
+    h3.text-2xl.font-bold.text-gray-800.dark:text-white.mb-4.flex.items-center
+      svg.w-6.h-6.mr-2.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+      | Main Features
+    .space-y-4
+      .flex.items-start.gap-3
+        .shrink-0.mt-2
+          .w-2.h-2.bg-blue-600.dark:bg-blue-400.rounded-full
+        div
+          h4.font-semibold.text-gray-800.dark:text-white Custom Keymap Registration
+          p.text-sm.text-gray-600.dark:text-gray-400 Register your own keyboard layout and practice with actual key positions. You can practice with the default keymap even without logging in.
+      .flex.items-start.gap-3
+        .shrink-0.mt-2
+          .w-2.h-2.bg-blue-600.dark:bg-blue-400.rounded-full
+        div
+          h4.font-semibold.text-gray-800.dark:text-white Layer Support
+          p.text-sm.text-gray-600.dark:text-gray-400 Supports 6 layers (0-5). Even complex keymaps can be configured layer by layer.
+      .flex.items-start.gap-3
+        .shrink-0.mt-2
+          .w-2.h-2.bg-blue-600.dark:bg-blue-400.rounded-full
+        div
+          h4.font-semibold.text-gray-800.dark:text-white Real-time Guide
+          p.text-sm.text-gray-600.dark:text-gray-400 Highlights the next key to press. When layer switching is needed, both the layer button and target key are highlighted simultaneously.
+      .flex.items-start.gap-3
+        .shrink-0.mt-2
+          .w-2.h-2.bg-blue-600.dark:bg-blue-400.rounded-full
+        div
+          h4.font-semibold.text-gray-800.dark:text-white Finger Guide
+          p.text-sm.text-gray-600.dark:text-gray-400 Color-coded display of which finger to use. Beginners can learn proper finger placement.
+      .flex.items-start.gap-3
+        .shrink-0.mt-2
+          .w-2.h-2.bg-blue-600.dark:bg-blue-400.rounded-full
+        div
+          h4.font-semibold.text-gray-800.dark:text-white Practice History Recording
+          p.text-sm.text-gray-600.dark:text-gray-400 For logged-in users, records statistics like accuracy rate, time taken, and mistakes (free users: up to 50 records).
+      .flex.items-start.gap-3
+        .shrink-0.mt-2
+          .w-2.h-2.bg-blue-600.dark:bg-blue-400.rounded-full
+        div
+          h4.font-semibold.text-gray-800.dark:text-white Dark Mode Support
+          p.text-sm.text-gray-600.dark:text-gray-400 Choose from 3 themes: Light, Dark, or System.
+
+  / 3. How to Use
+  section.mb-12
+    h3.text-2xl.font-bold.text-gray-800.dark:text-white.mb-4.flex.items-center
+      svg.w-6.h-6.mr-2.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+      | How to Use
+    .space-y-4
+      .flex.items-start.gap-3
+        .shrink-0.w-8.h-8.bg-blue-600.dark:bg-blue-700.text-white.rounded-full.flex.items-center.justify-center.font-bold
+          | 1
+        div
+          h4.font-semibold.text-gray-800.dark:text-white Try Practicing First
+          p.text-sm.text-gray-600.dark:text-gray-400 You can practice with the default keymap even without logging in. Select a lesson from the top page and start right away.
+      .flex.items-start.gap-3
+        .shrink-0.w-8.h-8.bg-blue-600.dark:bg-blue-700.text-white.rounded-full.flex.items-center.justify-center.font-bold
+          | 2
+        div
+          h4.font-semibold.text-gray-800.dark:text-white Log In
+          p.text-sm.text-gray-600.dark:text-gray-400 Log in with your Google account to register your own keymap. Your practice history will also be recorded.
+          p.text-sm.text-blue-700.dark:text-blue-400.mt-2.bg-blue-50.dark:bg-blue-900.border.border-blue-200.dark:border-blue-700.rounded.px-3.py-2
+            | Login is currently restricted as we are in beta. If you wish to log in, please contact us
+            = " "
+            a.underline.hover:text-blue-800.dark:hover:text-blue-300.font-medium href="https://forms.gle/a6EYBBxhMdGc4TJq6" target="_blank" rel="noopener noreferrer"
+              | here
+            | .
+      .flex.items-start.gap-3
+        .shrink-0.w-8.h-8.bg-blue-600.dark:bg-blue-700.text-white.rounded-full.flex.items-center.justify-center.font-bold
+          | 3
+        div
+          h4.font-semibold.text-gray-800.dark:text-white Configure Your Keymap
+          p.text-sm.text-gray-600.dark:text-gray-400 Register your keyboard layout on the "Keymap Settings" page. Click the key you want to register from the top keyboard → select a character from the bottom options → press save.
+      .flex.items-start.gap-3
+        .shrink-0.w-8.h-8.bg-blue-600.dark:bg-blue-700.text-white.rounded-full.flex.items-center.justify-center.font-bold
+          | 4
+        div
+          h4.font-semibold.text-gray-800.dark:text-white Continue Practicing
+          p.text-sm.text-gray-600.dark:text-gray-400 Select a lesson and practice with your own keymap. Check the statistics and overcome your weak points.
+
+  / 4. Supported Keyboards
+  section.mb-12
+    h3.text-2xl.font-bold.text-gray-800.dark:text-white.mb-4.flex.items-center
+      svg.w-6.h-6.mr-2.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+      | Supported Keyboards
+    .text-gray-700.dark:text-gray-300.space-y-3
+      p
+        | Currently only simple 4×6 split ortholinear layouts are supported, but we plan to develop support for layouts tailored to specific keyboard products and custom column-staggered configurations in the future.
+
+  / 5. About the Developer
+  section.mb-12
+    h3.text-2xl.font-bold.text-gray-800.dark:text-white.mb-4.flex.items-center
+      svg.w-6.h-6.mr-2.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+      | About the Developer
+    .text-gray-700.dark:text-gray-300.space-y-3
+      p
+        | Typnix was developed by a vertical-layout keyboard user for their own typing practice.
+      .flex.items-center.gap-4.mt-4
+        a.text-blue-600.dark:text-blue-400.hover:underline.flex.items-center.gap-1 href="https://x.com/sugiwe" target="_blank" rel="noopener noreferrer"
+          svg.w-5.h-5 fill="currentColor" viewBox="0 0 24 24"
+            path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+          | X (@sugiwe)
+
+  / 6. Contact
+  section.mb-4
+    h3.text-2xl.font-bold.text-gray-800.dark:text-white.mb-4.flex.items-center
+      svg.w-6.h-6.mr-2.text-blue-600.dark:text-blue-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+      | Contact
+    .text-gray-700.dark:text-gray-300.space-y-4
+      p
+        | Feel free to contact us for beta access applications, bug reports, feature requests, etc. We look forward to hearing from you.
+      .flex
+        a.inline-flex.items-center.gap-2.px-6.py-3.bg-blue-600.dark:bg-blue-700.text-white.rounded-lg.hover:bg-blue-700.dark:hover:bg-blue-600.transition.font-semibold href="https://forms.gle/a6EYBBxhMdGc4TJq6" target="_blank" rel="noopener noreferrer"
+          | Contact Form
+          svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+
+/ Back link
+.mt-6
+  = link_to root_path, class: "text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1" do
+    svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+      path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"
+    | Back to Top
