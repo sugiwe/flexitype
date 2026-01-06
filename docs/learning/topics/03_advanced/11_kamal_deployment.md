@@ -797,7 +797,7 @@ Typnixプロジェクトでは、Day 13-14でKamalを使ったデプロイを実
 
 ```bash
 # ローカル環境でデプロイドキュメント作成
-docs/deployment_guide.md       # 310行
+docs/DEPLOY_GUIDE.md           # デプロイガイド（初回セットアップ + 日常デプロイ）
 .kamal/secrets.example         # 環境変数テンプレート
 scripts/pre_deploy_check.sh    # 140行（自動チェックスクリプト）
 scripts/vps_setup.sh           # 97行（VPSセットアップスクリプト）

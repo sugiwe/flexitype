@@ -172,7 +172,7 @@ production:
 
 **hostとportを環境変数化**
 
-### 5. `docs/deployment_guide.md` (新規作成)
+### 5. `docs/DEPLOY_GUIDE.md` (新規作成)
 
 ```markdown
 # デプロイガイド
@@ -1009,7 +1009,7 @@ Day 28では、運用効率化のために以下を実施しました：
 - [セキュリティベストプラクティス](../topics/03_advanced/13_security_best_practices.md)
 - Day 13 の日報: `docs/daily_reports/2025-12-13.md`
 - Day 14 の日報: `docs/daily_reports/2025-12-14.md`
-- 実際のデプロイガイド: `docs/deployment_guide.md`
+- 実際のデプロイガイド: `docs/DEPLOY_GUIDE.md`
 
 ---
 

@@ -128,7 +128,7 @@ flexitype/
 │   ├── database.yml      # DB設定
 │   └── typing_words.yml  # タイピング練習用単語データ
 ├── docs/
-│   ├── deployment_guide.md    # デプロイガイド
+│   ├── DEPLOY_GUIDE.md        # デプロイガイド
 │   └── daily_reports/         # 日報
 └── scripts/
     ├── pre_deploy_check.sh    # デプロイ前チェック
