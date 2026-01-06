@@ -3,20 +3,6 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["dropdown"]
 
-  // 言語定義
-  locales = [
-    {
-      id: 'ja',
-      name: '日本語',
-      flag: '🇯🇵'
-    },
-    {
-      id: 'en',
-      name: 'English',
-      flag: '🇺🇸'
-    }
-  ]
-
   connect() {
     // ドロップダウン外クリックで閉じる
     this.closeOnOutsideClick = this.closeOnOutsideClick.bind(this)
