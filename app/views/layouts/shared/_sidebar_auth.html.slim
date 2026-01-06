@@ -32,17 +32,15 @@
         / 言語切り替えアイコン
         .relative data-controller="locale"
           button.w-10.h-10.bg-gray-100.dark:bg-gray-700.hover:bg-gray-200.dark:hover:bg-gray-600.rounded-full.flex.items-center.justify-center.text-gray-600.dark:text-gray-300.transition type="button" data-action="click->locale#toggle"
-            span.text-lg = I18n.locale == :ja ? '🇯🇵' : '🇺🇸'
+            span.text-lg 🌐
 
           / 言語選択ドロップダウン（上方向）
           .absolute.bottom-full.right-0.mb-2.w-40.bg-white.dark:bg-gray-700.rounded-lg.shadow-lg.border.border-gray-200.dark:border-gray-600.hidden data-locale-target="dropdown"
             .py-2
-              button.w-full.px-4.py-2.text-left.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition.flex.items-center type="button" data-action="click->locale#select" data-locale-id="ja"
-                span.mr-2 🇯🇵
-                span 日本語
-              button.w-full.px-4.py-2.text-left.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition.flex.items-center type="button" data-action="click->locale#select" data-locale-id="en"
-                span.mr-2 🇺🇸
-                span English
+              button.w-full.px-4.py-2.text-left.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition type="button" data-action="click->locale#select" data-locale-id="ja"
+                | 日本語
+              button.w-full.px-4.py-2.text-left.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition type="button" data-action="click->locale#select" data-locale-id="en"
+                | English
 
         / テーマアイコン
         .relative data-controller="theme"
@@ -124,17 +122,15 @@
         / 言語切り替えアイコン
         .relative data-controller="locale"
           button.w-10.h-10.bg-gray-100.dark:bg-gray-700.hover:bg-gray-200.dark:hover:bg-gray-600.rounded-full.flex.items-center.justify-center.text-gray-600.dark:text-gray-300.transition type="button" data-action="click->locale#toggle"
-            span.text-lg = I18n.locale == :ja ? '🇯🇵' : '🇺🇸'
+            span.text-lg 🌐
 
           / 言語選択ドロップダウン（上方向）
           .absolute.bottom-full.right-0.mb-2.w-40.bg-white.dark:bg-gray-700.rounded-lg.shadow-lg.border.border-gray-200.dark:border-gray-600.hidden data-locale-target="dropdown"
             .py-2
-              button.w-full.px-4.py-2.text-left.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition.flex.items-center type="button" data-action="click->locale#select" data-locale-id="ja"
-                span.mr-2 🇯🇵
-                span 日本語
-              button.w-full.px-4.py-2.text-left.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition.flex.items-center type="button" data-action="click->locale#select" data-locale-id="en"
-                span.mr-2 🇺🇸
-                span English
+              button.w-full.px-4.py-2.text-left.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition type="button" data-action="click->locale#select" data-locale-id="ja"
+                | 日本語
+              button.w-full.px-4.py-2.text-left.text-sm.text-gray-700.dark:text-gray-200.hover:bg-gray-100.dark:hover:bg-gray-600.transition type="button" data-action="click->locale#select" data-locale-id="en"
+                | English
 
         / ヘルプアイコン
         .relative data-controller="help-menu"
