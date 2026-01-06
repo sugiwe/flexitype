@@ -3,27 +3,27 @@
 
 - if lesson_records.any?
   / テーブル（PC）
-  .hidden.md:block
-    table.w-full
+  .hidden.md:block.overflow-x-auto
+    table.w-full.min-w-max
       thead
         tr.border-b.border-gray-200.dark:border-gray-700
-          th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 日時
+          th.px-3.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 日時
           - if local_assigns[:show_user]
-            th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider ユーザー
-          th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider レッスン
-          th.px-6.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 単語数
-          th.px-6.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 正答率
-          th.px-6.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider WPM
-          th.px-6.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider グレード
-          th.px-6.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 所要時間
-          th.px-6.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider ミス数
+            th.px-3.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider ユーザー
+          th.px-3.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider レッスン
+          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 単語数
+          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 正答率
+          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider WPM
+          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider グレード
+          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 所要時間
+          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider ミス数
       tbody.divide-y.divide-gray-200.dark:divide-gray-700
         - lesson_records.each do |record|
           tr.hover:bg-gray-50.dark:hover:bg-gray-700.transition-colors
-            td.px-6.py-4.whitespace-nowrap.text-sm.text-gray-900.dark:text-gray-100
+            td.px-3.py-4.whitespace-nowrap.text-sm.text-gray-900.dark:text-gray-100
               = l(record.completed_at, format: :short)
             - if local_assigns[:show_user]
-              td.px-6.py-4
+              td.px-3.py-4
                 .flex.items-center
                   - if record.user.icon_url.present?
                     img.w-8.h-8.rounded-full.mr-3 src=record.user.icon_url alt=record.user.name
@@ -35,15 +35,15 @@
                       = record.user.name
                   - else
                     span.text-sm.font-medium.text-gray-900.dark:text-gray-100 = record.user.name
-            td.px-6.py-4.text-sm
+            td.px-3.py-4.text-sm
               .font-medium.text-gray-900.dark:text-gray-100
                 - if record.lesson_name.present?
                   = record.lesson_name
                 - else
                   span.text-gray-400 不明
-            td.px-6.py-4.whitespace-nowrap.text-center.text-sm.text-gray-900.dark:text-gray-100
+            td.px-3.py-4.whitespace-nowrap.text-center.text-sm.text-gray-900.dark:text-gray-100
               = record.word_count
-            td.px-6.py-4.whitespace-nowrap.text-center
+            td.px-3.py-4.whitespace-nowrap.text-center
               - if record.accuracy && record.accuracy >= 90
                 span.inline-flex.px-2.py-1.text-sm.font-semibold.rounded-full.bg-green-100.dark:bg-green-900.text-green-800.dark:text-green-200
                   = "#{record.accuracy}%"
@@ -53,26 +53,26 @@
               - else
                 span.inline-flex.px-2.py-1.text-sm.font-semibold.rounded-full.bg-red-100.dark:bg-red-900.text-red-800.dark:text-red-200
                   = "#{record.accuracy}%"
-            td.px-6.py-4.whitespace-nowrap.text-center.text-sm.text-gray-900.dark:text-gray-100
+            td.px-3.py-4.whitespace-nowrap.text-center.text-sm.text-gray-900.dark:text-gray-100
               - if record.wpm
                 = record.wpm
               - else
                 | -
-            td.px-6.py-4.whitespace-nowrap.text-center.text-sm
+            td.px-3.py-4.whitespace-nowrap.text-center.text-sm
               - if record.grade.present?
                 .flex.items-center.justify-center.gap-1
                   span.text-lg = record.grade_emoji
                   span.text-gray-900.dark:text-gray-100 = record.grade.gsub(/のカワウソ|カワウソ/, '')
               - else
                 span.text-gray-500.dark:text-gray-400 -
-            td.px-6.py-4.whitespace-nowrap.text-center.text-sm.text-gray-900.dark:text-gray-100
+            td.px-3.py-4.whitespace-nowrap.text-center.text-sm.text-gray-900.dark:text-gray-100
               - if record.duration_seconds
                 - minutes = record.duration_seconds / 60
                 - seconds = record.duration_seconds % 60
                 = "#{minutes}:#{seconds.to_s.rjust(2, '0')}"
               - else
                 | -
-            td.px-6.py-4.whitespace-nowrap.text-center.text-sm.text-gray-900.dark:text-gray-100
+            td.px-3.py-4.whitespace-nowrap.text-center.text-sm.text-gray-900.dark:text-gray-100
               = record.mistake_count
 
   / カード（モバイル）
@@ -142,7 +142,7 @@
 
   / ページネーション（オプション）
   - if local_assigns[:show_pagination]
-    .px-6.py-4.border-t.border-gray-200.dark:border-gray-700
+    .px-3.py-4.border-t.border-gray-200.dark:border-gray-700
       = paginate lesson_records, params: local_assigns[:pagination_params] || {}
 
 - else

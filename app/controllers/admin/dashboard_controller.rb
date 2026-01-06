@@ -17,8 +17,8 @@ class Admin::DashboardController < Admin::ApplicationController
     @active_users_30days = User.where("current_sign_in_at >= ?", 30.days.ago).count
     @records_this_week = LessonRecord.where("completed_at >= ?", 1.week.ago).count
 
-    # 最新10名のユーザー（最終ログイン日時の降順）
-    @recent_users = User.order(current_sign_in_at: :desc).limit(10)
+    # 最新10名のユーザー（登録日時の降順、ID降順）
+    @recent_users = User.order(id: :desc).limit(10)
 
     # 最新10件の練習履歴（完了日時の降順）
     @recent_records = LessonRecord.includes(:user).order(completed_at: :desc).limit(10)
