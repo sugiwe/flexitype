@@ -83,6 +83,45 @@ ja:
       name: "コミュニティ"
       description: "共有レッスン（準備中）"
 
+  # 練習履歴ページ
+  history:
+    title: "練習履歴"
+    description: "あなたの練習記録を確認できます"
+    periods:
+      all: "全期間"
+      month: "直近1ヶ月"
+      week: "直近1週間"
+    stats:
+      total_practices: "総練習回数"
+      average_accuracy: "平均正答率"
+      average_wpm: "平均WPM"
+    table:
+      datetime: "日時"
+      lesson: "レッスン"
+      word_count: "単語数"
+      accuracy: "正答率"
+      wpm: "WPM"
+      grade: "グレード"
+      duration: "所要時間"
+      mistakes: "ミス数"
+    empty: "練習履歴がありません"
+    start_link: "タイピング練習を完了すると、ここに履歴が表示されます"
+
+  # 練習画面（レッスンページ）
+  lesson:
+    progress: "問題 %{current} / %{total}"
+    timer_notice: "⏱️ 時間計測は最初の入力から開始されます"
+    instruction: "ミス入力した場合は BackSpace で削除してから正しい文字を入力してください"
+    completion:
+      title: "お疲れ様でした！あなたのランクは…"
+      accuracy: "正答率"
+      wpm: "WPM"
+      duration: "所要時間"
+      mistakes: "ミス数"
+      share_button: "結果をXでシェア"
+      retry_button: "もう一度練習する"
+      home_button: "ホームに戻る"
+
   # メタタグ（SEO・OGP用）
   meta:
     title: "Typnix - 垂直配列タイピング練習アプリ | Vertical-Layout Keyboard Practice"

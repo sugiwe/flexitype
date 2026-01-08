@@ -1,7 +1,7 @@
 / ページヘッダー
 .mb-6
-  h2.text-3xl.font-bold.text-gray-800.dark:text-white 練習履歴
-  p.text-sm.text-gray-600.dark:text-gray-400.mt-2 あなたのタイピング練習の記録を確認できます
+  h2.text-3xl.font-bold.text-gray-800.dark:text-white = t('history.title')
+  p.text-sm.text-gray-600.dark:text-gray-400.mt-2 = t('history.description')
 
 = turbo_frame_tag "history_content" do
   / 期間フィルタータブ（Turbo Frames対応）
@@ -10,20 +10,20 @@
     .border-b.border-gray-200.dark:border-gray-700
       nav.-mb-px.flex.space-x-8 aria-label="Period tabs"
         = link_to my_history_index_path(period: 'all'), data: { turbo_frame: "history_content" }, class: "#{@period == 'all' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors" do
-          | 全期間
+          = t('history.periods.all')
 
         = link_to my_history_index_path(period: 'month'), data: { turbo_frame: "history_content" }, class: "#{@period == 'month' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors" do
-          | 直近1ヶ月
+          = t('history.periods.month')
 
         = link_to my_history_index_path(period: 'week'), data: { turbo_frame: "history_content" }, class: "#{@period == 'week' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors" do
-          | 直近1週間
+          = t('history.periods.week')
   / 統計情報（ミニ版）
   .grid.grid-cols-1.md:grid-cols-3.gap-4.mb-6
     / 総練習回数
     .bg-white.dark:bg-gray-800.rounded-lg.shadow.p-6.transition-colors
       .flex.items-center.justify-between
         div
-          p.text-sm.text-gray-600.dark:text-gray-400 総練習回数
+          p.text-sm.text-gray-600.dark:text-gray-400 = t('history.stats.total_practices')
           p.text-3xl.font-bold.text-blue-600.dark:text-blue-400.mt-2
             = @total_count
             span.text-lg.text-gray-500.dark:text-gray-400.ml-2 回
@@ -34,7 +34,7 @@
     .bg-white.dark:bg-gray-800.rounded-lg.shadow.p-6.transition-colors
       .flex.items-center.justify-between
         div
-          p.text-sm.text-gray-600.dark:text-gray-400 平均正答率
+          p.text-sm.text-gray-600.dark:text-gray-400 = t('history.stats.average_accuracy')
           p.text-3xl.font-bold.text-green-600.dark:text-green-400.mt-2
             = @average_accuracy
             span.text-lg.text-gray-500.dark:text-gray-400.ml-2 %
@@ -45,7 +45,7 @@
     .bg-white.dark:bg-gray-800.rounded-lg.shadow.p-6.transition-colors
       .flex.items-center.justify-between
         div
-          p.text-sm.text-gray-600.dark:text-gray-400 平均WPM
+          p.text-sm.text-gray-600.dark:text-gray-400 = t('history.stats.average_wpm')
           p.text-3xl.font-bold.text-purple-600.dark:text-purple-400.mt-2
             = @average_wpm
             span.text-lg.text-gray-500.dark:text-gray-400.ml-2 WPM

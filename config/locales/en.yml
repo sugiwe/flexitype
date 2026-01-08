@@ -112,6 +112,45 @@ en:
       name: "Community"
       description: "Shared lessons (coming soon)"
 
+  # Practice history page
+  history:
+    title: "Practice History"
+    description: "View your practice records"
+    periods:
+      all: "All Time"
+      month: "Last Month"
+      week: "Last Week"
+    stats:
+      total_practices: "Total Practices"
+      average_accuracy: "Average Accuracy"
+      average_wpm: "Average WPM"
+    table:
+      datetime: "Date/Time"
+      lesson: "Lesson"
+      word_count: "Words"
+      accuracy: "Accuracy"
+      wpm: "WPM"
+      grade: "Grade"
+      duration: "Duration"
+      mistakes: "Mistakes"
+    empty: "No practice history"
+    start_link: "Complete a typing practice to see your history here"
+
+  # Lesson page (practice screen)
+  lesson:
+    progress: "Question %{current} / %{total}"
+    timer_notice: "⏱️ Timer starts with your first keystroke"
+    instruction: "If you make a mistake, press BackSpace to delete and type the correct character"
+    completion:
+      title: "Well done! Your rank is..."
+      accuracy: "Accuracy"
+      wpm: "WPM"
+      duration: "Duration"
+      mistakes: "Mistakes"
+      share_button: "Share on X"
+      retry_button: "Practice Again"
+      home_button: "Back to Home"
+
   # Meta tags (SEO & OGP)
   meta:
     title: "Typnix - 垂直配列タイピング練習アプリ | Vertical-Layout Keyboard Practice"
