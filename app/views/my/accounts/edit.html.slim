@@ -3,8 +3,8 @@
 
   / ヘッダー
   .mb-8
-    h1.text-3xl.font-bold.text-gray-800.dark:text-white アカウント設定
-    p.text-gray-600.dark:text-gray-400.mt-2 プロフィールURLやその他の設定を管理できます
+    h1.text-3xl.font-bold.text-gray-800.dark:text-white = t('account.title')
+    p.text-gray-600.dark:text-gray-400.mt-2 = t('account.description')
 
   / 設定フォーム
   .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
@@ -13,64 +13,58 @@
 
       / 表示名設定
       .space-y-2
-        = f.label :name, "表示名", class: "block text-sm font-semibold text-gray-700 dark:text-gray-300"
+        = f.label :name, t('account.display_name.label'), class: "block text-sm font-semibold text-gray-700 dark:text-gray-300"
         p.text-xs.text-gray-500.dark:text-gray-400.mb-2
-          | プロフィールやコメントなどで表示される名前です
-        = f.text_field :name, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "表示名"
+          = t('account.display_name.help')
+        = f.text_field :name, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: t('account.display_name.placeholder')
 
         - if @user.errors[:name].any?
           .text-sm.text-red-600.dark:text-red-400.mt-1
             = @user.errors[:name].join(", ")
 
         p.text-xs.text-gray-500.dark:text-gray-400.mt-1
-          | ※1〜30文字
+          = t('account.display_name.length_note')
 
       / ユーザー名設定
       .space-y-2
-        = f.label :username, "ユーザー名", class: "block text-sm font-semibold text-gray-700 dark:text-gray-300"
+        = f.label :username, t('account.username.label'), class: "block text-sm font-semibold text-gray-700 dark:text-gray-300"
         p.text-xs.text-gray-500.dark:text-gray-400.mb-2
-          | プロフィールページのURL（
-          span.font-mono.text-blue-600.dark:text-blue-400 = "typnix.com/@#{@user.username}"
-          | ）に使用されます
+          = t('account.username.help', url: "typnix.com/@#{@user.username}")
 
         - if @user.can_change_username?
-          = f.text_field :username, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "username"
+          = f.text_field :username, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: t('account.username.placeholder')
         - else
-          = f.text_field :username, disabled: true, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed", placeholder: "username"
+          = f.text_field :username, disabled: true, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed", placeholder: t('account.username.placeholder')
           .text-sm.text-amber-600.dark:text-amber-400.mt-2.flex.items-start.gap-2
             svg.w-5.h-5.flex-shrink-0.mt-0.5 fill="currentColor" viewBox="0 0 20 20"
               path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"
             div
-              | ユーザー名は24時間に1回しか変更できません
+              = t('account.username.change_cooldown')
               br
-              strong = "次回変更可能: #{@user.next_username_change_at.strftime('%Y年%m月%d日 %H時%M分')}"
+              strong = t('account.username.next_change', time: @user.next_username_change_at.strftime('%Y年%m月%d日 %H時%M分'))
 
         - if @user.errors[:username].any?
           .text-sm.text-red-600.dark:text-red-400.mt-1
             = @user.errors[:username].join(", ")
 
         p.text-xs.text-gray-500.dark:text-gray-400.mt-1
-          | 使用可能な文字: 半角英数字、ハイフン（-）、アンダースコア（_）、ドット（.）
+          = t('account.username.allowed_chars')
           br
-          | ※記号は連続不可、先頭・末尾不可
-          br
-          | ※3〜30文字
-          br
-          | ※予約語（admin、api、myなど）は使用できません
-          br
-          | ※変更後24時間は再変更できません
+          - t('account.username.restrictions').each do |restriction|
+            = restriction
+            br
 
       / 現在のメールアドレス（表示のみ）
       .space-y-2
-        label.block.text-sm.font-semibold.text-gray-700.dark:text-gray-300 メールアドレス
+        label.block.text-sm.font-semibold.text-gray-700.dark:text-gray-300 = t('account.email.label')
         p.text-gray-600.dark:text-gray-400 = @user.email
         p.text-xs.text-gray-500.dark:text-gray-400.mt-1
-          | ※Googleアカウントに紐づいているため変更できません
+          = t('account.email.readonly_note')
 
       / 保存ボタン
       .flex.justify-end.gap-3.pt-4.border-t.border-gray-200.dark:border-gray-700
-        = link_to "キャンセル", my_root_path, class: "px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-        = f.submit "保存する", class: "px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        = link_to t('account.cancel_button'), my_root_path, class: "px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+        = f.submit t('account.save_button'), class: "px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
 
   / プロフィールプレビュー
   .mt-6.bg-blue-50.dark:bg-blue-900.border.border-blue-200.dark:border-blue-700.rounded-lg.p-4
@@ -78,6 +72,6 @@
       svg.w-5.h-5.flex-shrink-0 fill="none" stroke="currentColor" viewBox="0 0 24 24"
         path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
       p.text-sm
-        | あなたのプロフィールページ:
+        = t('account.profile_preview')
         = link_to profile_path(username: @user.username), class: "font-mono font-semibold hover:underline ml-1", target: "_blank" do
           = "typnix.com/@#{@user.username}"

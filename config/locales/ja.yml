@@ -88,6 +88,66 @@ ja:
     title: "レッスンを選択"
     description: "練習したいレッスンを選んでタイピング練習を始めましょう"
 
+  # マイページ（ダッシュボード）
+  my:
+    dashboard:
+      title: "マイページ"
+      description: "アカウント設定と各種機能"
+      profile:
+        title: "自分のプロフィール"
+        description: "他の人から見たあなたのプロフィールページ"
+      account:
+        title: "アカウント設定"
+        description: "ユーザー名など基本情報の設定"
+      keymaps:
+        title: "キーマップ管理"
+        description: "複数のキーマップを作成・管理"
+      history:
+        title: "練習履歴"
+        description: "過去のタイピング練習記録を確認"
+      account_management: "アカウント管理"
+      delete_account:
+        title: "アカウントの削除"
+        warning: "アカウントを削除すると、すべてのデータが失われます。この操作は取り消せません。"
+        coming_soon: "（この機能は現在準備中です）"
+
+  # アカウント設定ページ
+  account:
+    title: "アカウント設定"
+    description: "プロフィールURLやその他の設定を管理できます"
+    display_name:
+      label: "表示名"
+      help: "プロフィールやコメントなどで表示される名前です"
+      placeholder: "表示名"
+      length_note: "※1〜30文字"
+    username:
+      label: "ユーザー名"
+      help: "プロフィールページのURL（%{url}）に使用されます"
+      placeholder: "username"
+      change_cooldown: "ユーザー名は24時間に1回しか変更できません"
+      next_change: "次回変更可能: %{time}"
+      allowed_chars: "使用可能な文字: 半角英数字、ハイフン（-）、アンダースコア（_）、ドット（.）"
+      restrictions:
+        - "※記号は連続不可、先頭・末尾不可"
+        - "※3〜30文字"
+        - "※予約語（admin、api、myなど）は使用できません"
+        - "※変更後24時間は再変更できません"
+    email:
+      label: "メールアドレス"
+      readonly_note: "※Googleアカウントに紐づいているため変更できません"
+    cancel_button: "キャンセル"
+    save_button: "保存する"
+    profile_preview: "あなたのプロフィールページ:"
+
+  # プロフィールページ
+  profile:
+    coming_soon: "このページは現在準備中です。将来的には、練習履歴のグラフやランキングなどが表示されます。"
+    statistics:
+      total_records: "総練習回数"
+      average_accuracy: "平均正答率"
+      total_keymaps: "総キーマップ数"
+    published_lessons: "作成したレッスン"
+
   # キーマップ管理ページ
   keymaps:
     title: "キーマップ管理"

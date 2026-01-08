@@ -5,7 +5,7 @@
   .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
     .flex.items-center.justify-between
       div
-        p.text-sm.text-gray-600.dark:text-gray-400 総練習回数
+        p.text-sm.text-gray-600.dark:text-gray-400 = t('profile.statistics.total_records')
         p.text-3xl.font-bold.text-green-600.dark:text-green-400.mt-2 = total_records
       .w-12.h-12.bg-green-100.dark:bg-green-900.rounded-full.flex.items-center.justify-center
         svg.w-6.h-6.text-green-600.dark:text-green-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -15,7 +15,7 @@
   .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
     .flex.items-center.justify-between
       div
-        p.text-sm.text-gray-600.dark:text-gray-400 平均正答率
+        p.text-sm.text-gray-600.dark:text-gray-400 = t('profile.statistics.average_accuracy')
         p.text-3xl.font-bold.text-blue-600.dark:text-blue-400.mt-2
           = average_accuracy
           span.text-base.ml-1 %
@@ -27,7 +27,7 @@
   .bg-white.dark:bg-gray-800.rounded-lg.shadow-md.p-6
     .flex.items-center.justify-between
       div
-        p.text-sm.text-gray-600.dark:text-gray-400 総キーマップ数
+        p.text-sm.text-gray-600.dark:text-gray-400 = t('profile.statistics.total_keymaps')
         p.text-3xl.font-bold.text-yellow-600.dark:text-yellow-400.mt-2 = total_keymaps
       .w-12.h-12.bg-yellow-100.dark:bg-yellow-900.rounded-full.flex.items-center.justify-center
         svg.w-6.h-6.text-yellow-600.dark:text-yellow-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"

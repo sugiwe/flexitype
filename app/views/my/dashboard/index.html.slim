@@ -1,7 +1,7 @@
 / マイページ（設定ダッシュボード）
 .mb-8
-  h2.text-3xl.font-bold.text-gray-800.dark:text-white マイページ
-  p.text-gray-600.dark:text-gray-400.mt-2 アカウント設定と各種機能
+  h2.text-3xl.font-bold.text-gray-800.dark:text-white = t('my.dashboard.title')
+  p.text-gray-600.dark:text-gray-400.mt-2 = t('my.dashboard.description')
 
 / 設定メニュー
 .grid.grid-cols-1.md:grid-cols-2.gap-6
@@ -21,8 +21,8 @@
           line x1="13" y1="12" x2="20" y2="12" stroke-width="1.5" stroke-linecap="round"
           line x1="13" y1="15" x2="20" y2="15" stroke-width="1.5" stroke-linecap="round"
       div
-        h3.text-xl.font-bold.text-gray-800.dark:text-white.mb-2 自分のプロフィール
-        p.text-gray-600.dark:text-gray-400 他の人から見たあなたのプロフィールページ
+        h3.text-xl.font-bold.text-gray-800.dark:text-white.mb-2 = t('my.dashboard.profile.title')
+        p.text-gray-600.dark:text-gray-400 = t('my.dashboard.profile.description')
 
   / アカウント設定
   = link_to edit_my_account_path, class: "block bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition border-2 border-transparent hover:border-blue-500" do
@@ -31,8 +31,8 @@
         svg.h-12.w-12.text-purple-500 fill="none" stroke="currentColor" viewBox="0 0 24 24"
           path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
       div
-        h3.text-xl.font-bold.text-gray-800.dark:text-white.mb-2 アカウント設定
-        p.text-gray-600.dark:text-gray-400 ユーザー名など基本情報の設定
+        h3.text-xl.font-bold.text-gray-800.dark:text-white.mb-2 = t('my.dashboard.account.title')
+        p.text-gray-600.dark:text-gray-400 = t('my.dashboard.account.description')
 
   / キーマップ管理
   = link_to my_keymaps_path, class: "block bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition border-2 border-transparent hover:border-blue-500" do
@@ -41,8 +41,8 @@
         svg.h-12.w-12.text-blue-500 fill="none" stroke="currentColor" viewBox="0 0 24 24"
           path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
       div
-        h3.text-xl.font-bold.text-gray-800.dark:text-white.mb-2 キーマップ管理
-        p.text-gray-600.dark:text-gray-400 複数のキーマップを作成・管理
+        h3.text-xl.font-bold.text-gray-800.dark:text-white.mb-2 = t('my.dashboard.keymaps.title')
+        p.text-gray-600.dark:text-gray-400 = t('my.dashboard.keymaps.description')
 
   / 練習履歴
   = link_to my_history_index_path, class: "block bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition border-2 border-transparent hover:border-blue-500" do
@@ -51,17 +51,17 @@
         svg.h-12.w-12.text-green-500 fill="none" stroke="currentColor" viewBox="0 0 24 24"
           path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
       div
-        h3.text-xl.font-bold.text-gray-800.dark:text-white.mb-2 練習履歴
-        p.text-gray-600.dark:text-gray-400 過去のタイピング練習記録を確認
+        h3.text-xl.font-bold.text-gray-800.dark:text-white.mb-2 = t('my.dashboard.history.title')
+        p.text-gray-600.dark:text-gray-400 = t('my.dashboard.history.description')
 
 / 危険な操作（将来実装）
 .mt-8.pt-8.border-t.border-gray-300.dark:border-gray-700
-  h3.text-xl.font-bold.text-gray-800.dark:text-white.mb-4 アカウント管理
+  h3.text-xl.font-bold.text-gray-800.dark:text-white.mb-4 = t('my.dashboard.account_management')
   .bg-red-50.dark:bg-red-900.border-l-4.border-red-500.p-4.rounded
     .flex.items-start
       svg.h-6.w-6.text-red-500.dark:text-red-400.mr-3 fill="none" stroke="currentColor" viewBox="0 0 24 24"
         path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
       div
-        p.font-semibold.text-red-800.dark:text-red-200 アカウントの削除
-        p.text-sm.text-red-700.dark:text-red-300.mt-1 アカウントを削除すると、すべてのデータが失われます。この操作は取り消せません。
-        p.text-sm.text-gray-600.dark:text-gray-400.mt-2.italic （この機能は現在準備中です）
+        p.font-semibold.text-red-800.dark:text-red-200 = t('my.dashboard.delete_account.title')
+        p.text-sm.text-red-700.dark:text-red-300.mt-1 = t('my.dashboard.delete_account.warning')
+        p.text-sm.text-gray-600.dark:text-gray-400.mt-2.italic = t('my.dashboard.delete_account.coming_soon')

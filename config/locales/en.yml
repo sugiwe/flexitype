@@ -117,6 +117,66 @@ en:
     title: "Select a Lesson"
     description: "Choose a lesson to start your typing practice"
 
+  # My Page (Dashboard)
+  my:
+    dashboard:
+      title: "My Page"
+      description: "Account settings and features"
+      profile:
+        title: "My Profile"
+        description: "Your profile page as others see it"
+      account:
+        title: "Account Settings"
+        description: "Manage basic information like username"
+      keymaps:
+        title: "Keymap Management"
+        description: "Create and manage multiple keymaps"
+      history:
+        title: "Practice History"
+        description: "View your past typing practice records"
+      account_management: "Account Management"
+      delete_account:
+        title: "Delete Account"
+        warning: "Deleting your account will permanently delete all your data. This action cannot be undone."
+        coming_soon: "(This feature is currently in development)"
+
+  # Account Settings Page
+  account:
+    title: "Account Settings"
+    description: "Manage your profile URL and other settings"
+    display_name:
+      label: "Display Name"
+      help: "The name displayed on your profile and comments"
+      placeholder: "Display name"
+      length_note: "※1-30 characters"
+    username:
+      label: "Username"
+      help: "Used in your profile page URL (%{url})"
+      placeholder: "username"
+      change_cooldown: "Username can only be changed once every 24 hours"
+      next_change: "Next change available: %{time}"
+      allowed_chars: "Allowed characters: alphanumeric, hyphen (-), underscore (_), dot (.)"
+      restrictions:
+        - "※Symbols cannot be consecutive or at start/end"
+        - "※3-30 characters"
+        - "※Reserved words (admin, api, my, etc.) cannot be used"
+        - "※Cannot change again for 24 hours after changing"
+    email:
+      label: "Email Address"
+      readonly_note: "※Cannot be changed as it's linked to your Google account"
+    cancel_button: "Cancel"
+    save_button: "Save"
+    profile_preview: "Your profile page:"
+
+  # Profile Page
+  profile:
+    coming_soon: "This page is currently under construction. In the future, practice history graphs and rankings will be displayed."
+    statistics:
+      total_records: "Total Practices"
+      average_accuracy: "Average Accuracy"
+      total_keymaps: "Total Keymaps"
+    published_lessons: "Created Lessons"
+
   # Keymap management page
   keymaps:
     title: "Keymap Management"
