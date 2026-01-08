@@ -169,19 +169,9 @@ kamal setup
 kamal deploy
 ```
 
-### 5. データベースのセットアップ
+### 5. 初回デプロイ後の動作確認
 
-```bash
-# マイグレーション実行
-kamal app exec 'bin/rails db:migrate'
-
-# Solid Queue、Solid Cache、Solid Cable のマイグレーション
-kamal app exec 'bin/rails db:migrate:cache'
-kamal app exec 'bin/rails db:migrate:queue'
-kamal app exec 'bin/rails db:migrate:cable'
-```
-
-### 6. 初回デプロイ後の動作確認
+**注意:** マイグレーションは自動実行されます。Dockerコンテナ起動時に `bin/docker-entrypoint` が `rails db:prepare` を実行するため、手動でのマイグレーション実行は不要です。
 
 ```bash
 # アプリケーションのログ確認
@@ -306,17 +296,46 @@ curl https://typnix.com/up
 
 ---
 
-## マイグレーション実行
+## マイグレーションについて
 
-データベース変更がある場合:
+### 自動実行される仕組み
 
+通常、マイグレーションは**自動的に実行されます**。デプロイ時の流れ：
+
+1. `kamal deploy` を実行
+2. 新しいDockerコンテナが起動
+3. コンテナ起動時に `bin/docker-entrypoint` が実行される
+4. `rails db:prepare` が自動実行され、未実行のマイグレーションが適用される
+5. Railsサーバーが起動
+
+### 手動実行が必要なケース
+
+以下の場合のみ、手動でのマイグレーション操作が必要です：
+
+**マイグレーション状況の確認:**
 ```bash
-# マイグレーション実行
-kamal app exec bin/rails db:migrate
-
-# マイグレーション状況確認
 kamal app exec bin/rails db:migrate:status
 ```
+
+**ロールバックが必要な場合:**
+```bash
+# 1つ前のマイグレーションに戻す
+kamal app exec bin/rails db:rollback
+
+# 特定のバージョンまで戻す
+kamal app exec bin/rails db:rollback STEP=3
+```
+
+**データマイグレーションの手動実行（通常は不要）:**
+```bash
+kamal app exec bin/rails db:migrate
+```
+
+### 注意事項
+
+- **複雑なマイグレーション**: 時間がかかる場合、コンテナ起動タイムアウトの可能性があります
+- **ロールバック**: 問題が発生した場合は上記の手動コマンドでロールバック可能です
+- **複数サーバー**: 現在は1台構成のため問題ありませんが、将来複数サーバーになる場合は競合に注意が必要です
 
 ---
 
