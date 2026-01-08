@@ -17,7 +17,7 @@ module Admin
       set_translations(@category, category_params)
 
       if @category.save
-        redirect_to admin_categories_path, notice: "カテゴリー「#{@category.name}」を作成しました"
+        redirect_to admin_categories_path, notice: "カテゴリー「#{@category.translated_name}」を作成しました"
       else
         render :new, status: :unprocessable_entity
       end
@@ -31,7 +31,7 @@ module Admin
       set_translations(@category, category_params)
 
       if @category.save
-        redirect_to admin_categories_path, notice: "カテゴリー「#{@category.name}」を更新しました"
+        redirect_to admin_categories_path, notice: "カテゴリー「#{@category.translated_name}」を更新しました"
       else
         render :edit, status: :unprocessable_entity
       end
@@ -42,7 +42,7 @@ module Admin
         redirect_to admin_categories_path, alert: "このカテゴリーにはレッスンが紐付いているため削除できません"
       else
         @category.destroy
-        redirect_to admin_categories_path, notice: "カテゴリー「#{@category.name}」を削除しました"
+        redirect_to admin_categories_path, notice: "カテゴリー「#{@category.translated_name}」を削除しました"
       end
     end
 

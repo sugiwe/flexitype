@@ -25,7 +25,7 @@ class Share < ApplicationRecord
 
   # カテゴリー名を取得
   def category_name
-    lesson_record.lesson.category.name
+    lesson_record.lesson&.category&.translated_name || "不明"
   end
 
   private

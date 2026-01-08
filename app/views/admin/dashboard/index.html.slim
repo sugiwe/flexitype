@@ -102,7 +102,7 @@
   .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-4
     - @lesson_categories.each do |category|
       .bg-gray-50.dark:bg-gray-700.rounded-lg.p-4
-        p.text-sm.text-gray-600.dark:text-gray-400 = category.name
+        p.text-sm.text-gray-600.dark:text-gray-400 = category.translated_name
         p.text-2xl.font-bold.text-gray-800.dark:text-white.mt-1
           = category.lessons.count
           span.text-sm.font-normal.text-gray-500.dark:text-gray-400.ml-1 レッスン

@@ -1,10 +1,10 @@
 / ページヘッダー
 .mb-6
-  h2.text-3xl.font-bold.text-gray-800.dark:text-white = @lesson.name
+  h2.text-3xl.font-bold.text-gray-800.dark:text-white = @lesson.translated_name
   p.text-sm.text-gray-600.dark:text-gray-400.mt-2
-    = @lesson.category.name
+    = @lesson.category.translated_name
     |  •
-    = @lesson.description
+    = @lesson.translated_description
   / 作成者情報
   .flex.items-center.gap-2.mt-2
     - if @lesson.user.icon_url.present?
