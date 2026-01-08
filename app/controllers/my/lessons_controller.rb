@@ -1,4 +1,6 @@
 class My::LessonsController < My::ApplicationController
+  include TranslatableParams
+
   before_action :set_lesson, only: [ :edit, :update, :destroy ]
 
   def index
@@ -19,12 +21,14 @@ class My::LessonsController < My::ApplicationController
   end
 
   def create
-    @lesson = current_user.lessons.build(lesson_params)
+    @lesson = current_user.lessons.build(lesson_params.except(:name_en, :description_en))
 
     # 一般ユーザーは常に非公開（デフォルト値を設定）
     unless current_user.admin?
       @lesson.is_public = false
     end
+
+    set_translations(@lesson, lesson_params)
 
     if @lesson.save
       redirect_to my_lessons_path, notice: "レッスンを作成しました。"
@@ -39,7 +43,10 @@ class My::LessonsController < My::ApplicationController
   end
 
   def update
-    if @lesson.update(lesson_params)
+    @lesson.assign_attributes(lesson_params.except(:name_en, :description_en))
+    set_translations(@lesson, lesson_params)
+
+    if @lesson.save
       redirect_to my_lessons_path, notice: "レッスンを更新しました。"
     else
       @categories = Category.ordered
@@ -86,7 +93,8 @@ class My::LessonsController < My::ApplicationController
   def lesson_params
     # paramsを取得
     permitted_params = params.require(:lesson).permit(
-      :name, :description, :category_id, :count, :is_public, :items, :display_order
+      :name, :description, :category_id, :count, :is_public, :items, :display_order,
+      :name_en, :description_en
     )
 
     # itemsをテキストエリアの改行区切りから配列に変換
