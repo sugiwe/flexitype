@@ -44,6 +44,45 @@ ja:
     beta_contact: "ログイン希望者は"
     beta_contact_link: "こちらからご連絡ください"
 
+  # グレード（カワウソランク）
+  grades:
+    legendary:
+      name: "伝説のカワウソ"
+      description: "タイピングの神様！"
+    adult:
+      name: "熟練のカワウソ"
+      description: "堂々としたタイピング"
+    young:
+      name: "若手のカワウソ"
+      description: "すくすく成長中！"
+    child:
+      name: "子どものカワウソ"
+      description: "元気いっぱい練習中！"
+    baby:
+      name: "赤ちゃんカワウソ"
+      description: "よちよちスタート！"
+
+  # タブ（Category::TABSで使用）
+  tabs:
+    basics:
+      name: "基礎トレーニング"
+      description: "キー配置と指の練習"
+    english:
+      name: "英語練習"
+      description: "英単語・フレーズの練習"
+    japanese:
+      name: "日本語練習"
+      description: "かな・ローマ字入力"
+    programming:
+      name: "プログラミング"
+      description: "コード・用語の練習"
+    my_lessons:
+      name: "マイレッスン"
+      description: "自作レッスン（準備中）"
+    community:
+      name: "コミュニティ"
+      description: "共有レッスン（準備中）"
+
   # メタタグ（SEO・OGP用）
   meta:
     title: "Typnix - 垂直配列タイピング練習アプリ | Vertical-Layout Keyboard Practice"

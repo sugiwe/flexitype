@@ -73,6 +73,45 @@ en:
     beta_contact: "Want to join?"
     beta_contact_link: "Contact us here"
 
+  # Grades (Otter Ranks)
+  grades:
+    legendary:
+      name: "Legendary Otter"
+      description: "Typing deity!"
+    adult:
+      name: "Veteran Otter"
+      description: "Confident typing"
+    young:
+      name: "Growing Otter"
+      description: "Steadily improving!"
+    child:
+      name: "Young Otter"
+      description: "Practicing energetically!"
+    baby:
+      name: "Baby Otter"
+      description: "Just starting out!"
+
+  # Tabs (used in Category::TABS)
+  tabs:
+    basics:
+      name: "Basic Training"
+      description: "Key layout and finger practice"
+    english:
+      name: "English Practice"
+      description: "Words and phrases"
+    japanese:
+      name: "Japanese Practice"
+      description: "Kana and Romaji input"
+    programming:
+      name: "Programming"
+      description: "Code and terminology"
+    my_lessons:
+      name: "My Lessons"
+      description: "Custom lessons (coming soon)"
+    community:
+      name: "Community"
+      description: "Shared lessons (coming soon)"
+
   # Meta tags (SEO & OGP)
   meta:
     title: "Typnix - 垂直配列タイピング練習アプリ | Vertical-Layout Keyboard Practice"
