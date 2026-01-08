@@ -1,13 +1,25 @@
 = form_with model: [:admin, category], local: true, class: "space-y-6" do |f|
-  / カテゴリー名
+  / カテゴリー名（日本語）
   .space-y-2
-    = f.label :name, "カテゴリー名", class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
+    = f.label :name, "カテゴリー名（日本語）", class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
     = f.text_field :name, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white", placeholder: "例: 基礎練習", required: true, maxlength: 50
 
-  / 説明
+  / カテゴリー名（英語）
   .space-y-2
-    = f.label :description, "説明", class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
+    = f.label :name_en, "カテゴリー名（英語）", class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
+    = f.text_field :name_en, value: category.name_translations["en"], class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white", placeholder: "Example: Basic Training", maxlength: 50
+    p.text-xs.text-gray-500.dark:text-gray-400.mt-1 未登録の場合、英語表示時に日本語名が表示されます
+
+  / 説明（日本語）
+  .space-y-2
+    = f.label :description, "説明（日本語）", class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
     = f.text_area :description, rows: 3, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white", placeholder: "このカテゴリーの説明を入力してください", maxlength: 200
+
+  / 説明（英語）
+  .space-y-2
+    = f.label :description_en, "説明（英語）", class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
+    = f.text_area :description_en, value: category.description_translations["en"], rows: 3, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white", placeholder: "Enter category description", maxlength: 200
+    p.text-xs.text-gray-500.dark:text-gray-400.mt-1 未登録の場合、英語表示時に日本語説明が表示されます
 
   / タブ選択
   .space-y-2
