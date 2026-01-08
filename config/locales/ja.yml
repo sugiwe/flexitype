@@ -83,6 +83,27 @@ ja:
       name: "コミュニティ"
       description: "共有レッスン（準備中）"
 
+  # ホームページ
+  home:
+    title: "レッスンを選択"
+    description: "練習したいレッスンを選んでタイピング練習を始めましょう"
+
+  # キーマップ管理ページ
+  keymaps:
+    title: "キーマップ管理"
+    description: "あなたのキーボード配列を登録・管理します"
+    new_button: "新規作成"
+    limit_message: "一般ユーザーはキーマップを2つまで作成できます。新しいキーマップを作成するには、既存のキーマップを削除してください。"
+    no_description: "説明なし"
+    public_badge: "公開中"
+    keys_count: "%{count} キー設定"
+    active_badge: "使用中"
+    use_button: "使用する"
+    edit_button: "編集"
+    delete_button: "削除"
+    delete_disabled: "削除不可"
+    delete_confirm: "キーマップ「%{name}」を削除してもよろしいですか？"
+
   # 練習履歴ページ
   history:
     title: "練習履歴"

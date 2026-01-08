@@ -112,6 +112,27 @@ en:
       name: "Community"
       description: "Shared lessons (coming soon)"
 
+  # Home page
+  home:
+    title: "Select a Lesson"
+    description: "Choose a lesson to start your typing practice"
+
+  # Keymap management page
+  keymaps:
+    title: "Keymap Management"
+    description: "Register and manage your keyboard layouts"
+    new_button: "Create New"
+    limit_message: "Free users can create up to 2 keymaps. To create a new keymap, please delete an existing one."
+    no_description: "No description"
+    public_badge: "Public"
+    keys_count: "%{count} key settings"
+    active_badge: "Active"
+    use_button: "Use"
+    edit_button: "Edit"
+    delete_button: "Delete"
+    delete_disabled: "Cannot delete"
+    delete_confirm: "Are you sure you want to delete keymap \"%{name}\"?"
+
   # Practice history page
   history:
     title: "Practice History"

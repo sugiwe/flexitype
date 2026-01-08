@@ -12,8 +12,8 @@
 
 / ページヘッダー
 .mb-8
-  h2.text-3xl.font-bold.text-gray-800.dark:text-white レッスンを選択
-  p.text-gray-600.dark:text-gray-400.mt-2 練習したいレッスンを選んでタイピング練習を始めましょう
+  h2.text-3xl.font-bold.text-gray-800.dark:text-white = t('home.title')
+  p.text-gray-600.dark:text-gray-400.mt-2 = t('home.description')
 
 / ログインしていない場合のメッセージ（目立つ位置に配置）
 - unless logged_in?
