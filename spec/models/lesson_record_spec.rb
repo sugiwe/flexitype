@@ -110,85 +110,85 @@ RSpec.describe LessonRecord, type: :model do
 
   describe "グレード判定" do
     context "伝説のカワウソ級" do
-      it "正答率98%以上、WPM 80以上で「伝説のカワウソ」になること" do
+      it "正答率98%以上、WPM 80以上で「legendary」になること" do
         lesson_record = build(:lesson_record, :legendary)
         lesson_record.send(:calculate_wpm)
         lesson_record.send(:calculate_grade)
-        expect(lesson_record.grade).to eq("伝説のカワウソ")
+        expect(lesson_record.grade).to eq("legendary")
       end
 
-      it "正答率98%、WPM 80で「伝説のカワウソ」になること（境界値）" do
+      it "正答率98%、WPM 80で「legendary」になること（境界値）" do
         # WPM = (800 / 120) * 60 / 5 = 80
         lesson_record = build(:lesson_record, accuracy: 98.0, typed_chars: 800, duration_seconds: 120)
         lesson_record.send(:calculate_wpm)
         lesson_record.send(:calculate_grade)
-        expect(lesson_record.grade).to eq("伝説のカワウソ")
+        expect(lesson_record.grade).to eq("legendary")
       end
     end
 
     context "熟練のカワウソ級" do
-      it "正答率90%以上、WPM 50以上で「熟練のカワウソ」になること" do
+      it "正答率90%以上、WPM 50以上で「adult」になること" do
         lesson_record = build(:lesson_record, :adult)
         lesson_record.send(:calculate_wpm)
         lesson_record.send(:calculate_grade)
-        expect(lesson_record.grade).to eq("熟練のカワウソ")
+        expect(lesson_record.grade).to eq("adult")
       end
 
-      it "正答率90%、WPM 50で「熟練のカワウソ」になること（境界値）" do
+      it "正答率90%、WPM 50で「adult」になること（境界値）" do
         # WPM = (500 / 120) * 60 / 5 = 50
         lesson_record = build(:lesson_record, accuracy: 90.0, typed_chars: 500, duration_seconds: 120)
         lesson_record.send(:calculate_wpm)
         lesson_record.send(:calculate_grade)
-        expect(lesson_record.grade).to eq("熟練のカワウソ")
+        expect(lesson_record.grade).to eq("adult")
       end
 
-      it "正答率97%でもWPM 49なら「熟練のカワウソ」にならないこと" do
+      it "正答率97%でもWPM 49なら「adult」にならないこと" do
         # WPM = (490 / 120) * 60 / 5 = 49（四捨五入）
         lesson_record = build(:lesson_record, accuracy: 97.0, typed_chars: 490, duration_seconds: 120)
         lesson_record.send(:calculate_wpm)
         lesson_record.send(:calculate_grade)
-        expect(lesson_record.grade).to eq("若手のカワウソ")
+        expect(lesson_record.grade).to eq("young")
       end
     end
 
     context "若手のカワウソ級" do
-      it "正答率80%以上、WPM 30以上で「若手のカワウソ」になること" do
+      it "正答率80%以上、WPM 30以上で「young」になること" do
         lesson_record = build(:lesson_record, :young)
         lesson_record.send(:calculate_wpm)
         lesson_record.send(:calculate_grade)
-        expect(lesson_record.grade).to eq("若手のカワウソ")
+        expect(lesson_record.grade).to eq("young")
       end
     end
 
     context "子どものカワウソ級" do
-      it "正答率70%以上、WPM 15以上で「子どものカワウソ」になること" do
+      it "正答率70%以上、WPM 15以上で「child」になること" do
         lesson_record = build(:lesson_record, :child)
         lesson_record.send(:calculate_wpm)
         lesson_record.send(:calculate_grade)
-        expect(lesson_record.grade).to eq("子どものカワウソ")
+        expect(lesson_record.grade).to eq("child")
       end
     end
 
     context "赤ちゃんカワウソ級" do
-      it "正答率70%未満またはWPM 15未満で「赤ちゃんカワウソ」になること" do
+      it "正答率70%未満またはWPM 15未満で「baby」になること" do
         lesson_record = build(:lesson_record, :baby)
         lesson_record.send(:calculate_wpm)
         lesson_record.send(:calculate_grade)
-        expect(lesson_record.grade).to eq("赤ちゃんカワウソ")
+        expect(lesson_record.grade).to eq("baby")
       end
 
-      it "正答率が高くてもWPMが低ければ「赤ちゃんカワウソ」になること" do
+      it "正答率が高くてもWPMが低ければ「baby」になること" do
         lesson_record = build(:lesson_record, accuracy: 100.0, typed_chars: 50, duration_seconds: 60)
         lesson_record.send(:calculate_wpm)
         lesson_record.send(:calculate_grade)
-        expect(lesson_record.grade).to eq("赤ちゃんカワウソ")
+        expect(lesson_record.grade).to eq("baby")
       end
 
-      it "WPMが高くても正答率が低ければ「赤ちゃんカワウソ」になること" do
+      it "WPMが高くても正答率が低ければ「baby」になること" do
         lesson_record = build(:lesson_record, accuracy: 60.0, typed_chars: 800, duration_seconds: 60)
         lesson_record.send(:calculate_wpm)
         lesson_record.send(:calculate_grade)
-        expect(lesson_record.grade).to eq("赤ちゃんカワウソ")
+        expect(lesson_record.grade).to eq("baby")
       end
     end
 

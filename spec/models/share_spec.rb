@@ -63,7 +63,7 @@ RSpec.describe Share, type: :model do
     end
 
     it "lesson_recordのgradeを委譲すること" do
-      expect(share.grade).to eq("熟練のカワウソ")
+      expect(share.grade).to eq("adult")
     end
 
     it "lesson_recordのgrade_emojiを委譲すること" do

@@ -19,8 +19,20 @@ class LessonRecord < ApplicationRecord
 
   # ヘルパーメソッド: グレード情報を取得
   def grade_info
-    return LessonGrades::DEFINITIONS["baby"] if grade.blank?
-    LessonGrades::DEFINITIONS.values.find { |g| g[:name] == grade } || LessonGrades::DEFINITIONS["baby"]
+    grade_key = grade.presence || "baby"
+    LessonGrades::DEFINITIONS[grade_key] || LessonGrades::DEFINITIONS["baby"]
+  end
+
+  # グレード名を取得（i18n対応）
+  def grade_name
+    grade_key = grade.presence || "baby"
+    I18n.t("grades.#{grade_key}.name")
+  end
+
+  # グレード説明を取得（i18n対応）
+  def grade_description
+    grade_key = grade.presence || "baby"
+    I18n.t("grades.#{grade_key}.description")
   end
 
   def grade_emoji
@@ -29,10 +41,6 @@ class LessonRecord < ApplicationRecord
 
   def grade_color
     grade_info[:color]
-  end
-
-  def grade_description
-    grade_info[:description]
   end
 
   private
@@ -51,15 +59,15 @@ class LessonRecord < ApplicationRecord
     return if accuracy.nil? || wpm.nil?
 
     self.grade = if accuracy >= 98 && wpm >= 80
-      LessonGrades::DEFINITIONS["legendary"][:name]
+      "legendary"
     elsif accuracy >= 90 && wpm >= 50
-      LessonGrades::DEFINITIONS["adult"][:name]
+      "adult"
     elsif accuracy >= 80 && wpm >= 30
-      LessonGrades::DEFINITIONS["young"][:name]
+      "young"
     elsif accuracy >= 70 && wpm >= 15
-      LessonGrades::DEFINITIONS["child"][:name]
+      "child"
     else
-      LessonGrades::DEFINITIONS["baby"][:name]
+      "baby"
     end
   end
 end

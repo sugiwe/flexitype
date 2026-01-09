@@ -208,6 +208,22 @@ ja:
     title: "Typnix - 垂直配列タイピング練習アプリ | Vertical-Layout Keyboard Practice"
     description: "垂直配列キーボードに特化したタイピング練習アプリ。ログインユーザーはキーマップ登録や練習の記録も可能 / Typing practice app specialized for vertical-layout keyboards. Once you log in, you can register your keymaps and track your progress"
 
+  # シェア機能
+  share:
+    og_title: "%{grade}を獲得しました！"
+    og_description: "正答率%{accuracy}%、WPM %{wpm}"
+    page_title: "%{grade}を獲得しました！ - Typnix"
+    twitter_text: "Typnixで「%{grade}」を獲得しました！正答率%{accuracy}%、WPM %{wpm} 🦦 #typnix #タイピング"
+    stats:
+      accuracy: "正答率"
+      wpm: "WPM"
+      duration: "所要時間"
+      mistakes: "ミス数"
+    cta:
+      title: "あなたもTypnixでタイピング練習しませんか？"
+      description: "垂直配列キーボードに特化したタイピング練習アプリ"
+      button: "今すぐ始める"
+
   activerecord:
     errors:
       messages:

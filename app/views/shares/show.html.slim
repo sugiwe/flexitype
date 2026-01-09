@@ -1,14 +1,14 @@
 - content_for :head do
-  meta property="og:title" content="#{@share.grade_name}を獲得しました！"
-  meta property="og:description" content="正答率#{@share.accuracy}%、WPM #{@share.wpm}"
+  meta property="og:title" content=t('share.og_title', grade: @share.grade_name)
+  meta property="og:description" content=t('share.og_description', accuracy: @share.accuracy, wpm: @share.wpm)
   meta property="og:image" content=image_url("share_template.png")
   meta property="og:type" content="website"
   meta property="og:url" content=share_url(@share.token)
   meta name="twitter:card" content="summary_large_image"
-  meta name="twitter:title" content="#{@share.grade_name}を獲得しました！"
-  meta name="twitter:description" content="正答率#{@share.accuracy}%、WPM #{@share.wpm}"
+  meta name="twitter:title" content=t('share.og_title', grade: @share.grade_name)
+  meta name="twitter:description" content=t('share.og_description', accuracy: @share.accuracy, wpm: @share.wpm)
   meta name="twitter:image" content=image_url("share_template.png")
-  title = "#{@share.grade_name}を獲得しました！ - Typnix"
+  title = t('share.page_title', grade: @share.grade_name)
 
 .container.max-w-4xl.mx-auto.pb-12.px-4
   / グレードバッジと成績カード
@@ -28,19 +28,19 @@
       .grid.grid-cols-2.md:grid-cols-4.gap-4.max-w-3xl.mx-auto.mb-10
         .bg-green-50.dark:bg-green-900.rounded-lg.p-6.transition-colors
           .text-3xl.font-bold.text-green-700.dark:text-green-300 = "#{@share.accuracy}%"
-          .text-sm.text-gray-600.dark:text-gray-300.mt-2 正答率
+          .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.accuracy')
         .bg-purple-50.dark:bg-purple-900.rounded-lg.p-6.transition-colors
           .text-3xl.font-bold.text-purple-700.dark:text-purple-300 = @share.wpm
-          .text-sm.text-gray-600.dark:text-gray-300.mt-2 WPM
+          .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.wpm')
         .bg-blue-50.dark:bg-blue-900.rounded-lg.p-6.transition-colors
           .text-3xl.font-bold.text-blue-700.dark:text-blue-300
             - minutes = @share.duration_seconds / 60
             - seconds = @share.duration_seconds % 60
             = "#{minutes}:#{seconds.to_s.rjust(2, '0')}"
-          .text-sm.text-gray-600.dark:text-gray-300.mt-2 所要時間
+          .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.duration')
         .bg-amber-50.dark:bg-amber-900.rounded-lg.p-6.transition-colors
           .text-3xl.font-bold.text-amber-700.dark:text-amber-300 = @share.mistake_count
-          .text-sm.text-gray-600.dark:text-gray-300.mt-2 ミス数
+          .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.mistakes')
 
       / レッスン情報
       .text-sm.text-gray-500.dark:text-gray-400.mb-2
@@ -50,6 +50,6 @@
 
   / CTA（行動喚起）
   .text-center.bg-gradient-to-r.from-blue-600.to-purple-600.dark:from-blue-700.dark:to-purple-700.rounded-lg.shadow-lg.p-12.transition-colors
-    h2.text-3xl.font-bold.text-white.mb-4 あなたもTypnixでタイピング練習しませんか？
-    p.text-lg.text-blue-100.mb-8 垂直配列キーボードに特化したタイピング練習アプリ
-    = link_to "今すぐ始める", root_path, class: "inline-flex items-center px-8 py-4 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition font-bold text-lg shadow-lg"
+    h2.text-3xl.font-bold.text-white.mb-4 = t('share.cta.title')
+    p.text-lg.text-blue-100.mb-8 = t('share.cta.description')
+    = link_to t('share.cta.button'), root_path, class: "inline-flex items-center px-8 py-4 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition font-bold text-lg shadow-lg"

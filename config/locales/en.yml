@@ -232,6 +232,22 @@ en:
       retry_button: "Practice Again"
       home_button: "Back to Home"
 
+  # Share feature
+  share:
+    og_title: "I earned %{grade}!"
+    og_description: "Accuracy %{accuracy}%, WPM %{wpm}"
+    page_title: "I earned %{grade}! - Typnix"
+    twitter_text: "I earned \"%{grade}\" on Typnix! Accuracy %{accuracy}%, WPM %{wpm} 🦦 #typnix #typing"
+    stats:
+      accuracy: "Accuracy"
+      wpm: "WPM"
+      duration: "Duration"
+      mistakes: "Mistakes"
+    cta:
+      title: "Want to practice typing on Typnix too?"
+      description: "Typing practice app specialized for vertical-layout keyboards"
+      button: "Start Now"
+
   # Meta tags (SEO & OGP)
   meta:
     title: "Typnix - 垂直配列タイピング練習アプリ | Vertical-Layout Keyboard Practice"

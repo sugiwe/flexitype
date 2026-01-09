@@ -9,14 +9,9 @@ class Share < ApplicationRecord
 
   # LessonRecordのデータを委譲
   delegate :accuracy, :wpm, :duration_seconds, :mistake_count,
-           :grade, :grade_emoji, :grade_color, :grade_description,
+           :grade, :grade_emoji, :grade_color, :grade_description, :grade_name,
            :lesson_name,
            to: :lesson_record
-
-  # グレード名を取得
-  def grade_name
-    lesson_record.grade_info[:name]
-  end
 
   # グレード画像を取得
   def grade_image
