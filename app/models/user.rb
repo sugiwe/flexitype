@@ -63,9 +63,9 @@ class User < ApplicationRecord
     premium? || admin?
   end
 
-  # 表示用の名前（公式アカウントは「Typnix公式」）
+  # 表示用の名前（公式アカウントは「Typnix Official」）
   def display_name
-    admin? ? "Typnix公式" : name
+    admin? ? "Typnix Official" : name
   end
 
   # 公開されたレッスンのみ取得

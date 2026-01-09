@@ -19,8 +19,34 @@ class LessonRecord < ApplicationRecord
 
   # ヘルパーメソッド: グレード情報を取得
   def grade_info
-    return LessonGrades::DEFINITIONS["baby"] if grade.blank?
-    LessonGrades::DEFINITIONS.values.find { |g| g[:name] == grade } || LessonGrades::DEFINITIONS["baby"]
+    grade_key = grade.presence || "baby"
+    LessonGrades::DEFINITIONS[grade_key] || LessonGrades::DEFINITIONS["baby"]
+  end
+
+  # グレード名を取得（i18n対応、後方互換性あり）
+  def grade_name
+    grade_value = grade.presence || "baby"
+
+    # 新しいデータ（キー形式: legendary/adult/young/child/baby）の場合は翻訳
+    if LessonGrades::DEFINITIONS.key?(grade_value)
+      I18n.t("grades.#{grade_value}.name")
+    else
+      # 古いデータ（日本語名）の場合はそのまま返す（後方互換性）
+      grade_value
+    end
+  end
+
+  # グレード説明を取得（i18n対応、後方互換性あり）
+  def grade_description
+    grade_value = grade.presence || "baby"
+
+    # 新しいデータ（キー形式）の場合は翻訳
+    if LessonGrades::DEFINITIONS.key?(grade_value)
+      I18n.t("grades.#{grade_value}.description")
+    else
+      # 古いデータの場合は空文字を返す（説明は保存していない）
+      ""
+    end
   end
 
   def grade_emoji
@@ -31,8 +57,15 @@ class LessonRecord < ApplicationRecord
     grade_info[:color]
   end
 
-  def grade_description
-    grade_info[:description]
+  # レッスン名を取得（i18n対応）
+  def lesson_name
+    # lesson_idがある場合は動的に翻訳を返す（新しいデータ）
+    if lesson.present?
+      lesson.translated_name
+    else
+      # lesson_idがない場合はカラムの値を返す（古いデータの後方互換性）
+      read_attribute(:lesson_name)
+    end
   end
 
   private
@@ -51,15 +84,15 @@ class LessonRecord < ApplicationRecord
     return if accuracy.nil? || wpm.nil?
 
     self.grade = if accuracy >= 98 && wpm >= 80
-      LessonGrades::DEFINITIONS["legendary"][:name]
+      "legendary"
     elsif accuracy >= 90 && wpm >= 50
-      LessonGrades::DEFINITIONS["adult"][:name]
+      "adult"
     elsif accuracy >= 80 && wpm >= 30
-      LessonGrades::DEFINITIONS["young"][:name]
+      "young"
     elsif accuracy >= 70 && wpm >= 15
-      LessonGrades::DEFINITIONS["child"][:name]
+      "child"
     else
-      LessonGrades::DEFINITIONS["baby"][:name]
+      "baby"
     end
   end
 end

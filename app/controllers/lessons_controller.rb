@@ -22,9 +22,13 @@ class LessonsController < ApplicationController
     user_id = logged_in? ? current_user.id : nil
     @keymaps = Keymap.all_layers_for_user_or_default(user_id)
 
-    # グレード定義に画像パスを追加してJavaScriptに渡す
-    @grades_with_paths = LessonGrades::DEFINITIONS.transform_values do |grade|
-      grade.merge(image_path: view_context.asset_path(grade[:image]))
+    # グレード定義に画像パスとi18n翻訳を追加してJavaScriptに渡す
+    @grades_with_paths = LessonGrades::DEFINITIONS.each_with_object({}) do |(grade_key, grade), hash|
+      hash[grade_key] = grade.merge(
+        image_path: view_context.asset_path(grade[:image]),
+        name: I18n.t("grades.#{grade_key}.name"),
+        description: I18n.t("grades.#{grade_key}.description")
+      )
     end
   end
 end

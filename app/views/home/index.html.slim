@@ -12,8 +12,8 @@
 
 / ページヘッダー
 .mb-8
-  h2.text-3xl.font-bold.text-gray-800.dark:text-white レッスンを選択
-  p.text-gray-600.dark:text-gray-400.mt-2 練習したいレッスンを選んでタイピング練習を始めましょう
+  h2.text-3xl.font-bold.text-gray-800.dark:text-white = t('home.title')
+  p.text-gray-600.dark:text-gray-400.mt-2 = t('home.description')
 
 / ログインしていない場合のメッセージ（目立つ位置に配置）
 - unless logged_in?
@@ -32,7 +32,7 @@
       - @tabs.each do |tab_key, tab_config|
         = link_to root_path(tab: tab_key), data: { turbo_frame: "lesson_content", tabs_target: "tab", tab: tab_key }, class: "group inline-flex items-center gap-2 px-4 py-3 border-b-2 font-medium text-sm transition-colors #{'border-blue-500 text-blue-600 dark:text-blue-400' if @current_tab == tab_key.to_s} #{'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600' unless @current_tab == tab_key.to_s}" do
           span.text-xl = tab_config[:icon]
-          = tab_config[:name]
+          = Category.tab_name(tab_key)
 
   / Turbo Frame for lesson content
   = turbo_frame_tag "lesson_content", data: { tabs_target: "content" } do

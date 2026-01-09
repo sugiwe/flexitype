@@ -44,10 +44,189 @@ ja:
     beta_contact: "ログイン希望者は"
     beta_contact_link: "こちらからご連絡ください"
 
+  # グレード（カワウソランク）
+  grades:
+    legendary:
+      name: "伝説のカワウソ"
+      description: "タイピングの神様！"
+    adult:
+      name: "熟練のカワウソ"
+      description: "堂々としたタイピング"
+    young:
+      name: "若手のカワウソ"
+      description: "すくすく成長中！"
+    child:
+      name: "子どものカワウソ"
+      description: "元気いっぱい練習中！"
+    baby:
+      name: "赤ちゃんカワウソ"
+      description: "よちよちスタート！"
+
+  # タブ（Category::TABSで使用）
+  tabs:
+    basics:
+      name: "基礎トレーニング"
+      description: "キー配置と指の練習"
+    english:
+      name: "英語練習"
+      description: "英単語・フレーズの練習"
+    japanese:
+      name: "日本語練習"
+      description: "かな・ローマ字入力"
+    programming:
+      name: "プログラミング"
+      description: "コード・用語の練習"
+    my_lessons:
+      name: "マイレッスン"
+      description: "自作レッスン（準備中）"
+    community:
+      name: "コミュニティ"
+      description: "共有レッスン（準備中）"
+
+  # ホームページ
+  home:
+    title: "レッスンを選択"
+    description: "練習したいレッスンを選んでタイピング練習を始めましょう"
+    items_count: "%{count}項目"
+    coming_soon:
+      title: "準備中です"
+      description: "このタブのレッスンは現在準備中です。しばらくお待ちください。"
+
+  # マイページ（ダッシュボード）
+  my:
+    dashboard:
+      title: "マイページ"
+      description: "アカウント設定と各種機能"
+      profile:
+        title: "自分のプロフィール"
+        description: "他の人から見たあなたのプロフィールページ"
+      account:
+        title: "アカウント設定"
+        description: "ユーザー名など基本情報の設定"
+      keymaps:
+        title: "キーマップ管理"
+        description: "複数のキーマップを作成・管理"
+      history:
+        title: "練習履歴"
+        description: "過去のタイピング練習記録を確認"
+      account_management: "アカウント管理"
+      delete_account:
+        title: "アカウントの削除"
+        warning: "アカウントを削除すると、すべてのデータが失われます。この操作は取り消せません。"
+        coming_soon: "（この機能は現在準備中です）"
+
+  # アカウント設定ページ
+  account:
+    title: "アカウント設定"
+    description: "プロフィールURLやその他の設定を管理できます"
+    display_name:
+      label: "表示名"
+      help: "プロフィールやコメントなどで表示される名前です"
+      placeholder: "表示名"
+      length_note: "※1〜30文字"
+    username:
+      label: "ユーザー名"
+      help: "プロフィールページのURL（%{url}）に使用されます"
+      placeholder: "username"
+      change_cooldown: "ユーザー名は24時間に1回しか変更できません"
+      next_change: "次回変更可能: %{time}"
+      allowed_chars: "使用可能な文字: 半角英数字、ハイフン（-）、アンダースコア（_）、ドット（.）"
+      restrictions:
+        - "※記号は連続不可、先頭・末尾不可"
+        - "※3〜30文字"
+        - "※予約語（admin、api、myなど）は使用できません"
+        - "※変更後24時間は再変更できません"
+    email:
+      label: "メールアドレス"
+      readonly_note: "※Googleアカウントに紐づいているため変更できません"
+    cancel_button: "キャンセル"
+    save_button: "保存する"
+    profile_preview: "あなたのプロフィールページ:"
+
+  # プロフィールページ
+  profile:
+    coming_soon: "このページは現在準備中です。将来的には、練習履歴のグラフやランキングなどが表示されます。"
+    statistics:
+      total_records: "総練習回数"
+      average_accuracy: "平均正答率"
+      total_keymaps: "総キーマップ数"
+    published_lessons: "作成したレッスン"
+
+  # キーマップ管理ページ
+  keymaps:
+    title: "キーマップ管理"
+    description: "あなたのキーボード配列を登録・管理します"
+    new_button: "新規作成"
+    limit_message: "一般ユーザーはキーマップを2つまで作成できます。新しいキーマップを作成するには、既存のキーマップを削除してください。"
+    no_description: "説明なし"
+    public_badge: "公開中"
+    keys_count: "%{count} キー設定"
+    active_badge: "使用中"
+    use_button: "使用する"
+    edit_button: "編集"
+    delete_button: "削除"
+    delete_disabled: "削除不可"
+    delete_confirm: "キーマップ「%{name}」を削除してもよろしいですか？"
+
+  # 練習履歴ページ
+  history:
+    title: "練習履歴"
+    description: "あなたの練習記録を確認できます"
+    periods:
+      all: "全期間"
+      month: "直近1ヶ月"
+      week: "直近1週間"
+    stats:
+      total_practices: "総練習回数"
+      average_accuracy: "平均正答率"
+      average_wpm: "平均WPM"
+    table:
+      datetime: "日時"
+      lesson: "レッスン"
+      word_count: "単語数"
+      accuracy: "正答率"
+      wpm: "WPM"
+      grade: "グレード"
+      duration: "所要時間"
+      mistakes: "ミス数"
+    empty: "練習履歴がありません"
+    start_link: "タイピング練習を完了すると、ここに履歴が表示されます"
+
+  # 練習画面（レッスンページ）
+  lesson:
+    progress: "問題 %{current} / %{total}"
+    timer_notice: "⏱️ 時間計測は最初の入力から開始されます"
+    instruction: "ミス入力した場合は BackSpace で削除してから正しい文字を入力してください"
+    completion:
+      title: "お疲れ様でした！あなたのランクは…"
+      accuracy: "正答率"
+      wpm: "WPM"
+      duration: "所要時間"
+      mistakes: "ミス数"
+      share_button: "結果をXでシェア"
+      retry_button: "もう一度練習する"
+      home_button: "ホームに戻る"
+
   # メタタグ（SEO・OGP用）
   meta:
     title: "Typnix - 垂直配列タイピング練習アプリ | Vertical-Layout Keyboard Practice"
     description: "垂直配列キーボードに特化したタイピング練習アプリ。ログインユーザーはキーマップ登録や練習の記録も可能 / Typing practice app specialized for vertical-layout keyboards. Once you log in, you can register your keymaps and track your progress"
+
+  # シェア機能
+  share:
+    og_title: "%{grade}を獲得しました！"
+    og_description: "正答率%{accuracy}%、WPM %{wpm}"
+    page_title: "%{grade}を獲得しました！ - Typnix"
+    twitter_text: "Typnixで「%{grade}」を獲得しました！正答率%{accuracy}%、WPM %{wpm} 🦦 #typnix #タイピング"
+    stats:
+      accuracy: "正答率"
+      wpm: "WPM"
+      duration: "所要時間"
+      mistakes: "ミス数"
+    cta:
+      title: "あなたもTypnixでタイピング練習しませんか？"
+      description: "垂直配列キーボードに特化したタイピング練習アプリ"
+      button: "今すぐ始める"
 
   activerecord:
     errors:

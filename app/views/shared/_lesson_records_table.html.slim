@@ -7,16 +7,16 @@
     table.w-full.min-w-max
       thead
         tr.border-b.border-gray-200.dark:border-gray-700
-          th.px-3.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 日時
+          th.px-3.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider = t('history.table.datetime')
           - if local_assigns[:show_user]
             th.px-3.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider ユーザー
-          th.px-3.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider レッスン
-          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 単語数
-          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 正答率
-          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider WPM
-          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider グレード
-          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider 所要時間
-          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider ミス数
+          th.px-3.py-3.text-left.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider = t('history.table.lesson')
+          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider = t('history.table.word_count')
+          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider = t('history.table.accuracy')
+          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider = t('history.table.wpm')
+          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider = t('history.table.grade')
+          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider = t('history.table.duration')
+          th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider = t('history.table.mistakes')
       tbody.divide-y.divide-gray-200.dark:divide-gray-700
         - lesson_records.each do |record|
           tr.hover:bg-gray-50.dark:hover:bg-gray-700.transition-colors
@@ -62,7 +62,7 @@
               - if record.grade.present?
                 .flex.items-center.justify-center.gap-1
                   span.text-lg = record.grade_emoji
-                  span.text-gray-900.dark:text-gray-100 = record.grade.gsub(/のカワウソ|カワウソ/, '')
+                  span.text-gray-900.dark:text-gray-100 = record.grade_name
               - else
                 span.text-gray-500.dark:text-gray-400 -
             td.px-3.py-4.whitespace-nowrap.text-center.text-sm.text-gray-900.dark:text-gray-100
@@ -115,20 +115,20 @@
         - if record.grade.present?
           .mb-3.flex.items-center.gap-2.text-sm
             span.text-2xl = record.grade_emoji
-            span.font-medium.text-gray-900.dark:text-gray-100 = record.grade.gsub(/のカワウソ|カワウソ/, '')
+            span.font-medium.text-gray-900.dark:text-gray-100 = record.grade_name
         .grid.grid-cols-4.gap-2.text-sm.text-gray-600.dark:text-gray-400
           div
-            span.text-xs 単語数
+            span.text-xs = t('history.table.word_count')
             .font-medium.text-gray-900.dark:text-gray-100.mt-1 = record.word_count
           div
-            span.text-xs WPM
+            span.text-xs = t('history.table.wpm')
             .font-medium.text-gray-900.dark:text-gray-100.mt-1
               - if record.wpm
                 = record.wpm
               - else
                 | -
           div
-            span.text-xs 所要時間
+            span.text-xs = t('history.table.duration')
             .font-medium.text-gray-900.dark:text-gray-100.mt-1
               - if record.duration_seconds
                 - minutes = record.duration_seconds / 60
@@ -137,7 +137,7 @@
               - else
                 | -
           div
-            span.text-xs ミス数
+            span.text-xs = t('history.table.mistakes')
             .font-medium.text-gray-900.dark:text-gray-100.mt-1 = record.mistake_count
 
   / ページネーション（オプション）
@@ -150,8 +150,8 @@
   .p-12.text-center
     svg.mx-auto.h-12.w-12.text-gray-400.dark:text-gray-600 fill="none" stroke="currentColor" viewBox="0 0 24 24"
       path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-    p.mt-4.text-gray-500.dark:text-gray-400 練習履歴がありません
+    p.mt-4.text-gray-500.dark:text-gray-400 = t('history.empty')
     - if local_assigns[:show_start_link]
-      p.text-sm.text-gray-400.dark:text-gray-500.mt-2 タイピング練習を完了すると、ここに履歴が表示されます
+      p.text-sm.text-gray-400.dark:text-gray-500.mt-2 = t('history.start_link')
       .mt-6
-        = link_to "練習を始める", root_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+        = link_to t('navigation.home'), root_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"

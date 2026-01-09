@@ -1,14 +1,16 @@
 class Category < ApplicationRecord
+  include Translatable
+
   has_many :lessons, dependent: :destroy
 
-  # タブ定義
+  # タブ定義（name/descriptionはYMLファイルで管理）
   TABS = {
-    basics: { key: "basics", name: "基礎トレーニング", icon: "🔰", description: "キー配置と指の練習" },
-    english: { key: "english", name: "英語練習", icon: "🔠", description: "英単語・フレーズの練習" },
-    japanese: { key: "japanese", name: "日本語練習", icon: "🌸", description: "かな・ローマ字入力" },
-    programming: { key: "programming", name: "プログラミング", icon: "💻", description: "コード・用語の練習" },
-    my_lessons: { key: "my_lessons", name: "マイレッスン", icon: "📝", description: "自作レッスン（準備中）", disabled: true },
-    community: { key: "community", name: "コミュニティ", icon: "👥", description: "共有レッスン（準備中）", disabled: true }
+    basics: { key: "basics", icon: "🔰" },
+    english: { key: "english", icon: "🔠" },
+    japanese: { key: "japanese", icon: "🌸" },
+    programming: { key: "programming", icon: "💻" },
+    my_lessons: { key: "my_lessons", icon: "📝", disabled: true },
+    community: { key: "community", icon: "👥", disabled: true }
   }.freeze
 
   # バリデーション
@@ -30,5 +32,13 @@ class Category < ApplicationRecord
 
   def self.all_tabs
     TABS
+  end
+
+  def self.tab_name(tab_key)
+    I18n.t("tabs.#{tab_key}.name", default: tab_key.to_s.titleize)
+  end
+
+  def self.tab_description(tab_key)
+    I18n.t("tabs.#{tab_key}.description", default: "")
   end
 end

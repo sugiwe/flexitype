@@ -1,4 +1,6 @@
 class Lesson < ApplicationRecord
+  include Translatable
+
   belongs_to :user
   belongs_to :category
   has_many :lesson_records, dependent: :destroy
@@ -44,10 +46,10 @@ class Lesson < ApplicationRecord
   def to_lesson_info
     {
       lesson_id: id,
-      category_name: category.name,
-      category_description: category.description,
-      lesson_name: name,
-      lesson_description: description,
+      category_name: category.translated_name,
+      category_description: category.translated_description,
+      lesson_name: translated_name,
+      lesson_description: translated_description,
       count: count,
       requires_login: category.requires_login,
       premium: category.premium

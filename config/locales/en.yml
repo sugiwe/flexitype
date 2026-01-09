@@ -73,6 +73,185 @@ en:
     beta_contact: "Want to join?"
     beta_contact_link: "Contact us here"
 
+  # Grades (Otter Ranks)
+  grades:
+    legendary:
+      name: "Legendary Otter"
+      description: "Typing deity!"
+    adult:
+      name: "Veteran Otter"
+      description: "Confident typing"
+    young:
+      name: "Growing Otter"
+      description: "Steadily improving!"
+    child:
+      name: "Young Otter"
+      description: "Practicing energetically!"
+    baby:
+      name: "Baby Otter"
+      description: "Just starting out!"
+
+  # Tabs (used in Category::TABS)
+  tabs:
+    basics:
+      name: "Basic Training"
+      description: "Key layout and finger practice"
+    english:
+      name: "English Practice"
+      description: "Words and phrases"
+    japanese:
+      name: "Japanese Practice"
+      description: "Kana and Romaji input"
+    programming:
+      name: "Programming"
+      description: "Code and terminology"
+    my_lessons:
+      name: "My Lessons"
+      description: "Custom lessons (coming soon)"
+    community:
+      name: "Community"
+      description: "Shared lessons (coming soon)"
+
+  # Home page
+  home:
+    title: "Select a Lesson"
+    description: "Choose a lesson to start your typing practice"
+    items_count: "%{count} items"
+    coming_soon:
+      title: "Coming Soon"
+      description: "Lessons for this tab are currently being prepared. Please check back later."
+
+  # My Page (Dashboard)
+  my:
+    dashboard:
+      title: "My Page"
+      description: "Account settings and features"
+      profile:
+        title: "My Profile"
+        description: "Your profile page as others see it"
+      account:
+        title: "Account Settings"
+        description: "Manage basic information like username"
+      keymaps:
+        title: "Keymap Management"
+        description: "Create and manage multiple keymaps"
+      history:
+        title: "Practice History"
+        description: "View your past typing practice records"
+      account_management: "Account Management"
+      delete_account:
+        title: "Delete Account"
+        warning: "Deleting your account will permanently delete all your data. This action cannot be undone."
+        coming_soon: "(This feature is currently in development)"
+
+  # Account Settings Page
+  account:
+    title: "Account Settings"
+    description: "Manage your profile URL and other settings"
+    display_name:
+      label: "Display Name"
+      help: "The name displayed on your profile and comments"
+      placeholder: "Display name"
+      length_note: "※1-30 characters"
+    username:
+      label: "Username"
+      help: "Used in your profile page URL (%{url})"
+      placeholder: "username"
+      change_cooldown: "Username can only be changed once every 24 hours"
+      next_change: "Next change available: %{time}"
+      allowed_chars: "Allowed characters: alphanumeric, hyphen (-), underscore (_), dot (.)"
+      restrictions:
+        - "※Symbols cannot be consecutive or at start/end"
+        - "※3-30 characters"
+        - "※Reserved words (admin, api, my, etc.) cannot be used"
+        - "※Cannot change again for 24 hours after changing"
+    email:
+      label: "Email Address"
+      readonly_note: "※Cannot be changed as it's linked to your Google account"
+    cancel_button: "Cancel"
+    save_button: "Save"
+    profile_preview: "Your profile page:"
+
+  # Profile Page
+  profile:
+    coming_soon: "This page is currently under construction. In the future, practice history graphs and rankings will be displayed."
+    statistics:
+      total_records: "Total Practices"
+      average_accuracy: "Average Accuracy"
+      total_keymaps: "Total Keymaps"
+    published_lessons: "Created Lessons"
+
+  # Keymap management page
+  keymaps:
+    title: "Keymap Management"
+    description: "Register and manage your keyboard layouts"
+    new_button: "Create New"
+    limit_message: "Free users can create up to 2 keymaps. To create a new keymap, please delete an existing one."
+    no_description: "No description"
+    public_badge: "Public"
+    keys_count: "%{count} key settings"
+    active_badge: "Active"
+    use_button: "Use"
+    edit_button: "Edit"
+    delete_button: "Delete"
+    delete_disabled: "Cannot delete"
+    delete_confirm: "Are you sure you want to delete keymap \"%{name}\"?"
+
+  # Practice history page
+  history:
+    title: "Practice History"
+    description: "View your practice records"
+    periods:
+      all: "All Time"
+      month: "Last Month"
+      week: "Last Week"
+    stats:
+      total_practices: "Total Practices"
+      average_accuracy: "Average Accuracy"
+      average_wpm: "Average WPM"
+    table:
+      datetime: "Date/Time"
+      lesson: "Lesson"
+      word_count: "Words"
+      accuracy: "Accuracy"
+      wpm: "WPM"
+      grade: "Grade"
+      duration: "Duration"
+      mistakes: "Mistakes"
+    empty: "No practice history"
+    start_link: "Complete a typing practice to see your history here"
+
+  # Lesson page (practice screen)
+  lesson:
+    progress: "Question %{current} / %{total}"
+    timer_notice: "⏱️ Timer starts with your first keystroke"
+    instruction: "If you make a mistake, press BackSpace to delete and type the correct character"
+    completion:
+      title: "Well done! Your rank is..."
+      accuracy: "Accuracy"
+      wpm: "WPM"
+      duration: "Duration"
+      mistakes: "Mistakes"
+      share_button: "Share on X"
+      retry_button: "Practice Again"
+      home_button: "Back to Home"
+
+  # Share feature
+  share:
+    og_title: "I earned %{grade}!"
+    og_description: "Accuracy %{accuracy}%, WPM %{wpm}"
+    page_title: "I earned %{grade}! - Typnix"
+    twitter_text: "I earned \"%{grade}\" on Typnix! Accuracy %{accuracy}%, WPM %{wpm} 🦦 #typnix #typing"
+    stats:
+      accuracy: "Accuracy"
+      wpm: "WPM"
+      duration: "Duration"
+      mistakes: "Mistakes"
+    cta:
+      title: "Want to practice typing on Typnix too?"
+      description: "Typing practice app specialized for vertical-layout keyboards"
+      button: "Start Now"
+
   # Meta tags (SEO & OGP)
   meta:
     title: "Typnix - 垂直配列タイピング練習アプリ | Vertical-Layout Keyboard Practice"

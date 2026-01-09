@@ -121,9 +121,8 @@ RSpec.describe Category, type: :model do
     it "各タブが必要な属性を持つこと" do
       Category::TABS.each do |_key, config|
         expect(config).to have_key(:key)
-        expect(config).to have_key(:name)
         expect(config).to have_key(:icon)
-        expect(config).to have_key(:description)
+        # :name と :description は i18n で管理されるため、TABS 定数には含まれない
       end
     end
 
