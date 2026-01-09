@@ -116,6 +116,7 @@ en:
   home:
     title: "Select a Lesson"
     description: "Choose a lesson to start your typing practice"
+    items_count: "%{count} items"
 
   # My Page (Dashboard)
   my:

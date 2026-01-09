@@ -17,7 +17,7 @@
                 .flex.items-start.justify-between.mb-2
                   h3.text-base.font-bold.text-gray-800.dark:text-white = lesson.translated_name
                   .px-2.py-1.bg-blue-100.dark:bg-blue-800.text-blue-700.dark:text-blue-200.text-xs.rounded-full.font-semibold
-                    = "#{lesson.count}問"
+                    = t('home.items_count', count: lesson.count)
                 p.text-sm.text-gray-600.dark:text-gray-300.line-clamp-2.mb-3 = lesson.translated_description
                 / 作成者情報
                 .flex.items-center.gap-2.pt-3.border-t.border-blue-200.dark:border-blue-700
