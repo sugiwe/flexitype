@@ -62,7 +62,7 @@
               - if record.grade.present?
                 .flex.items-center.justify-center.gap-1
                   span.text-lg = record.grade_emoji
-                  span.text-gray-900.dark:text-gray-100 = record.grade.gsub(/のカワウソ|カワウソ/, '')
+                  span.text-gray-900.dark:text-gray-100 = record.grade_name
               - else
                 span.text-gray-500.dark:text-gray-400 -
             td.px-3.py-4.whitespace-nowrap.text-center.text-sm.text-gray-900.dark:text-gray-100
@@ -115,7 +115,7 @@
         - if record.grade.present?
           .mb-3.flex.items-center.gap-2.text-sm
             span.text-2xl = record.grade_emoji
-            span.font-medium.text-gray-900.dark:text-gray-100 = record.grade.gsub(/のカワウソ|カワウソ/, '')
+            span.font-medium.text-gray-900.dark:text-gray-100 = record.grade_name
         .grid.grid-cols-4.gap-2.text-sm.text-gray-600.dark:text-gray-400
           div
             span.text-xs = t('history.table.word_count')

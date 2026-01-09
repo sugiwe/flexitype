@@ -23,16 +23,30 @@ class LessonRecord < ApplicationRecord
     LessonGrades::DEFINITIONS[grade_key] || LessonGrades::DEFINITIONS["baby"]
   end
 
-  # グレード名を取得（i18n対応）
+  # グレード名を取得（i18n対応、後方互換性あり）
   def grade_name
-    grade_key = grade.presence || "baby"
-    I18n.t("grades.#{grade_key}.name")
+    grade_value = grade.presence || "baby"
+
+    # 新しいデータ（キー形式: legendary/adult/young/child/baby）の場合は翻訳
+    if LessonGrades::DEFINITIONS.key?(grade_value)
+      I18n.t("grades.#{grade_value}.name")
+    else
+      # 古いデータ（日本語名）の場合はそのまま返す（後方互換性）
+      grade_value
+    end
   end
 
-  # グレード説明を取得（i18n対応）
+  # グレード説明を取得（i18n対応、後方互換性あり）
   def grade_description
-    grade_key = grade.presence || "baby"
-    I18n.t("grades.#{grade_key}.description")
+    grade_value = grade.presence || "baby"
+
+    # 新しいデータ（キー形式）の場合は翻訳
+    if LessonGrades::DEFINITIONS.key?(grade_value)
+      I18n.t("grades.#{grade_value}.description")
+    else
+      # 古いデータの場合は空文字を返す（説明は保存していない）
+      ""
+    end
   end
 
   def grade_emoji
