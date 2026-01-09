@@ -88,6 +88,9 @@ ja:
     title: "レッスンを選択"
     description: "練習したいレッスンを選んでタイピング練習を始めましょう"
     items_count: "%{count}項目"
+    coming_soon:
+      title: "準備中です"
+      description: "このタブのレッスンは現在準備中です。しばらくお待ちください。"
 
   # マイページ（ダッシュボード）
   my:

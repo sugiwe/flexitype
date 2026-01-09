@@ -117,6 +117,9 @@ en:
     title: "Select a Lesson"
     description: "Choose a lesson to start your typing practice"
     items_count: "%{count} items"
+    coming_soon:
+      title: "Coming Soon"
+      description: "Lessons for this tab are currently being prepared. Please check back later."
 
   # My Page (Dashboard)
   my:
