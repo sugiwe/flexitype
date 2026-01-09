@@ -335,7 +335,7 @@ namespace :lessons do
   task migrate_to_db: :environment do
     yaml_data = YAML.load_file(Rails.root.join("config/typing_lessons.yml"))
 
-    # Typnix公式アカウントを取得
+    # Typnix Official アカウントを取得
     official_user = User.find_by!(email: "official@typnix.com")
 
     yaml_data["lessons"].each do |category_key, category_data|
@@ -349,7 +349,7 @@ namespace :lessons do
       # レッスンを作成
       category_data["lessons"].each do |lesson_data|
         Lesson.find_or_create_by!(
-          user: official_user,  # Typnix公式アカウント
+          user: official_user,  # Typnix Official アカウント
           category: category,
           name: lesson_data["name"]
         ) do |lesson|
@@ -376,7 +376,7 @@ end
    - `ADMIN_EMAILS` に `official@typnix.com` を追加
    - `ALLOWED_EMAILS` に `official@typnix.com` を追加
 4. アプリケーションにログインしてUserレコードを作成
-5. ユーザー名を「Typnix公式」に設定
+5. ユーザー名を「Typnix Official」に設定
 6. 上記のRakeタスクを実行してYAMLからDBに移行
 
 ### 5. URL設計

@@ -185,10 +185,10 @@ RSpec.describe User, type: :model do
     end
 
     describe "#display_name" do
-      it "管理者の場合、「Typnix公式」を返すこと" do
+      it "管理者の場合、「Typnix Official」を返すこと" do
         user = build(:user, :admin, name: "管理者")
         allow(user).to receive(:admin?).and_return(true)
-        expect(user.display_name).to eq("Typnix公式")
+        expect(user.display_name).to eq("Typnix Official")
       end
 
       it "一般ユーザーの場合、nameを返すこと" do
