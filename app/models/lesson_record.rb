@@ -43,6 +43,17 @@ class LessonRecord < ApplicationRecord
     grade_info[:color]
   end
 
+  # レッスン名を取得（i18n対応）
+  def lesson_name
+    # lesson_idがある場合は動的に翻訳を返す（新しいデータ）
+    if lesson.present?
+      lesson.translated_name
+    else
+      # lesson_idがない場合はカラムの値を返す（古いデータの後方互換性）
+      read_attribute(:lesson_name)
+    end
+  end
+
   private
 
   def calculate_wpm
