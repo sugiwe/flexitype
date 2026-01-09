@@ -6,7 +6,7 @@ class KeymapSet < ApplicationRecord
   validates :description, length: { maximum: 500 }, allow_blank: true
   validates :slug, presence: true, length: { maximum: 50 },
                    uniqueness: { scope: :user_id },
-                   format: { with: /\A[a-z0-9\-]+\z/, message: "は小文字英数字とハイフンのみ使用できます" }
+                   format: { with: /\A[a-z0-9\-]+\z/, message: :invalid_format }
   validate :check_user_keymap_limit, on: :create
 
   before_validation :generate_slug, if: -> { slug.blank? }
@@ -37,7 +37,7 @@ class KeymapSet < ApplicationRecord
     current_count = user.keymap_sets.count
 
     if current_count >= max_keymaps
-      errors.add(:base, "キーマップは#{max_keymaps}つまでしか作成できません")
+      errors.add(:base, :keymap_limit, count: max_keymaps)
     end
   end
 

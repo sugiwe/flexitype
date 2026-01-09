@@ -196,6 +196,61 @@ en:
     delete_button: "Delete"
     delete_disabled: "Cannot delete"
     delete_confirm: "Are you sure you want to delete keymap \"%{name}\"?"
+    keyboard_types:
+      split_4x6: "4×6 - Split Ortholinear"
+      coming_soon: "Support for other keyboard types is planned for the future"
+    index:
+      title: "Keymap Management"
+      description: "Register and manage your keyboard layouts"
+    edit:
+      title: "Edit Keymap"
+      back: "← Back to list"
+      basic_info: "Basic Information"
+      key_layout: "Key Layout"
+      purpose_title: "📍 Purpose of Keymap Settings"
+      purpose_description: "Register the same key layout as your keyboard. The correct key positions will be displayed as guides on the practice screen."
+      method_title: "⚙️ How to Set"
+      method_description: "Click the key you want to set on the keyboard → Select a character from the candidates below → Press the save button."
+      keyboard_type_label: "⌨️ Keyboard Type"
+      select_character: "Select character to assign"
+      left_hand: "Left Hand"
+      right_hand: "Right Hand"
+      tabs:
+        letters: "Letters & Numbers"
+        symbols: "Symbols & Special Keys"
+      sections:
+        alphabet: "Alphabet"
+        numbers_2_row: "Numbers (2 rows)"
+        numbers_single: "Numbers (single)"
+        basic_operations: "Basic Operations"
+        symbols_2_row: "Symbols (2 rows)"
+        symbols_single: "Symbols (single)"
+        special_keys: "Special Keys"
+        function_keys: "Function Keys"
+      labels:
+        unassigned: "Unassigned"
+        no_key: "No Key"
+        space: "Space"
+      buttons:
+        save: "Save Changes"
+        reset: "Reset Key Layout"
+        cancel: "Cancel"
+      save_status: "✓ Saved"
+    new:
+      title: "Create New Keymap"
+      description: "Enter the name and description of your keymap"
+      create: "Create"
+      cancel: "Cancel"
+      error_count: "%{count} error(s) occurred"
+    form:
+      name_label: "Keymap Name"
+      name_placeholder: "e.g., For Programming"
+      slug_label: "Keymap URL"
+      slug_help_index: "This URL will be used when publishing (e.g., /@your-username/keymaps/%{slug})"
+      slug_help_edit: "Current URL: /my/keymaps/%{slug}"
+      slug_validation: "Only lowercase alphanumeric characters and hyphens are allowed. Can be freely changed (e.g., vim-layout, gaming-setup)"
+      description_label: "Description (optional)"
+      description_placeholder: "e.g., Keymap used for coding"
 
   # Practice history page
   history:
@@ -271,6 +326,13 @@ en:
         too_long: "is too long (maximum is %{count} characters)"
         invalid: "is invalid"
         required: "is required"
+      models:
+        keymap_set:
+          attributes:
+            slug:
+              invalid_format: "can only contain lowercase alphanumeric characters and hyphens"
+            base:
+              keymap_limit: "You can only create up to %{count} keymaps"
     attributes:
       user:
         google_uid: "Google UID"
@@ -279,3 +341,7 @@ en:
         username: "Username"
         icon_url: "Icon URL"
         active_keymap_set: "Active keymap"
+      keymap_set:
+        name: "Keymap Name"
+        description: "Description"
+        slug: "Keymap URL"
