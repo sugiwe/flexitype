@@ -9,6 +9,17 @@
   h3.text-lg.font-semibold.text-gray-800.dark:text-white.mb-4 = t('keymaps.edit.basic_info')
   = form_with model: @keymap_set, url: my_keymap_path(@keymap_set), method: :patch, id: "basic-info-form", class: "space-y-4" do |f|
     .grid.grid-cols-1.gap-4
+      / キーボードタイプ選択
+      div
+        label.block.text-sm.font-medium.text-gray-700.dark:text-gray-300.mb-2
+          = t('keymaps.edit.keyboard_type_label')
+        .relative
+          select.w-full.px-4.py-3.pr-10.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.rounded-lg.text-gray-900.dark:text-gray-100.focus:border-blue-500.dark:focus:border-blue-400.focus:outline-none.transition.appearance-none.cursor-pointer
+            option value="split_4x6" selected=true = t('keymaps.keyboard_types.split_4x6')
+            option disabled=true = t('keymaps.keyboard_types.coming_soon')
+          .pointer-events-none.absolute.inset-y-0.right-0.flex.items-center.px-3.text-gray-500.dark:text-gray-400
+            svg.w-5.h-5 fill="currentColor" viewBox="0 0 20 20"
+              path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"
       / キーマップ名
       div
         = f.label :name, t('keymaps.form.name_label'), class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
@@ -41,18 +52,6 @@
     p.text-gray-800.dark:text-gray-100.font-semibold.mb-2 = t('keymaps.edit.method_title')
     p.text-gray-700.dark:text-gray-200.text-sm
       = t('keymaps.edit.method_description')
-
-  / キーボードタイプ選択
-  .mb-6
-    label.block.text-sm.font-semibold.text-gray-700.dark:text-gray-200.mb-2
-      = t('keymaps.edit.keyboard_type_label')
-    .relative
-      select.w-full.px-4.py-3.pr-10.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.rounded-lg.text-gray-900.dark:text-gray-100.focus:border-blue-500.dark:focus:border-blue-400.focus:outline-none.transition.appearance-none.cursor-pointer
-        option value="split_4x6" selected=true = t('keymaps.keyboard_types.split_4x6')
-        option disabled=true = t('keymaps.keyboard_types.coming_soon')
-      .pointer-events-none.absolute.inset-y-0.right-0.flex.items-center.px-3.text-gray-500.dark:text-gray-400
-        svg.w-5.h-5 fill="currentColor" viewBox="0 0 20 20"
-          path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"
 
   / レイヤー切り替え
   .mb-8.text-center
