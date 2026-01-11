@@ -24,7 +24,7 @@
   / タブ選択
   .space-y-2
     = f.label :tab, "タブ", class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
-    = f.select :tab, options_for_select(Category.available_tabs.map { |key, config| [config[:name], key.to_s] }, category.tab), {}, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+    = f.select :tab, options_for_select(Category.available_tabs.map { |key, config| [Category.tab_name(key), key.to_s] }, category.tab), {}, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
     p.text-xs.text-gray-500.dark:text-gray-400.mt-1 このカテゴリーを表示するタブを選択してください
 
   / 表示順
