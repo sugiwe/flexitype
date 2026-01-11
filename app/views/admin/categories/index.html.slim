@@ -5,7 +5,7 @@
       h2.text-3xl.font-bold.text-gray-800.dark:text-white カテゴリー管理
       p.text-sm.text-gray-600.dark:text-gray-400.mt-2 レッスンのカテゴリーを管理します
     / 新規作成ボタン
-    = link_to new_admin_category_path, class: "px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition" do
+    = link_to new_admin_category_path, data: { turbo_frame: "_top" }, class: "px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition" do
       svg.w-5.h-5.inline-block.mr-2 fill="none" stroke="currentColor" viewBox="0 0 24 24"
         path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"
       | 新規作成

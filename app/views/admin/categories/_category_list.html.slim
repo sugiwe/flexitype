@@ -50,7 +50,7 @@
 
             / 右側: アクションボタン（固定幅、縦並び）
             .flex.flex-col.gap-2.shrink-0 style="width: 140px;"
-              = link_to edit_admin_category_path(category), class: "px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white text-center rounded hover:bg-blue-700 dark:hover:bg-blue-800 transition text-sm" do
+              = link_to edit_admin_category_path(category), data: { turbo_frame: "_top" }, class: "px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white text-center rounded hover:bg-blue-700 dark:hover:bg-blue-800 transition text-sm" do
                 svg.w-4.h-4.inline-block.mr-2 fill="none" stroke="currentColor" viewBox="0 0 24 24"
                   path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                 | 編集
@@ -69,7 +69,7 @@
       svg.w-16.h-16.mx-auto.text-gray-400.dark:text-gray-600.mb-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
         path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
       p.text-gray-500.dark:text-gray-400.mb-4 カテゴリーがありません
-      = link_to new_admin_category_path, class: "px-6 py-3 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition inline-flex items-center gap-2" do
+      = link_to new_admin_category_path, data: { turbo_frame: "_top" }, class: "px-6 py-3 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition inline-flex items-center gap-2" do
         svg.w-5.h-5 fill="none" stroke="currentColor" viewBox="0 0 24 24"
           path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"
         | 最初のカテゴリーを作成
