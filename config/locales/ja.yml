@@ -167,6 +167,61 @@ ja:
     delete_button: "削除"
     delete_disabled: "削除不可"
     delete_confirm: "キーマップ「%{name}」を削除してもよろしいですか？"
+    keyboard_types:
+      split_4x6: "4×6 - 分割型・オーソリニア"
+      coming_soon: "今後、他のキーボードタイプの対応を予定しています"
+    index:
+      title: "キーマップ管理"
+      description: "あなたのキーボード配列を登録・管理します"
+    edit:
+      title: "キーマップ編集"
+      back: "← 一覧に戻る"
+      basic_info: "基本情報"
+      key_layout: "キー配置"
+      purpose_title: "📍 キーマップ設定の目的"
+      purpose_description: "お使いのキーボードと同じキー配置を登録してください。練習画面で正しいキー位置をガイド表示します。"
+      method_title: "⚙️ 設定方法"
+      method_description: "キーボードから設定したいキーをクリック → 下の候補から文字を選択 → 保存ボタンを押してください。"
+      keyboard_type_label: "⌨️ キーボードタイプ"
+      select_character: "割り当てる文字を選択"
+      left_hand: "左手"
+      right_hand: "右手"
+      tabs:
+        letters: "文字・数字"
+        symbols: "記号・特殊キー"
+      sections:
+        alphabet: "アルファベット"
+        numbers_2_row: "数字（2段）"
+        numbers_single: "数字（単体）"
+        basic_operations: "基本操作"
+        symbols_2_row: "記号（2段）"
+        symbols_single: "記号（単体）"
+        special_keys: "特殊キー"
+        function_keys: "ファンクションキー"
+      labels:
+        unassigned: "未設定"
+        no_key: "キーなし"
+        space: "スペース"
+      buttons:
+        save: "変更を保存"
+        reset: "キー配置をリセット"
+        cancel: "キャンセル"
+      save_status: "✓ 保存しました"
+    new:
+      title: "新しいキーマップを作成"
+      description: "キーマップの名前と説明を入力してください"
+      create: "作成"
+      cancel: "キャンセル"
+      error_count: "%{count}個のエラーがありました"
+    form:
+      name_label: "キーマップ名"
+      name_placeholder: "例: プログラミング用"
+      slug_label: "キーマップURL"
+      slug_help_index: "このURLが公開時のアドレスになります（例: /@あなたのユーザー名/keymaps/%{slug}）"
+      slug_help_edit: "現在のURL: /my/keymaps/%{slug}"
+      slug_validation: "小文字英数字とハイフンのみ使用できます。自由に変更可能です（例: vim-layout, gaming-setup）"
+      description_label: "説明（任意）"
+      description_placeholder: "例: コーディング時に使用するキーマップ"
 
   # 練習履歴ページ
   history:
@@ -241,6 +296,13 @@ ja:
         too_long: "は%{count}文字以内で入力してください"
         invalid: "は不正な値です"
         required: "を入力してください"
+      models:
+        keymap_set:
+          attributes:
+            slug:
+              invalid_format: "は小文字英数字とハイフンのみ使用できます"
+            base:
+              keymap_limit: "キーマップは%{count}つまでしか作成できません"
     attributes:
       user:
         google_uid: "Google UID"
@@ -249,6 +311,10 @@ ja:
         username: "ユーザー名"
         icon_url: "アイコンURL"
         active_keymap_set: "アクティブキーマップ"
+      keymap_set:
+        name: "キーマップ名"
+        description: "説明"
+        slug: "キーマップURL"
   time:
     formats:
       default: "%Y/%m/%d %H:%M:%S"
