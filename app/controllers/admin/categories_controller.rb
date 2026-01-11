@@ -5,7 +5,12 @@ module Admin
     before_action :set_category, only: [ :edit, :update, :destroy ]
 
     def index
-      @categories = Category.ordered
+      @current_tab = params[:tab] || "all"
+      @categories = if @current_tab == "all"
+        Category.ordered
+      else
+        Category.ordered.by_tab(@current_tab)
+      end
     end
 
     def new
@@ -17,7 +22,7 @@ module Admin
       set_translations(@category, category_params)
 
       if @category.save
-        redirect_to admin_categories_path, notice: "カテゴリー「#{@category.translated_name}」を作成しました"
+        redirect_to admin_categories_path(tab: @category.tab), notice: "カテゴリー「#{@category.translated_name}」を作成しました"
       else
         render :new, status: :unprocessable_entity
       end
@@ -31,18 +36,19 @@ module Admin
       set_translations(@category, category_params)
 
       if @category.save
-        redirect_to admin_categories_path, notice: "カテゴリー「#{@category.translated_name}」を更新しました"
+        redirect_to admin_categories_path(tab: @category.tab), notice: "カテゴリー「#{@category.translated_name}」を更新しました"
       else
         render :edit, status: :unprocessable_entity
       end
     end
 
     def destroy
+      tab = @category.tab # 削除前にタブを保存
       if @category.lessons.exists?
-        redirect_to admin_categories_path, alert: "このカテゴリーにはレッスンが紐付いているため削除できません"
+        redirect_to admin_categories_path(tab: tab), alert: "このカテゴリーにはレッスンが紐付いているため削除できません"
       else
         @category.destroy
-        redirect_to admin_categories_path, notice: "カテゴリー「#{@category.translated_name}」を削除しました"
+        redirect_to admin_categories_path(tab: tab), notice: "カテゴリー「#{@category.translated_name}」を削除しました"
       end
     end
 
