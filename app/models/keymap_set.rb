@@ -110,7 +110,7 @@ class KeymapSet < ApplicationRecord
 
   # デフォルトキーマップを新規作成されたキーマップセットにコピー
   def copy_default_keymap
-    default_keymap = Keymap.default_keymap
+    default_keymap = Keymap.default_keymap_for_type(keyboard_type)
 
     # 全6レイヤー分のデフォルトキーマップをコピー
     default_keymap.each do |layer, keymap_hash|
