@@ -7,40 +7,8 @@
 
   / フォーム
   = form_with model: @keymap_set, url: my_keymaps_path, class: "bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6" do |f|
-    / エラーメッセージ
-    - if @keymap_set.errors.any?
-      .bg-red-50.dark:bg-red-900.border.border-red-200.dark:border-red-700.rounded-lg.p-4.mb-6
-        h3.text-red-800.dark:text-red-300.font-semibold.mb-2
-          = t('keymaps.new.error_count', count: @keymap_set.errors.count)
-        ul.list-disc.list-inside.text-red-700.dark:text-red-400
-          - @keymap_set.errors.full_messages.each do |message|
-            li = message
-
-    / キーボードタイプ選択
-    .mb-6
-      = f.label :keyboard_type, "キーボードタイプ", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-      = f.select :keyboard_type, KEYBOARD_TYPE_OPTIONS, {}, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      p.mt-1.text-sm.text-gray-500.dark:text-gray-400
-        | キーボードのレイアウトを選択してください。デフォルトキーマップは選択したタイプに応じて設定されます。
-
-    / キーマップ名
-    .mb-6
-      = f.label :name, t('keymaps.form.name_label'), class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-      = f.text_field :name, placeholder: t('keymaps.form.name_placeholder'), class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent", required: true, maxlength: 50
-
-    / キーマップURL（slug）
-    .mb-6
-      = f.label :slug, t('keymaps.form.slug_label'), class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-      = f.text_field :slug, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono", required: true, maxlength: 50, pattern: "[a-z0-9\\-]+"
-      p.mt-1.text-sm.text-gray-500.dark:text-gray-400
-        = t('keymaps.form.slug_help_index', slug: @keymap_set.slug)
-      p.mt-1.text-sm.text-gray-500.dark:text-gray-400
-        = t('keymaps.form.slug_validation')
-
-    / キーマップ説明
-    .mb-6
-      = f.label :description, t('keymaps.form.description_label'), class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-      = f.text_area :description, placeholder: t('keymaps.form.description_placeholder'), rows: 3, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent", maxlength: 500
+    / 基本情報フィールド
+    = render "form_fields", f: f, keymap_set: @keymap_set, mode: :new
 
     / ボタン
     .flex.gap-3
