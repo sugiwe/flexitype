@@ -32,7 +32,7 @@ class KeymapSet < ApplicationRecord
 
   # キーボードタイプの設定情報を取得
   def keyboard_config
-    KEYBOARD_TYPES[keyboard_type] || KEYBOARD_TYPES["cornix_4x6"]
+    KEYBOARD_TYPES[keyboard_type] || KEYBOARD_TYPES["split_4x6"]
   end
 
   # キーボードタイプ名を取得
