@@ -1,0 +1,65 @@
+# キーボードタイプの定義
+# 12行×8列のグリッド（合計96キー）を想定
+# 分割型: 0-5行が左手、6-11行が右手
+# 一体型: 0-5行を全列使用
+
+KEYBOARD_TYPES = {
+  "cornix_4x6" => {
+    name: "Cornix（4×6分割型）",
+    name_en: "Cornix (4×6 Split)",
+    grid_type: :split,
+    rows_left: 4,   # 左手の行数
+    cols_left: 6,   # 左手の列数
+    rows_right: 4,  # 右手の行数
+    cols_right: 6,  # 右手の列数
+    vial_compatible: true,
+    description: "Cornixキーボード用のレイアウト（4行×6列の分割型）"
+  },
+  "split_4x7" => {
+    name: "4×7分割型",
+    name_en: "4×7 Split",
+    grid_type: :split,
+    rows_left: 4,
+    cols_left: 7,
+    rows_right: 4,
+    cols_right: 7,
+    vial_compatible: true,
+    description: "4行×7列の分割型キーボード（エンコーダー付きCornixなど）"
+  },
+  "split_5x6" => {
+    name: "5×6分割型",
+    name_en: "5×6 Split",
+    grid_type: :split,
+    rows_left: 5,
+    cols_left: 6,
+    rows_right: 5,
+    cols_right: 6,
+    vial_compatible: true,
+    description: "5行×6列の分割型キーボード（数字行付き）"
+  },
+  "split_5x7" => {
+    name: "5×7分割型",
+    name_en: "5×7 Split",
+    grid_type: :split,
+    rows_left: 5,
+    cols_left: 7,
+    rows_right: 5,
+    cols_right: 7,
+    vial_compatible: true,
+    description: "5行×7列の分割型キーボード（数字行付き、エンコーダー対応）"
+  },
+  "ortho_5x14" => {
+    name: "5×14一体型（Ortholinear）",
+    name_en: "5×14 Ortholinear",
+    grid_type: :ortho,
+    rows: 5,
+    cols: 14,
+    vial_compatible: false,  # 当面非対応（変換ロジックが必要）
+    description: "5行×14列の一体型オルソリニアキーボード"
+  }
+}.freeze
+
+# キーボードタイプの選択肢（セレクトボックス用）
+KEYBOARD_TYPE_OPTIONS = KEYBOARD_TYPES.map do |key, config|
+  [ config[:name], key ]
+end.freeze

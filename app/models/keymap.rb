@@ -3,7 +3,10 @@ class Keymap < ApplicationRecord
   belongs_to :keymap_set
 
   validates :layer, presence: true, inclusion: { in: 0..5 }
-  validates :key_position, presence: true
+  validates :key_position, presence: true, format: {
+    with: /\A([0-9]|1[0-1])-[0-7]\z/,
+    message: "must be in format 'row-col' where row is 0-11 and col is 0-7"
+  }
   validates :character, length: { maximum: 20 }, allow_blank: true
   validates :key_position, uniqueness: { scope: [ :keymap_set_id, :layer ] }
 
