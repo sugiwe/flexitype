@@ -1,4 +1,8 @@
 class KeymapSet < ApplicationRecord
+  # キーマップ作成上限（将来的にプレミアムユーザーは別の上限を設定可能）
+  MAX_KEYMAPS_FREE_USER = 3
+  MAX_KEYMAPS_PREMIUM_USER = 5
+
   belongs_to :user
   has_many :keymaps, dependent: :destroy
 
@@ -99,8 +103,7 @@ class KeymapSet < ApplicationRecord
   private
 
   def check_user_keymap_limit
-    # 一般ユーザーは2つまで（将来的にプレミアムユーザーは5つまで拡張可能）
-    max_keymaps = 2
+    max_keymaps = user.premium? ? MAX_KEYMAPS_PREMIUM_USER : MAX_KEYMAPS_FREE_USER
     current_count = user.keymap_sets.count
 
     if current_count >= max_keymaps

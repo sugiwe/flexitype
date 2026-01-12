@@ -68,7 +68,10 @@ class My::KeymapsController < My::ApplicationController
   end
 
   def keymap_set_params
-    params.require(:keymap_set).permit(:name, :description, :slug, :keyboard_type)
+    # 新規作成時はkeyboard_typeを許可、更新時は除外（作成後は変更不可）
+    permitted_params = [ :name, :description, :slug ]
+    permitted_params << :keyboard_type if action_name == "create"
+    params.require(:keymap_set).permit(*permitted_params)
   end
 
   def keymap_params

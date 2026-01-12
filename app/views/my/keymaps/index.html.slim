@@ -3,7 +3,8 @@
   h2.text-3xl.font-bold.text-gray-800.dark:text-white = t('keymaps.title')
   p.text-sm.text-gray-600.dark:text-gray-400.mt-2 = t('keymaps.description')
 
-- if @keymap_sets.count < 2
+- max_keymaps = current_user.premium? ? KeymapSet::MAX_KEYMAPS_PREMIUM_USER : KeymapSet::MAX_KEYMAPS_FREE_USER
+- if @keymap_sets.count < max_keymaps
   .mb-6
     .flex.justify-end
       = link_to new_my_keymap_path, class: "px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition" do
@@ -11,8 +12,8 @@
           path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"
         = t('keymaps.new_button')
 
-/ 制限メッセージ（2つに達している場合）
-- if @keymap_sets.count >= 2
+/ 制限メッセージ（上限に達している場合）
+- if @keymap_sets.count >= max_keymaps
   .bg-yellow-50.dark:bg-yellow-900.border.border-yellow-200.dark:border-yellow-700.rounded-lg.p-4.mb-6
     .flex.items-center.gap-2
       svg.w-5.h-5.text-yellow-600.dark:text-yellow-400 fill="none" stroke="currentColor" viewBox="0 0 24 24"
