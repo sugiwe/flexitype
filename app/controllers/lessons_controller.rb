@@ -22,6 +22,13 @@ class LessonsController < ApplicationController
     user_id = logged_in? ? current_user.id : nil
     @keymaps = Keymap.all_layers_for_user_or_default(user_id)
 
+    # キーボードタイプを取得（ユーザーのアクティブなキーマップセットから）
+    if user_id && current_user.active_keymap_set
+      @keyboard_type = current_user.active_keymap_set.keyboard_type
+    else
+      @keyboard_type = "split_4x6"  # デフォルト
+    end
+
     # グレード定義に画像パスとi18n翻訳を追加してJavaScriptに渡す
     @grades_with_paths = LessonGrades::DEFINITIONS.each_with_object({}) do |(grade_key, grade), hash|
       hash[grade_key] = grade.merge(

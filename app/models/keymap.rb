@@ -98,13 +98,18 @@ class Keymap < ApplicationRecord
   # @param keymap_set_id [Integer] キーマップセットID
   # @return [Hash] レイヤー番号 => { キー位置 => 文字 } のハッシュ
   def self.all_layers_for_keymap_set(keymap_set_id)
+    keymap_set = KeymapSet.find_by(id: keymap_set_id)
+    # キーマップセットのキーボードタイプに応じたデフォルトキーマップを取得
+    keyboard_type = keymap_set&.keyboard_type || "split_4x6"
+    base_keymap = default_keymap_for_type(keyboard_type)
+
     (0..5).each_with_object({}) do |layer, result|
       # このキーマップセットのキーマップを取得
       user_keymap = where(keymap_set_id: keymap_set_id, layer: layer)
                       .pluck(:key_position, :character)
                       .to_h
-      # デフォルトキーマップにユーザーのキーマップをマージ
-      result[layer] = (default_keymap[layer] || {}).merge(user_keymap)
+      # キーボードタイプに応じたデフォルトキーマップにユーザーのキーマップをマージ
+      result[layer] = (base_keymap[layer] || {}).merge(user_keymap)
     end
   end
 end
