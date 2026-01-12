@@ -11,15 +11,10 @@
     .grid.grid-cols-1.gap-4
       / キーボードタイプ選択
       div
-        label.block.text-sm.font-medium.text-gray-700.dark:text-gray-300.mb-2
-          = t('keymaps.edit.keyboard_type_label')
-        .relative
-          select.w-full.px-4.py-3.pr-10.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.rounded-lg.text-gray-900.dark:text-gray-100.focus:border-blue-500.dark:focus:border-blue-400.focus:outline-none.transition.appearance-none.cursor-pointer
-            option value="split_4x6" selected=true = t('keymaps.keyboard_types.split_4x6')
-            option disabled=true = t('keymaps.keyboard_types.coming_soon')
-          .pointer-events-none.absolute.inset-y-0.right-0.flex.items-center.px-3.text-gray-500.dark:text-gray-400
-            svg.w-5.h-5 fill="currentColor" viewBox="0 0 20 20"
-              path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"
+        = f.label :keyboard_type, "キーボードタイプ", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+        = f.select :keyboard_type, KEYBOARD_TYPE_OPTIONS, {}, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        p.mt-1.text-sm.text-gray-500.dark:text-gray-400
+          | キーボードのレイアウトを選択してください。デフォルトキーマップは選択したタイプに応じて設定されます。
       / キーマップ名
       div
         = f.label :name, t('keymaps.form.name_label'), class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
