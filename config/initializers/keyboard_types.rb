@@ -13,6 +13,7 @@ KEYBOARD_TYPES = {
     rows_right: 4,  # 右手の行数
     cols_right: 6,  # 右手の列数
     vial_compatible: true,
+    enabled: true,  # UI選択可能
     description: "4行×6列の分割型キーボード（格子配列）"
   },
   "split_4x7" => {
@@ -24,6 +25,7 @@ KEYBOARD_TYPES = {
     rows_right: 4,
     cols_right: 7,
     vial_compatible: true,
+    enabled: false,  # 将来実装
     description: "4行×7列の分割型キーボード（格子配列）"
   },
   "split_5x6" => {
@@ -35,6 +37,7 @@ KEYBOARD_TYPES = {
     rows_right: 5,
     cols_right: 6,
     vial_compatible: true,
+    enabled: false,  # 将来実装
     description: "5行×6列の分割型キーボード（格子配列・数字行付き等）"
   },
   "split_5x7" => {
@@ -46,6 +49,7 @@ KEYBOARD_TYPES = {
     rows_right: 5,
     cols_right: 7,
     vial_compatible: true,
+    enabled: false,  # 将来実装
     description: "5行×7列の分割型キーボード（格子配列・数字行付き等）"
   },
   "ortho_5x14" => {
@@ -55,11 +59,13 @@ KEYBOARD_TYPES = {
     rows: 5,
     cols: 14,
     vial_compatible: false,  # 当面非対応（変換ロジックが必要）
+    enabled: true,   # UI選択可能
     description: "5行×14列の一体型オーソリニアキーボード"
   }
 }.freeze
 
 # キーボードタイプの選択肢（セレクトボックス用）
-KEYBOARD_TYPE_OPTIONS = KEYBOARD_TYPES.map do |key, config|
+# enabledがtrueのもののみ表示
+KEYBOARD_TYPE_OPTIONS = KEYBOARD_TYPES.select { |_key, config| config[:enabled] }.map do |key, config|
   [ config[:name], key ]
 end.freeze

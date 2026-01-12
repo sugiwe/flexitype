@@ -68,7 +68,7 @@ class My::KeymapsController < My::ApplicationController
   end
 
   def keymap_set_params
-    params.require(:keymap_set).permit(:name, :description, :slug)
+    params.require(:keymap_set).permit(:name, :description, :slug, :keyboard_type)
   end
 
   def keymap_params
