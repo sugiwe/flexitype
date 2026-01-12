@@ -93,25 +93,25 @@
           .grid.gap-1.5.keyboard-grid-6col
             / 1行目
             - (0..5).each do |i|
-              - position = "L0-R#{i}"
+              - position = "0-#{i}"
               - char = @keymaps[0][position] || ""
               .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.text-gray-800.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-position=position
                 = format_key_display(char)
             / 2行目
             - (0..5).each do |i|
-              - position = "L1-R#{i}"
+              - position = "1-#{i}"
               - char = @keymaps[0][position] || ""
               .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.text-gray-800.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-position=position
                 = format_key_display(char)
             / 3行目
             - (0..5).each do |i|
-              - position = "L2-R#{i}"
+              - position = "2-#{i}"
               - char = @keymaps[0][position] || ""
               .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.text-gray-800.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-position=position
                 = format_key_display(char)
             / 4行目（最下段）
             - (0..5).each do |i|
-              - position = "L3-R#{i}"
+              - position = "3-#{i}"
               - char = @keymaps[0][position] || ""
               .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.text-gray-800.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-position=position
                 = format_key_display(char)
@@ -121,25 +121,25 @@
           .grid.gap-1.5.keyboard-grid-6col
             / 1行目
             - (0..5).each do |i|
-              - position = "R0-R#{i}"
+              - position = "6-#{i}"
               - char = @keymaps[0][position] || ""
               .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.text-gray-800.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-position=position
                 = format_key_display(char)
             / 2行目
             - (0..5).each do |i|
-              - position = "R1-R#{i}"
+              - position = "7-#{i}"
               - char = @keymaps[0][position] || ""
               .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.text-gray-800.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-position=position
                 = format_key_display(char)
             / 3行目
             - (0..5).each do |i|
-              - position = "R2-R#{i}"
+              - position = "8-#{i}"
               - char = @keymaps[0][position] || ""
               .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.text-gray-800.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-position=position
                 = format_key_display(char)
             / 4行目（最下段）
             - (0..5).each do |i|
-              - position = "R3-R#{i}"
+              - position = "9-#{i}"
               - char = @keymaps[0][position] || ""
               .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.text-gray-800.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-position=position
                 = format_key_display(char)

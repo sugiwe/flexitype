@@ -50,7 +50,7 @@ class KeymapsController < ApplicationController
 
   def keymap_params
     # keymapsパラメータを許可（ネストしたハッシュ形式）
-    # 形式: { "0" => { "L0-R0" => "Q|q", ... }, "1" => { ... }, ... }
+    # 形式: { "0" => { "0-0" => "Q|q", ... }, "1" => { ... }, ... }
     # レイヤー0-5のみ許可し、各レイヤー内の動的なキー位置を許可
     params.require(:keymaps).permit(
       "0": {},
