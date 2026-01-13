@@ -25,11 +25,11 @@ class My::KeymapsController < My::ApplicationController
   end
 
   def edit
-    # 編集画面を表示（デフォルトキーマップをベースにユーザーのキーマップをマージ）
+    # 編集画面を表示（キーボードタイプに応じたデフォルトキーマップをベースにユーザーのキーマップをマージ）
     @keymaps = {}
     (0..5).each do |layer|
-      # デフォルトキーマップを取得
-      default_keymap = Keymap.default_keymap[layer] || {}
+      # キーボードタイプに応じたデフォルトキーマップを取得
+      default_keymap = Keymap.default_keymap_for_type(@keymap_set.keyboard_type)[layer] || {}
       # このキーマップセットのキーマップを取得
       user_keymap = Keymap.where(keymap_set: @keymap_set, layer: layer)
                           .pluck(:key_position, :character)
