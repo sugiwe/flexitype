@@ -52,15 +52,15 @@ KEYBOARD_TYPES = {
     enabled: false,  # 将来実装
     description: "5行×7列の分割型キーボード（格子配列・数字行付き等）"
   },
-  "ortho_5x14" => {
-    name: "5×14一体型（オーソリニア）",
-    name_en: "5×14 Unibody (Ortholinear)",
+  "ortho_4x12" => {
+    name: "4×12一体型（オーソリニア）",
+    name_en: "4×12 Unibody (Ortholinear)",
     grid_type: :ortho,
-    rows: 5,
-    cols: 14,
-    vial_compatible: false,  # 当面非対応（変換ロジックが必要）
+    rows: 4,
+    cols: 12,
+    vial_compatible: true,
     enabled: true,   # UI選択可能
-    description: "5行×14列の一体型オーソリニアキーボード"
+    description: "4行×12列の一体型オーソリニアキーボード（4×6分割型を横に並べた配列）"
   }
 }.freeze
 
