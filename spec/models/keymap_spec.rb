@@ -42,7 +42,7 @@ RSpec.describe Keymap, type: :model do
         keymap = Keymap.default_keymap_for_type("split_4x6")
 
         expect(keymap).to be_a(Hash)
-        expect(keymap.keys).to match_array([0, 1, 2, 3, 4, 5])  # 6レイヤー
+        expect(keymap.keys).to match_array([ 0, 1, 2, 3, 4, 5 ])  # 6レイヤー
         expect(keymap[0]).to be_a(Hash)
         expect(keymap[0].keys.count).to eq(48)  # 48キー（4×6 左右）
 
@@ -56,7 +56,7 @@ RSpec.describe Keymap, type: :model do
         keymap = Keymap.default_keymap_for_type("ortho_5x14")
 
         expect(keymap).to be_a(Hash)
-        expect(keymap.keys).to match_array([0, 1, 2, 3, 4, 5])
+        expect(keymap.keys).to match_array([ 0, 1, 2, 3, 4, 5 ])
         expect(keymap[0]).to be_a(Hash)
         expect(keymap[0].keys.count).to eq(70)  # 70キー（5×14）
 
