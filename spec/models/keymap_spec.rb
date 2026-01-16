@@ -8,9 +8,9 @@ RSpec.describe Keymap, type: :model do
         # split_4x6の範囲内
         expect(build(:keymap, keymap_set: keymap_set, key_position: "0-0")).to be_valid
         expect(build(:keymap, keymap_set: keymap_set, key_position: "11-7")).to be_valid
-        # ortho_5x14の範囲内（14列目まで）
-        expect(build(:keymap, keymap_set: keymap_set, key_position: "0-13")).to be_valid
-        expect(build(:keymap, keymap_set: keymap_set, key_position: "4-13")).to be_valid
+        # ortho_4x12の範囲内（12列目まで）
+        expect(build(:keymap, keymap_set: keymap_set, key_position: "0-11")).to be_valid
+        expect(build(:keymap, keymap_set: keymap_set, key_position: "3-11")).to be_valid
       end
 
       it "無効な形式の場合、バリデーションエラーになること" do
@@ -52,18 +52,18 @@ RSpec.describe Keymap, type: :model do
         expect(keymap[0]["6-0"]).to eq("Y|y")
       end
 
-      it "ortho_5x14のデフォルトキーマップを読み込めること" do
-        keymap = Keymap.default_keymap_for_type("ortho_5x14")
+      it "ortho_4x12のデフォルトキーマップを読み込めること" do
+        keymap = Keymap.default_keymap_for_type("ortho_4x12")
 
         expect(keymap).to be_a(Hash)
         expect(keymap.keys).to match_array([ 0, 1, 2, 3, 4, 5 ])
         expect(keymap[0]).to be_a(Hash)
-        expect(keymap[0].keys.count).to eq(70)  # 70キー（5×14）
+        expect(keymap[0].keys.count).to eq(48)  # 48キー（4×12）
 
-        # 14列目（0-13）のキーが存在すること
-        expect(keymap[0]["0-13"]).to eq("bs")
-        expect(keymap[0]["1-13"]).to eq("||\\")
-        expect(keymap[0]["4-13"]).to eq("ctrl")
+        # 12列目（0-11）のキーが存在すること
+        expect(keymap[0]["0-11"]).to eq("bs")
+        expect(keymap[0]["1-11"]).to eq("ent")
+        expect(keymap[0]["3-11"]).to eq("→")
       end
 
       it "存在しないキーボードタイプの場合、split_4x6にフォールバックすること" do

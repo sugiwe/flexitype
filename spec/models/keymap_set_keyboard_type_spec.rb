@@ -30,14 +30,14 @@ RSpec.describe KeymapSet, type: :model do
       end
 
       it "一体型キーボードの場合、falseを返すこと" do
-        keymap_set = build(:keymap_set, keyboard_type: "ortho_5x14")
+        keymap_set = build(:keymap_set, keyboard_type: "ortho_4x12")
         expect(keymap_set.split_keyboard?).to be false
       end
     end
 
     describe "#ortho_keyboard?" do
       it "一体型キーボードの場合、trueを返すこと" do
-        keymap_set = build(:keymap_set, keyboard_type: "ortho_5x14")
+        keymap_set = build(:keymap_set, keyboard_type: "ortho_4x12")
         expect(keymap_set.ortho_keyboard?).to be true
       end
 
@@ -58,7 +58,7 @@ RSpec.describe KeymapSet, type: :model do
       end
 
       it "一体型キーボードの場合、空配列を返すこと" do
-        keymap_set = build(:keymap_set, keyboard_type: "ortho_5x14")
+        keymap_set = build(:keymap_set, keyboard_type: "ortho_4x12")
         expect(keymap_set.left_hand_positions).to eq([])
       end
     end
@@ -74,7 +74,7 @@ RSpec.describe KeymapSet, type: :model do
       end
 
       it "一体型キーボードの場合、空配列を返すこと" do
-        keymap_set = build(:keymap_set, keyboard_type: "ortho_5x14")
+        keymap_set = build(:keymap_set, keyboard_type: "ortho_4x12")
         expect(keymap_set.right_hand_positions).to eq([])
       end
     end
@@ -88,12 +88,12 @@ RSpec.describe KeymapSet, type: :model do
         expect(positions).to include("0-0", "3-5", "6-0", "9-5")
       end
 
-      it "ortho_5x14の全キー位置を返すこと" do
-        keymap_set = build(:keymap_set, keyboard_type: "ortho_5x14")
+      it "ortho_4x12の全キー位置を返すこと" do
+        keymap_set = build(:keymap_set, keyboard_type: "ortho_4x12")
         positions = keymap_set.all_key_positions
 
-        expect(positions.count).to eq(70)  # 5行×14列
-        expect(positions).to include("0-0", "0-13", "4-0", "4-13")
+        expect(positions.count).to eq(48)  # 4行×12列
+        expect(positions).to include("0-0", "0-11", "3-0", "3-11")
       end
     end
   end
@@ -128,47 +128,48 @@ RSpec.describe KeymapSet, type: :model do
       end
     end
 
-    describe "ortho_5x14" do
-      it "70キーのデフォルトキーマップがコピーされること" do
+    describe "ortho_4x12" do
+      it "48キーのデフォルトキーマップがコピーされること" do
         user = create(:user)
 
         keymap_set_id = ActiveRecord::Base.connection.execute(
           "INSERT INTO keymap_sets (user_id, name, slug, keyboard_type, created_at, updated_at) " \
-          "VALUES (#{user.id}, 'Test Ortho 5x14', 'test-ortho-5x14-#{SecureRandom.hex(4)}', 'ortho_5x14', NOW(), NOW()) " \
+          "VALUES (#{user.id}, 'Test Ortho 4x12', 'test-ortho-4x12-#{SecureRandom.hex(4)}', 'ortho_4x12', NOW(), NOW()) " \
           "RETURNING id"
         )[0]['id'].to_i
 
         keymap_set = KeymapSet.find(keymap_set_id)
         keymap_set.send(:copy_default_keymap)
 
-        # 70キー（5×14）が作成されていることを確認
-        expect(keymap_set.keymaps.where(layer: 0).count).to eq(70)
+        # 48キー（4×12）が作成されていることを確認
+        expect(keymap_set.keymaps.where(layer: 0).count).to eq(48)
 
-        # 14列目のキーが存在することを確認
-        expect(keymap_set.keymaps.find_by(layer: 0, key_position: "0-13")&.character).to eq("bs")
-        expect(keymap_set.keymaps.find_by(layer: 0, key_position: "4-13")&.character).to eq("ctrl")
+        # 12列目のキーが存在することを確認
+        expect(keymap_set.keymaps.find_by(layer: 0, key_position: "0-11")&.character).to eq("bs")
+        expect(keymap_set.keymaps.find_by(layer: 0, key_position: "3-11")&.character).to eq("→")
 
         # クリーンアップ
         keymap_set.destroy
       end
 
-      it "Layer 0に70キー、Layer 1に36キーが作成されること" do
+      it "Layer 0に48キー、Layer 1に22キーが作成されること" do
         user = create(:user)
 
         keymap_set_id = ActiveRecord::Base.connection.execute(
           "INSERT INTO keymap_sets (user_id, name, slug, keyboard_type, created_at, updated_at) " \
-          "VALUES (#{user.id}, 'Test Ortho Layers', 'test-ortho-layers-#{SecureRandom.hex(4)}', 'ortho_5x14', NOW(), NOW()) " \
+          "VALUES (#{user.id}, 'Test Ortho Layers', 'test-ortho-layers-#{SecureRandom.hex(4)}', 'ortho_4x12', NOW(), NOW()) " \
           "RETURNING id"
         )[0]['id'].to_i
 
         keymap_set = KeymapSet.find(keymap_set_id)
         keymap_set.send(:copy_default_keymap)
 
-        # Layer 0: 70キー（全キー設定あり）
-        expect(keymap_set.keymaps.where(layer: 0).count).to eq(70)
+        # Layer 0: 48キー（全キー設定あり）
+        expect(keymap_set.keymaps.where(layer: 0).count).to eq(48)
 
-        # Layer 1: 36キー（ファンクションキーと一部の修飾キー）
-        expect(keymap_set.keymaps.where(layer: 1).count).to eq(36)
+        # Layer 1: 24キー（数字・記号と修飾キー）
+        # 内訳: 1行目12キー（tab + 数字記号10個 + bs）+ 2行目2キー（caps, ent）+ 3行目1キー（shift）+ 4行目9キー（ctrl~layer2）
+        expect(keymap_set.keymaps.where(layer: 1).count).to eq(24)
 
         # Layer 2-5: 空欄（デフォルトYAMLで空文字のためスキップされる）
         expect(keymap_set.keymaps.where(layer: 2).count).to eq(0)
