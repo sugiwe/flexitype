@@ -186,7 +186,7 @@ en:
     title: "Keymap Management"
     description: "Register and manage your keyboard layouts"
     new_button: "Create New"
-    limit_message: "Free users can create up to 3 keymaps. To create a new keymap, please delete an existing one."
+    limit_message: "Free users can create up to %{count} keymaps. To create a new keymap, please delete an existing one."
     no_description: "No description"
     public_badge: "Public"
     keys_count: "%{count} key settings"
