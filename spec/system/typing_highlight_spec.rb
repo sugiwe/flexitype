@@ -8,22 +8,17 @@ RSpec.describe "タイピング練習のキーハイライト", type: :system do
 
   # "hello"と"world"を打つための最小限のキーマップを作成
   # keymap_setの作成時にデフォルトキーマップがコピーされているので
-  # 必要な文字だけを上書き設定する
+  # デフォルトで既に設定されている文字はそのまま使用できる
   before do
-    # h: L2-R0（左手中指）
-    keymap_set.keymaps.find_by(layer: 0, key_position: "L2-R0").update(character: "h")
-    # e: L0-R2（左手薬指）
-    keymap_set.keymaps.find_by(layer: 0, key_position: "L0-R2").update(character: "e")
-    # l: L2-R3（左手人差し指）
-    keymap_set.keymaps.find_by(layer: 0, key_position: "L2-R3").update(character: "l")
-    # o: R2-R2（右手中指）
-    keymap_set.keymaps.find_by(layer: 0, key_position: "R2-R2").update(character: "o")
-    # w: L1-R1（左手小指）
-    keymap_set.keymaps.find_by(layer: 0, key_position: "L1-R1").update(character: "w")
-    # r: L1-R4（左手人差し指）
-    keymap_set.keymaps.find_by(layer: 0, key_position: "L1-R4").update(character: "r")
-    # d: L2-R2（左手薬指）
-    keymap_set.keymaps.find_by(layer: 0, key_position: "L2-R2").update(character: "d")
+    # デフォルトキーマップで既に設定されている文字:
+    # h: 7-0（右手、H|h）
+    # e: 0-3（左手、E|e）
+    # l: 7-3（右手、L|l）
+    # o: 6-3（右手、O|o）
+    # w: 0-2（左手、W|w）
+    # r: 0-4（左手、R|r）
+    # d: 1-3（左手、D|d）
+    # → デフォルトキーマップに全て含まれているので、特に設定不要
 
     # ユーザーのアクティブキーマップに設定
     user.update(active_keymap_set: keymap_set)
@@ -41,8 +36,8 @@ RSpec.describe "タイピング練習のキーハイライト", type: :system do
       # レッスンのitemsは["hello", "world"]だが、ランダム表示されるため
       # "h"または"w"のどちらかがハイライトされる
       expect(
-        page.has_selector?('.key.ring-2[data-position="L2-R0"]') || # h
-        page.has_selector?('.key.ring-2[data-position="L1-R1"]')    # w
+        page.has_selector?('.key.ring-2[data-position="7-0"]') || # h (右手)
+        page.has_selector?('.key.ring-2[data-position="0-2"]')    # w (左手)
       ).to be true
     end
 
@@ -51,10 +46,10 @@ RSpec.describe "タイピング練習のキーハイライト", type: :system do
       visit lesson_path(lesson)
 
       # 指ガイドがハイライトされることを確認
-      # "h"（left-middle）または"w"（left-pinky）
+      # "h"（right-index: 右手人差し指、7-0）または"w"（left-ring: 左手薬指、0-2）
       expect(
-        page.has_selector?('.finger-guide.ring-2[data-finger="left-middle"]') || # h
-        page.has_selector?('.finger-guide.ring-2[data-finger="left-pinky"]')    # w
+        page.has_selector?('.finger-guide.ring-2[data-finger="right-index"]') || # h
+        page.has_selector?('.finger-guide.ring-2[data-finger="left-ring"]')      # w
       ).to be true
     end
   end
@@ -67,8 +62,8 @@ RSpec.describe "タイピング練習のキーハイライト", type: :system do
       login_as_user(user)
       visit lesson_path(lesson)
 
-      # 最初は"h"（L2-R0）がハイライトされる
-      expect(page).to have_selector('.key.ring-2[data-position="L2-R0"]')
+      # 最初は"h"（7-0: 右手人差し指）がハイライトされる
+      expect(page).to have_selector('.key.ring-2[data-position="7-0"]')
 
       # "h"を入力
       input_field = page.find('[data-typing-target="input"]', visible: :all)
@@ -77,9 +72,9 @@ RSpec.describe "タイピング練習のキーハイライト", type: :system do
       # 少し待機（Stimulus Controllerの処理を待つ）
       sleep 0.1
 
-      # 次の文字"e"（L0-R2）がハイライトされる
-      expect(page).to have_selector('.key.ring-2[data-position="L0-R2"]')
-      expect(page).to have_selector('.finger-guide.ring-2[data-finger="left-ring"]')
+      # 次の文字"e"（0-3: 左手中指）がハイライトされる
+      expect(page).to have_selector('.key.ring-2[data-position="0-3"]')
+      expect(page).to have_selector('.finger-guide.ring-2[data-finger="left-middle"]')
     end
 
     it "間違った文字を入力すると現在の文字が赤くハイライトされる" do
@@ -108,39 +103,37 @@ RSpec.describe "タイピング練習のキーハイライト", type: :system do
       sleep 0.1
 
       # "e"がハイライトされることを確認
-      expect(page).to have_selector('.key.ring-2[data-position="L0-R2"]')
+      expect(page).to have_selector('.key.ring-2[data-position="0-3"]')
 
       # BackSpaceで削除
       input_field.send_keys(:backspace)
       sleep 0.1
 
       # "h"に戻る
-      expect(page).to have_selector('.key.ring-2[data-position="L2-R0"]')
+      expect(page).to have_selector('.key.ring-2[data-position="7-0"]')
     end
   end
 
   describe "レイヤー切り替え", js: true do
-    let(:lesson) { create(:lesson, category: category, items: [ "X" ], count: 1) }
+    let(:lesson) { create(:lesson, category: category, items: [ "1" ], count: 1) }
 
     before do
-      # Layer 1に大文字"X"を追加（デフォルトキーマップにない文字を使用）
-      keymap_set.keymaps.find_by(layer: 1, key_position: "L2-R0").update(character: "X")
-      # Layer 0のL2-R0は使わない文字に設定（Xを検索してもLayer 0で見つからないようにする）
-      keymap_set.keymaps.find_by(layer: 0, key_position: "L2-R0").update(character: "")
-      # レイヤー切り替えキー（Layer1/Lyr1）をLayer 0に追加
-      keymap_set.keymaps.find_by(layer: 0, key_position: "L3-R3").update(character: "Layer1")
+      # Layer 0にない文字をテスト（数字"1"）
+      # デフォルトキーマップではLayer 1の0-1に"!|1"が設定されている
+      # Layer 0には"1"が存在しないため、レイヤー切り替えが必要
+      # → レイヤー切り替えキー（Layer1）は Layer 0 の 3-3 にデフォルトで設定済み
     end
 
-    it "大文字が必要な場合はレイヤーボタンとターゲットキーの両方がハイライトされる" do
+    it "Layer 0にない文字の場合、レイヤーボタンとターゲットキーの両方がハイライトされる" do
       login_as_user(user)
       visit lesson_path(lesson)
 
-      # 最初の文字"X"はLayer 1にあるため
-      # 1. Layer1キー（L3-R3）がハイライトされる
-      expect(page).to have_selector('.key.ring-2[data-position="L3-R3"]')
+      # 最初の文字"1"はLayer 1（0-1）にのみ存在するため
+      # 1. Layer1キー（3-3: 左手側レイヤー切り替えキー）がハイライトされる
+      expect(page).to have_selector('.key.ring-2[data-position="3-3"]')
 
-      # 2. "X"のキー（L2-R0）もハイライトされる
-      expect(page).to have_selector('.key.ring-2[data-position="L2-R0"]')
+      # 2. "1"のキー（0-1: Layer 1の"!|1"の位置）もハイライトされる
+      expect(page).to have_selector('.key.ring-2[data-position="0-1"]')
     end
   end
 

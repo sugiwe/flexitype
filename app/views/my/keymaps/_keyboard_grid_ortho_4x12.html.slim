@@ -1,0 +1,29 @@
+/ 4×12一体型キーボードグリッド
+.flex.justify-center
+  .keyboard-full
+    h3.text-sm.font-semibold.text-gray-500.dark:text-gray-400.mb-3.text-center 4×12 オーソリニアキーボード
+    .grid.gap-1.5.keyboard-grid-12col
+      / 1行目
+      - (0..11).each do |col|
+        - pos = "0-#{col}"
+        .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
+          div data-keymap-editor-target="keyChar"
+            = format_key_display("")
+      / 2行目
+      - (0..11).each do |col|
+        - pos = "1-#{col}"
+        .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
+          div data-keymap-editor-target="keyChar"
+            = format_key_display("")
+      / 3行目
+      - (0..11).each do |col|
+        - pos = "2-#{col}"
+        .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
+          div data-keymap-editor-target="keyChar"
+            = format_key_display("")
+      / 4行目（最下段）
+      - (0..11).each do |col|
+        - pos = "3-#{col}"
+        .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
+          div data-keymap-editor-target="keyChar"
+            = format_key_display("")

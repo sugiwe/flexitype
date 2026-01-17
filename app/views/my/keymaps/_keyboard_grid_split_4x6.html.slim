@@ -1,0 +1,51 @@
+/ 4×6分割型キーボードグリッド
+.flex.justify-center.gap-12
+  / 左手側
+  .keyboard-half
+    h3.text-sm.font-semibold.text-gray-500.dark:text-gray-400.mb-3.text-center = t('keymaps.edit.left_hand')
+    .grid.gap-1.5.keyboard-grid-6col
+      / 1行目
+      - ["0-0", "0-1", "0-2", "0-3", "0-4", "0-5"].each do |pos|
+        .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
+          div data-keymap-editor-target="keyChar"
+            = format_key_display("")
+      / 2行目
+      - ["1-0", "1-1", "1-2", "1-3", "1-4", "1-5"].each do |pos|
+        .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
+          div data-keymap-editor-target="keyChar"
+            = format_key_display("")
+      / 3行目
+      - ["2-0", "2-1", "2-2", "2-3", "2-4", "2-5"].each do |pos|
+        .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
+          div data-keymap-editor-target="keyChar"
+            = format_key_display("")
+      / 4行目（最下段）
+      - ["3-0", "3-1", "3-2", "3-3", "3-4", "3-5"].each do |pos|
+        .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
+          div data-keymap-editor-target="keyChar"
+            = format_key_display("")
+
+  / 右手側
+  .keyboard-half
+    h3.text-sm.font-semibold.text-gray-500.dark:text-gray-400.mb-3.text-center = t('keymaps.edit.right_hand')
+    .grid.gap-1.5.keyboard-grid-6col
+      / 1行目
+      - ["6-0", "6-1", "6-2", "6-3", "6-4", "6-5"].each do |pos|
+        .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
+          div data-keymap-editor-target="keyChar"
+            = format_key_display("")
+      / 2行目
+      - ["7-0", "7-1", "7-2", "7-3", "7-4", "7-5"].each do |pos|
+        .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
+          div data-keymap-editor-target="keyChar"
+            = format_key_display("")
+      / 3行目
+      - ["8-0", "8-1", "8-2", "8-3", "8-4", "8-5"].each do |pos|
+        .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
+          div data-keymap-editor-target="keyChar"
+            = format_key_display("")
+      / 4行目（最下段）
+      - ["9-0", "9-1", "9-2", "9-3", "9-4", "9-5"].each do |pos|
+        .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-blue-400.dark:hover:border-blue-500.hover:bg-blue-50.dark:hover:bg-blue-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#selectKey" data-position=pos
+          div data-keymap-editor-target="keyChar"
+            = format_key_display("")

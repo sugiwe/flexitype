@@ -1,7 +1,8 @@
-# キーボードタイプ対応の拡張設計（Phase Y）
+# キーボードタイプ対応の拡張設計
 
 **作成日: 2025-12-18**
-**ステータス: 設計案（未実装）**
+**最終更新: 2026-01-14**
+**ステータス: Phase 0-0.5 完了（シンプル実装方式採用）**
 
 ## 現状の課題
 
@@ -268,6 +269,143 @@ PATCH  /my/keymaps/:id               # 更新
 
 - KeymapSet 機能が完成してから着手
 - 現状のハードコーディングされた UI を動的生成に置き換える実験
+
+---
+
+## ✅ 実装完了: シンプル実装方式（2026-01-14）
+
+**実装方針の変更:**
+当初は KeyboardType モデルを使った複雑な JSONB ベースの設計を予定していたが、より**シンプルで保守性の高いアプローチ**を採用。
+
+### 採用した設計
+
+**1. 設定ファイルベース** ([config/initializers/keyboard_types.rb](config/initializers/keyboard_types.rb))
+```ruby
+KEYBOARD_TYPES = {
+  "split_4x6" => {
+    name: "4×6分割型（オーソリニア）",
+    name_en: "4×6 Split (Ortholinear)",
+    grid_type: :split,
+    rows_left: 4, cols_left: 6,
+    rows_right: 4, cols_right: 6,
+    vial_compatible: true,
+    enabled: true,
+    description: "4行×6列の分割型キーボード（格子配列）"
+  },
+  "ortho_4x12" => {
+    name: "4×12一体型（オーソリニア）",
+    name_en: "4×12 Unibody (Ortholinear)",
+    grid_type: :ortho,
+    rows: 4, cols: 12,
+    vial_compatible: true,
+    enabled: true,
+    description: "4行×12列の一体型オーソリニアキーボード（4×6分割型を横に並べた配列）"
+  }
+}.freeze
+```
+
+**2. デフォルトキーマップ: YAMLファイル** (`config/default_keymaps/`)
+- `split_4x6.yml`
+- `ortho_4x12.yml`
+- キーボードタイプごとに個別ファイル
+- `Keymap.default_keymap_for_type(keyboard_type)` で動的ロード
+
+**3. ビューパーシャル: キーボードタイプごと**
+- 編集画面: `app/views/my/keymaps/_keyboard_grid_{type}.html.slim`
+- 練習画面: `app/views/lessons/_keyboard_grid_{type}.html.slim`
+- 動的レンダリング: `render "keyboard_grid_#{@keyboard_type}"`
+
+**4. JavaScript: 指マッピング** ([app/javascript/controllers/typing_controller.js](app/javascript/controllers/typing_controller.js))
+```javascript
+fingerPositionMappings = {
+  'split_4x6': { /* ... */ },
+  'ortho_4x12': { /* ... */ }
+}
+```
+
+**5. KeymapSet モデル** ([app/models/keymap_set.rb](app/models/keymap_set.rb))
+```ruby
+# keyboard_type: string (split_4x6, ortho_4x12, など)
+validates :keyboard_type, presence: true,
+  inclusion: { in: KEYBOARD_TYPES.keys }
+
+def keyboard_config
+  KEYBOARD_TYPES[keyboard_type]
+end
+```
+
+### 実装の利点
+
+✅ **シンプル**: DBモデル不要、マイグレーション不要
+✅ **高速**: 設定ファイルはRails起動時にロード済み
+✅ **保守性**: コード変更だけで新タイプ追加可能
+✅ **型安全**: Rubyのハッシュで厳密に定義
+✅ **バージョン管理**: Gitで変更履歴を追跡可能
+
+### 新しいキーボードタイプの追加手順
+
+1. `KEYBOARD_TYPES` にエントリ追加
+2. デフォルトキーマップ YAML 作成 (`config/default_keymaps/`)
+3. ビューパーシャル作成（編集画面・練習画面）
+4. JavaScript 指マッピング追加
+5. 完成！
+
+**実装コスト: 約1-2時間**（複雑な設計では数日かかる）
+
+### 実装済みキーボードタイプ
+
+- ✅ `split_4x6`: 4×6分割型（Cornix等）
+- ✅ `ortho_4x12`: 4×12一体型（Planck等）
+
+### 5×14 → 4×12 への戦略的ピボット
+
+**当初計画**: 5×14一体型を追加
+**問題点**:
+- デフォルトキーマップ設計が複雑（ホームポジション解釈が複数）
+- 指配置の議論が必要
+- 本来の目的（**切り替えメカニズムの検証**）から逸脱
+
+**最終判断**: 4×12一体型を採用
+**理由**:
+- 4×6分割型を横に並べただけ（シンプル）
+- デフォルトキーマップを流用可能
+- 指配置も4×6と同じ
+- **メカニズムの実証**という本来の目的に集中できる
+
+**結果**: ✅ 成功（拡張メカニズムが正常に動作）
+
+---
+
+## 将来の拡張候補
+
+### 実装しやすいキーボードタイプ（優先度: 中）
+
+1. **5×6分割型** (`split_5x6`)
+   - 4×6 + 数字行
+   - デフォルトキーマップ: 4×6ベース + 数字行追加
+
+2. **4×7分割型** (`split_4x7`)
+   - 4×6 + 1列
+   - デフォルトキーマップ: 4×6ベース + 右端1列追加
+
+3. **5×7分割型** (`split_5x7`)
+   - 5×6 + 1列
+
+### 複雑なキーボードタイプ（優先度: 低）
+
+4. **カラムスタッガード配列**
+   - 物理的な列ずれ
+   - CSS での位置調整が必要
+
+5. **5×14一体型** (`ortho_5x14`)
+   - 指配置カスタマイズ機能とセットで実装推奨
+   - [指配置カスタマイズ設計](docs/2026-01-12-finger-assignment-customization.md) 参照
+
+---
+
+## 以下は旧設計（参考資料）
+
+**注意**: 以下のセクション（KeyboardType モデル、JSONB ベースの設計）は、当初の設計案として残していますが、**実装されていません**。現在のシンプル実装方式で十分な拡張性が確保できているため、将来的にも採用予定はありません。
 
 ### Phase 1: KeyboardType モデルとマイグレーション
 

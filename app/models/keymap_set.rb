@@ -1,4 +1,8 @@
 class KeymapSet < ApplicationRecord
+  # キーマップ作成上限（将来的にプレミアムユーザーは別の上限を設定可能）
+  MAX_KEYMAPS_FREE_USER = 3
+  MAX_KEYMAPS_PREMIUM_USER = 5
+
   belongs_to :user
   has_many :keymaps, dependent: :destroy
 
@@ -7,6 +11,7 @@ class KeymapSet < ApplicationRecord
   validates :slug, presence: true, length: { maximum: 50 },
                    uniqueness: { scope: :user_id },
                    format: { with: /\A[a-z0-9\-]+\z/, message: :invalid_format }
+  validates :keyboard_type, presence: true, inclusion: { in: KEYBOARD_TYPES.keys }
   validate :check_user_keymap_limit, on: :create
 
   before_validation :generate_slug, if: -> { slug.blank? }
@@ -29,11 +34,76 @@ class KeymapSet < ApplicationRecord
     slug
   end
 
+  # キーボードタイプの設定情報を取得
+  def keyboard_config
+    KEYBOARD_TYPES[keyboard_type] || KEYBOARD_TYPES["split_4x6"]
+  end
+
+  # キーボードタイプ名を取得
+  def keyboard_type_name
+    keyboard_config[:name]
+  end
+
+  # 分割型キーボードかどうか
+  def split_keyboard?
+    keyboard_config[:grid_type] == :split
+  end
+
+  # 一体型キーボードかどうか
+  def ortho_keyboard?
+    keyboard_config[:grid_type] == :ortho
+  end
+
+  # 左手のキー範囲を取得（分割型のみ）
+  def left_hand_positions
+    return [] unless split_keyboard?
+
+    config = keyboard_config
+    positions = []
+    (0...config[:rows_left]).each do |row|
+      (0...config[:cols_left]).each do |col|
+        positions << "#{row}-#{col}"
+      end
+    end
+    positions
+  end
+
+  # 右手のキー範囲を取得（分割型のみ）
+  def right_hand_positions
+    return [] unless split_keyboard?
+
+    config = keyboard_config
+    positions = []
+    row_offset = 6  # 右手は6行目から開始
+    (0...config[:rows_right]).each do |row|
+      (0...config[:cols_right]).each do |col|
+        positions << "#{row + row_offset}-#{col}"
+      end
+    end
+    positions
+  end
+
+  # 全キー位置を取得
+  def all_key_positions
+    if split_keyboard?
+      left_hand_positions + right_hand_positions
+    else
+      # 一体型の場合
+      config = keyboard_config
+      positions = []
+      (0...config[:rows]).each do |row|
+        (0...config[:cols]).each do |col|
+          positions << "#{row}-#{col}"
+        end
+      end
+      positions
+    end
+  end
+
   private
 
   def check_user_keymap_limit
-    # 一般ユーザーは2つまで（将来的にプレミアムユーザーは5つまで拡張可能）
-    max_keymaps = 2
+    max_keymaps = user.premium? ? MAX_KEYMAPS_PREMIUM_USER : MAX_KEYMAPS_FREE_USER
     current_count = user.keymap_sets.count
 
     if current_count >= max_keymaps
@@ -43,7 +113,7 @@ class KeymapSet < ApplicationRecord
 
   # デフォルトキーマップを新規作成されたキーマップセットにコピー
   def copy_default_keymap
-    default_keymap = Keymap.default_keymap
+    default_keymap = Keymap.default_keymap_for_type(keyboard_type)
 
     # 全6レイヤー分のデフォルトキーマップをコピー
     default_keymap.each do |layer, keymap_hash|

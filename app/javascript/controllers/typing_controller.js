@@ -8,26 +8,50 @@ export default class extends Controller {
     keymaps: Object,
     lessonInfo: Object,
     loggedIn: Boolean,
-    grades: Object
+    grades: Object,
+    keyboardType: String
   }
 
   // キーマップから動的に生成する（初期化時に設定）
   keyMapping = {}
 
-  // 指ごとのキー位置マッピング（data-position）
-  fingerPositionMapping = {
-    // 左手
-    'left-pinky': ['L0-R0', 'L0-R1', 'L1-R0', 'L1-R1', 'L2-R0', 'L2-R1', 'L3-R0', 'L3-R1'],
-    'left-ring': ['L0-R2', 'L1-R2', 'L2-R2', 'L3-R2'],
-    'left-middle': ['L0-R3', 'L1-R3', 'L2-R3'],
-    'left-index': ['L0-R4', 'L0-R5', 'L1-R4', 'L1-R5', 'L2-R4', 'L2-R5'],
-    'left-thumb': ['L3-R3', 'L3-R4', 'L3-R5'],
-    // 右手
-    'right-thumb': ['R3-R0', 'R3-R1', 'R3-R2'],
-    'right-index': ['R0-R0', 'R0-R1', 'R1-R0', 'R1-R1', 'R2-R0', 'R2-R1'],
-    'right-middle': ['R0-R2', 'R1-R2', 'R2-R2'],
-    'right-ring': ['R0-R3', 'R1-R3', 'R2-R3', 'R3-R3'],
-    'right-pinky': ['R0-R4', 'R0-R5', 'R1-R4', 'R1-R5', 'R2-R4', 'R2-R5', 'R3-R4', 'R3-R5']
+  // 指ごとのキー位置マッピング（キーボードタイプ別）
+  fingerPositionMappings = {
+    'split_4x6': {
+      // 左手
+      'left-pinky': ['0-0', '0-1', '1-0', '1-1', '2-0', '2-1', '3-0', '3-1'],
+      'left-ring': ['0-2', '1-2', '2-2', '3-2'],
+      'left-middle': ['0-3', '1-3', '2-3'],
+      'left-index': ['0-4', '0-5', '1-4', '1-5', '2-4', '2-5'],
+      'left-thumb': ['3-3', '3-4', '3-5'],
+      // 右手
+      'right-thumb': ['9-0', '9-1', '9-2'],
+      'right-index': ['6-0', '6-1', '7-0', '7-1', '8-0', '8-1'],
+      'right-middle': ['6-2', '7-2', '8-2'],
+      'right-ring': ['6-3', '7-3', '8-3', '9-3'],
+      'right-pinky': ['6-4', '6-5', '7-4', '7-5', '8-4', '8-5', '9-4', '9-5']
+    },
+    'ortho_4x12': {
+      // 4×6分割型を横に並べた配列（左手: 列0-5、右手: 列6-11）
+      // 左手
+      'left-pinky': ['0-0', '0-1', '1-0', '1-1', '2-0', '2-1', '3-0', '3-1'],
+      'left-ring': ['0-2', '1-2', '2-2', '3-2'],
+      'left-middle': ['0-3', '1-3', '2-3'],
+      'left-index': ['0-4', '0-5', '1-4', '1-5', '2-4', '2-5'],
+      'left-thumb': ['3-3', '3-4', '3-5'],
+      // 右手
+      'right-thumb': ['3-6', '3-7', '3-8'],
+      'right-index': ['0-6', '0-7', '1-6', '1-7', '2-6', '2-7'],
+      'right-middle': ['0-8', '1-8', '2-8'],
+      'right-ring': ['0-9', '1-9', '2-9', '3-9'],
+      'right-pinky': ['0-10', '0-11', '1-10', '1-11', '2-10', '2-11', '3-10', '3-11']
+    }
+  }
+
+  // 現在のキーボードタイプに応じた指マッピングを取得
+  get fingerPositionMapping() {
+    const keyboardType = this.keyboardTypeValue || 'split_4x6'
+    return this.fingerPositionMappings[keyboardType] || this.fingerPositionMappings['split_4x6']
   }
 
   // 指ごとの色（薄い背景色と濃いハイライト色）
@@ -108,7 +132,7 @@ export default class extends Controller {
     console.log("Keymaps received:", this.keymapsValue)
 
     // 各レイヤーごとに文字 → {layer, position} のマッピングを作成
-    // 例: 'a' => [{layer: 0, position: 'L2-R0'}, {layer: 1, position: 'L1-R3'}]
+    // 例: 'a' => [{layer: 0, position: '2-0'}, {layer: 1, position: '1-3'}]
     this.keyMapping = {}
 
     // 全レイヤー（0-5）を走査

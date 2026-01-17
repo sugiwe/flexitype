@@ -1,0 +1,97 @@
+/ 入力候補エリア（タブ切り替え + 候補ボタン）
+h2.text-xl.font-bold.text-gray-700.dark:text-gray-200.mb-4.text-center = t('keymaps.edit.select_character')
+
+/ タブ切り替え
+.mb-6.text-center
+  .inline-flex.gap-2.p-2.bg-gray-100.dark:bg-gray-700.rounded-lg.transition-colors
+    button.px-6.py-2.rounded.bg-blue-600.dark:bg-blue-700.text-white.transition data-action="click->keymap-editor#switchTab" data-tab="letters" = t('keymaps.edit.tabs.letters')
+    button.px-6.py-2.rounded.bg-white.dark:bg-gray-600.text-gray-700.dark:text-gray-200.hover:bg-gray-200.dark:hover:bg-gray-500.transition data-action="click->keymap-editor#switchTab" data-tab="symbols" = t('keymaps.edit.tabs.symbols')
+
+/ 候補ボタンエリア
+.candidates-container
+  / 文字・数字タブ
+  .candidate-group data-keymap-editor-target="candidateGroup" data-category="letters"
+    / アルファベット（2段表示: 大文字/小文字）
+    .mb-6
+      h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 = t('keymaps.edit.sections.alphabet')
+      .grid.gap-1.5.keyboard-grid-13col
+        - ('a'..'z').each_with_index do |char, i|
+          - data_char_value = char.upcase + ' ' + char
+          .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.rounded.w-14.h-14.flex.flex-col.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=data_char_value
+            .text-xs.text-gray-400.dark:text-gray-500.mb-1 = char.upcase
+            .text-base.font-semibold.text-gray-700.dark:text-gray-200 = char
+
+    / 数字（2段）
+    .mb-6
+      h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 = t('keymaps.edit.sections.numbers_2_row')
+      .grid.gap-1.5.keyboard-grid-10col
+        - [['1', '!'], ['2', '@'], ['3', '#'], ['4', '$'], ['5', '%'], ['6', '^'], ['7', '&'], ['8', '*'], ['9', '('], ['0', ')']].each do |pair|
+          - data_char_value = pair[1] + ' ' + pair[0]
+          .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.rounded.w-14.h-14.flex.flex-col.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=data_char_value
+            .text-xs.text-gray-400.dark:text-gray-500.mb-1 = pair[1]
+            .text-base.font-semibold.text-gray-700.dark:text-gray-200 = pair[0]
+
+    / 数字（単体）
+    .mb-6
+      h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 = t('keymaps.edit.sections.numbers_single')
+      .grid.gap-1.5.keyboard-grid-10col
+        - ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].each do |num|
+          .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-lg.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=num
+            .text-base.font-semibold.text-gray-700.dark:text-gray-200 = num
+
+    / 基本操作
+    .mb-6
+      h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 = t('keymaps.edit.sections.basic_operations')
+      .grid.gap-1.5.keyboard-grid-10col
+        / 未設定
+        .flex.flex-col.items-center
+          .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.text-gray-700.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=""
+          .text-xs.text-gray-500.dark:text-gray-400.mt-1 = t('keymaps.edit.labels.unassigned')
+        / キーなし（blank）
+        .flex.flex-col.items-center
+          .key.bg-gray-600.dark:bg-gray-800.border-2.border-gray-700.dark:border-gray-900.hover:border-gray-500.dark:hover:border-gray-700.text-gray-300.dark:text-gray-400.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char="blank"
+            | ✕
+          .text-xs.text-gray-500.dark:text-gray-400.mt-1 = t('keymaps.edit.labels.no_key')
+        / スペース
+        .flex.flex-col.items-center
+          .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.text-gray-700.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char="spc"
+            | Spc
+          .text-xs.text-gray-500.dark:text-gray-400.mt-1 = t('keymaps.edit.labels.space')
+
+  / 記号・特殊キータブ
+  .candidate-group data-keymap-editor-target="candidateGroup" data-category="symbols" style="display: none;"
+    / 記号（2段）
+    .mb-6
+      h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 = t('keymaps.edit.sections.symbols_2_row')
+      .grid.gap-1.5.keyboard-grid-14col
+        - [['-', '_'], ['=', '+'], ['[', '{'], [']', '}'], [';', ':'], ["'", '"'], [',', '<'], ['.', '>'], ['/', '?'], ['\\', '|'], ['`', '~']].each do |pair|
+          - data_char_value = pair[1] + ' ' + pair[0]
+          .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.rounded.w-14.h-14.flex.flex-col.items-center.justify-center.font-mono.text-sm.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=data_char_value
+            .text-xs.text-gray-400.dark:text-gray-500.mb-1 = pair[1]
+            .text-base.font-semibold.text-gray-700.dark:text-gray-200 = pair[0]
+
+    / 記号（単体）
+    .mb-6
+      h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 = t('keymaps.edit.sections.symbols_single')
+      .grid.gap-1.5.keyboard-grid-14col
+        - ['-', '=', '[', ']', ';', "'", ',', '.', '/', '\\', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', ':', '"', '<', '>', '?', '|', '~', '←', '→', '↑', '↓'].each do |sym|
+          .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-lg.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=sym
+            .text-base.font-semibold.text-gray-700.dark:text-gray-200 = sym
+
+    / 特殊キー
+    .mb-6
+      h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 = t('keymaps.edit.sections.special_keys')
+      .grid.gap-1.5.keyboard-grid-12col
+        - [['ent', 'Ent'], ['tab', 'Tab'], ['bs', 'BS'], ['esc', 'Esc'], ['del', 'Del'], ['shift', 'Shift'], ['ctrl', 'Ctrl'], ['alt', 'Alt'], ['cmd', 'Cmd'], ['win', 'Win'], ['menu', 'Menu'], ['caps', 'Caps'], ['layer1', 'Lyr1'], ['layer2', 'Lyr2'], ['layer3', 'Lyr3'], ['layer4', 'Lyr4'], ['layer5', 'Lyr5'], ['lower', 'Lower'], ['raise', 'Raise']].each do |char, display|
+          .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.text-gray-700.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char=char
+            = display
+
+    / ファンクションキー
+    .mb-6
+      h3.text-sm.font-semibold.text-gray-600.dark:text-gray-300.mb-3 = t('keymaps.edit.sections.function_keys')
+      .grid.gap-1.5.keyboard-grid-13col
+        .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.text-gray-700.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char="fn"
+          | Fn
+        - (1..12).each do |num|
+          .key.bg-white.dark:bg-gray-700.border-2.border-gray-300.dark:border-gray-600.hover:border-green-400.dark:hover:border-green-500.hover:bg-green-50.dark:hover:bg-green-900.text-gray-700.dark:text-gray-200.rounded.w-14.h-14.flex.items-center.justify-center.font-mono.text-xs.cursor-pointer.transition.shadow-sm data-action="click->keymap-editor#assignChar" data-char="f#{num}"
+            = "F#{num}"

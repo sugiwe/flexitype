@@ -3,7 +3,10 @@ class Keymap < ApplicationRecord
   belongs_to :keymap_set
 
   validates :layer, presence: true, inclusion: { in: 0..5 }
-  validates :key_position, presence: true
+  validates :key_position, presence: true, format: {
+    with: /\A([0-9]|1[0-1])-([0-9]|1[0-3])\z/,
+    message: "must be in format 'row-col' where row is 0-11 and col is 0-13"
+  }
   validates :character, length: { maximum: 20 }, allow_blank: true
   validates :key_position, uniqueness: { scope: [ :keymap_set_id, :layer ] }
 
@@ -36,15 +39,28 @@ class Keymap < ApplicationRecord
   end
 
   # デフォルトキーマップを読み込む（YAMLファイルから）
+  # @param keyboard_type [String] キーボードタイプ（例: "split_4x6", "ortho_5x14"）
   # @return [Hash] レイヤー番号 => { キー位置 => 文字 } のハッシュ
-  def self.default_keymap
-    @default_keymap ||= begin
-      yaml_path = Rails.root.join("config", "default_keymap.yml")
+  def self.default_keymap_for_type(keyboard_type)
+    @default_keymaps ||= {}
+    @default_keymaps[keyboard_type] ||= begin
+      yaml_path = Rails.root.join("config", "default_keymaps", "#{keyboard_type}.yml")
+
+      # ファイルが存在しない場合はsplit_4x6をフォールバック
+      unless File.exist?(yaml_path)
+        yaml_path = Rails.root.join("config", "default_keymaps", "split_4x6.yml")
+      end
+
       yaml_data = YAML.load_file(yaml_path)
 
       # layer_0 -> 0, layer_1 -> 1 のように変換
       yaml_data.transform_keys { |k| k.gsub("layer_", "").to_i }
     end
+  end
+
+  # 後方互換性のため、引数なしのdefault_keymapメソッドを残す
+  def self.default_keymap
+    default_keymap_for_type("split_4x6")
   end
 
   # ユーザーのキーマップまたはデフォルトキーマップを取得
@@ -82,13 +98,18 @@ class Keymap < ApplicationRecord
   # @param keymap_set_id [Integer] キーマップセットID
   # @return [Hash] レイヤー番号 => { キー位置 => 文字 } のハッシュ
   def self.all_layers_for_keymap_set(keymap_set_id)
+    keymap_set = KeymapSet.find_by(id: keymap_set_id)
+    # キーマップセットのキーボードタイプに応じたデフォルトキーマップを取得
+    keyboard_type = keymap_set&.keyboard_type || "split_4x6"
+    base_keymap = default_keymap_for_type(keyboard_type)
+
     (0..5).each_with_object({}) do |layer, result|
       # このキーマップセットのキーマップを取得
       user_keymap = where(keymap_set_id: keymap_set_id, layer: layer)
                       .pluck(:key_position, :character)
                       .to_h
-      # デフォルトキーマップにユーザーのキーマップをマージ
-      result[layer] = (default_keymap[layer] || {}).merge(user_keymap)
+      # キーボードタイプに応じたデフォルトキーマップにユーザーのキーマップをマージ
+      result[layer] = (base_keymap[layer] || {}).merge(user_keymap)
     end
   end
 end

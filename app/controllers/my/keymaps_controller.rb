@@ -25,11 +25,11 @@ class My::KeymapsController < My::ApplicationController
   end
 
   def edit
-    # 編集画面を表示（デフォルトキーマップをベースにユーザーのキーマップをマージ）
+    # 編集画面を表示（キーボードタイプに応じたデフォルトキーマップをベースにユーザーのキーマップをマージ）
     @keymaps = {}
     (0..5).each do |layer|
-      # デフォルトキーマップを取得
-      default_keymap = Keymap.default_keymap[layer] || {}
+      # キーボードタイプに応じたデフォルトキーマップを取得
+      default_keymap = Keymap.default_keymap_for_type(@keymap_set.keyboard_type)[layer] || {}
       # このキーマップセットのキーマップを取得
       user_keymap = Keymap.where(keymap_set: @keymap_set, layer: layer)
                           .pluck(:key_position, :character)
@@ -68,12 +68,15 @@ class My::KeymapsController < My::ApplicationController
   end
 
   def keymap_set_params
-    params.require(:keymap_set).permit(:name, :description, :slug)
+    # 新規作成時はkeyboard_typeを許可、更新時は除外（作成後は変更不可）
+    permitted_params = [ :name, :description, :slug ]
+    permitted_params << :keyboard_type if action_name == "create"
+    params.require(:keymap_set).permit(*permitted_params)
   end
 
   def keymap_params
     # keymapsパラメータを許可（ネストしたハッシュ形式）
-    # 形式: { "0" => { "L0-R0" => "Q|q", ... }, "1" => { ... }, ... }
+    # 形式: { "0" => { "0-0" => "Q|q", ... }, "1" => { ... }, ... }
     # レイヤー0-5のみ許可し、各レイヤー内の動的なキー位置を許可
     params.require(:keymaps).permit(
       "0": {},
