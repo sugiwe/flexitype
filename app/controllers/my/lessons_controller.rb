@@ -79,7 +79,28 @@ class My::LessonsController < My::ApplicationController
     end
   end
 
-  helper_method :lessons_for_tab
+  # フォーム表示用にitemsをフォーマット
+  def format_items_for_form(items)
+    return "" if items.blank?
+
+    items.map do |item|
+      if item.is_a?(Hash)
+        # ハッシュ形式の場合
+        if item["display"].present?
+          # displayがある場合はJSON形式で表示
+          item.to_json
+        else
+          # displayがない場合はtextのみ表示
+          item["text"]
+        end
+      else
+        # 文字列の場合はそのまま表示
+        item
+      end
+    end.join("\n")
+  end
+
+  helper_method :lessons_for_tab, :format_items_for_form
 
   def set_lesson
     # 管理者は全レッスンにアクセス可能、一般ユーザーは自分のレッスンのみ
@@ -99,7 +120,21 @@ class My::LessonsController < My::ApplicationController
 
     # itemsをテキストエリアの改行区切りから配列に変換
     if permitted_params[:items].is_a?(String)
-      permitted_params[:items] = permitted_params[:items].split("\n").map(&:strip).reject(&:blank?)
+      permitted_params[:items] = permitted_params[:items].split("\n").map(&:strip).reject(&:blank?).map do |line|
+        # JSON形式かどうかを判定（{で始まる場合）
+        if line.start_with?("{")
+          begin
+            # JSON形式の場合はパース
+            JSON.parse(line)
+          rescue JSON::ParserError
+            # パースエラーの場合は文字列として扱う
+            { "text" => line, "display" => nil }
+          end
+        else
+          # 通常の文字列の場合はハッシュに変換
+          { "text" => line, "display" => nil }
+        end
+      end
     end
 
     permitted_params

@@ -37,9 +37,17 @@
 
   / 単語・文章リスト
   .mb-6
-    = f.label :items, "単語・文章リスト（1行に1つ）", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-    = f.text_area :items, value: @lesson.items&.join("\n"), rows: 10, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm", placeholder: "hello\nworld\nruby\nrails"
-    p.mt-1.text-sm.text-gray-500.dark:text-gray-400 1行に1つの単語または文章を入力してください
+    = f.label :items, "単語・文章リスト（1行に1つ、またはJSON形式）", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+    = f.text_area :items, value: format_items_for_form(@lesson.items), rows: 10, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm", placeholder: "hello\nworld\n\nまたはJSON形式（日本語レッスン用）:\n{\"text\":\"きょう\",\"display\":\"今日\"}\n{\"text\":\"てんき\",\"display\":\"天気\"}"
+    .mt-2.space-y-1
+      p.text-sm.text-gray-500.dark:text-gray-400
+        | 1行に1つの単語または文章を入力してください。
+      p.text-sm.text-gray-500.dark:text-gray-400
+        strong> 日本語レッスンで漢字・カタカナ表示が必要な場合:
+        |  JSON形式で
+        code.px-1.py-0.5.bg-gray-100.dark:bg-gray-800.rounded.text-xs
+          | {"text":"ひらがな","display":"表示用テキスト"}
+        |  と入力してください。
 
   / 問題数と表示順
   .grid.grid-cols-2.gap-4.mb-6

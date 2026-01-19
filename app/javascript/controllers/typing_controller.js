@@ -84,7 +84,10 @@ export default class extends Controller {
     this.isFirstInput = true // 最初の入力かどうか
 
     // 日本語レッスンの判定とローマ字変換
-    this.isJapaneseLesson = this.words.some(word => isJapaneseText(word))
+    this.isJapaneseLesson = this.words.some(wordItem => {
+      const text = typeof wordItem === 'string' ? wordItem : wordItem.text
+      return isJapaneseText(text)
+    })
     if (this.isJapaneseLesson) {
       this.prepareJapaneseLesson()
     }
@@ -247,12 +250,17 @@ export default class extends Controller {
   // 日本語レッスンの準備（ローマ字変換データの生成）
   prepareJapaneseLesson() {
     // 各単語をローマ字に変換
-    this.japaneseWords = this.words.map(word => {
+    this.japaneseWords = this.words.map(wordItem => {
+      // wordsが文字列配列かハッシュ配列かを判定
+      const word = typeof wordItem === 'string' ? wordItem : wordItem.text
+      const display = typeof wordItem === 'string' ? null : wordItem.display
+
       const romajiData = convertToRomaji(word)
       const defaultRomaji = getDefaultRomajiString(romajiData)
 
       return {
         original: word,        // 元のひらがな文字列（例: "しょうりした"）
+        display: display,      // 表示用テキスト（例: "勝利した"）、nullの場合はoriginalを使用
         romajiData: romajiData, // ローマ字変換データ配列
         currentRomaji: defaultRomaji, // 現在のローマ字文字列（動的に変わる）
         romajiPosition: 0      // 現在のローマ字入力位置
@@ -332,7 +340,9 @@ export default class extends Controller {
       const currentWordData = this.japaneseWords[this.currentWordValue]
       return currentWordData.currentRomaji.slice(0, currentWordData.romajiPosition)
     } else {
-      return this.words[this.currentWordValue].slice(0, this.currentPosition)
+      const wordItem = this.words[this.currentWordValue]
+      const currentWord = typeof wordItem === 'string' ? wordItem : wordItem.text
+      return currentWord.slice(0, this.currentPosition)
     }
   }
 
@@ -343,7 +353,8 @@ export default class extends Controller {
 
   // 英語レッスンの文字入力処理
   handleEnglishCharInput(char) {
-    const currentWord = this.words[this.currentWordValue]
+    const wordItem = this.words[this.currentWordValue]
+    const currentWord = typeof wordItem === 'string' ? wordItem : wordItem.text
 
     // 最初の入力時に計測開始
     if (this.isFirstInput) {
@@ -543,11 +554,10 @@ export default class extends Controller {
     const seconds = elapsedSeconds % 60
     const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`
 
-    // 総文字数を計算
-    const totalChars = this.words.reduce((sum, word) => sum + word.length, 0)
-
-    // 正答率を計算（総文字数に対するミス数の割合）
-    const accuracy = Math.round(((totalChars - this.mistakeCount) / totalChars) * 100)
+    // 正答率を計算（タイプした文字数に対するミス数の割合）
+    const accuracy = this.typedChars > 0
+      ? Math.round(((this.typedChars - this.mistakeCount) / this.typedChars) * 100)
+      : 100
 
     // WPMを計算（CPM = タイプ数 / 秒数 × 60、WPM = CPM / 5）
     const cpm = elapsedSeconds > 0 ? (this.typedChars / elapsedSeconds) * 60 : 0
@@ -614,7 +624,7 @@ export default class extends Controller {
             lesson_id: this.lessonInfoValue.lesson_id,
             lesson_name: this.lessonInfoValue.lesson_name,
             word_count: this.words.length,
-            correct_count: this.words.length * this.words.reduce((sum, word) => sum + word.length, 0) - this.mistakeCount,
+            correct_count: this.typedChars - this.mistakeCount,
             mistake_count: this.mistakeCount,
             accuracy: accuracy,
             duration_seconds: durationSeconds,
@@ -714,7 +724,8 @@ export default class extends Controller {
     }
 
     // 英語レッスンの場合は既存の表示
-    const currentWord = this.words[this.currentWordValue]
+    const wordItem = this.words[this.currentWordValue]
+    const currentWord = typeof wordItem === 'string' ? wordItem : wordItem.text
     const completed = currentWord.slice(0, this.currentPosition)
     const current = currentWord[this.currentPosition] || ""
     const remaining = currentWord.slice(this.currentPosition + 1)
@@ -785,13 +796,16 @@ export default class extends Controller {
       `
     }
 
+    // displayフィールドがある場合はそれを使用、なければoriginalを使用
+    const displayText = currentWordData.display || currentWordData.original
+
     // 最上段: ひらがな読み（小さく）
-    // 中段: 本来のテキスト（大きく、メイン表示）
+    // 中段: 表示用テキスト（大きく、メイン表示）- displayフィールドがあれば漢字・カタカナ混じり
     // 下段: ローマ字ガイド（小さく）
     this.displayTarget.innerHTML = `
       <div class="flex flex-col items-center gap-2">
         <div class="text-sm text-gray-500 dark:text-gray-400">${this.escapeHtml(currentWordData.original)}</div>
-        <div class="text-5xl font-mono tracking-wider">${this.escapeHtml(currentWordData.original)}</div>
+        <div class="text-5xl font-mono tracking-wider">${this.escapeHtml(displayText)}</div>
         <div class="text-base font-mono tracking-wide text-gray-600 dark:text-gray-300">${romajiHTML}</div>
       </div>
     `
@@ -959,7 +973,8 @@ export default class extends Controller {
       nextChar = currentWordData.currentRomaji[currentWordData.romajiPosition]
     } else {
       // 英語の場合は通常の文字
-      const currentWord = this.words[this.currentWordValue]
+      const wordItem = this.words[this.currentWordValue]
+      const currentWord = typeof wordItem === 'string' ? wordItem : wordItem.text
       nextChar = currentWord[this.currentPosition]
     }
 
