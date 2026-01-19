@@ -270,13 +270,13 @@ export function convertToRomaji(hiragana) {
 /**
  * ローマ字パターン配列から最初のパターンを連結した文字列を生成
  * @param {Array<{kana: string, roma: Array<string>}>} romajiData
- * @returns {string} - ローマ字文字列（例: "SHOURISHITA"）
+ * @returns {string} - ローマ字文字列（例: "shourishita"、小文字）
  */
 export function getDefaultRomajiString(romajiData) {
   return romajiData
     .map(item => item.roma[0])
     .join('')
-    .toUpperCase()
+    .toLowerCase()
 }
 
 /**

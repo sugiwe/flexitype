@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { convertToRomaji, getDefaultRomajiString, isJapaneseText } from "../lib/romaji_converter"
+import { convertToRomaji, getDefaultRomajiString, isJapaneseText } from "lib/romaji_converter"
 
 export default class extends Controller {
   static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "lessonScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay", "displayArea", "gradeImage", "gradeName", "gradeDescription", "wpmDisplay"]
@@ -96,6 +96,71 @@ export default class extends Controller {
     this.applyFingerColors() // 指ごとの色を適用
     this.updateDisplay()
     this.highlightNextKey()
+
+    // IMEを完全に無効化する設定
+    this.inputTarget.style.imeMode = 'disabled' // 古いブラウザ用
+    this.inputTarget.style.webkitImeMode = 'disabled' // Safari用
+    this.inputTarget.setAttribute('autocorrect', 'off') // iOS用
+    this.inputTarget.setAttribute('autocapitalize', 'off') // iOS用
+    this.inputTarget.setAttribute('spellcheck', 'false') // スペルチェック無効
+
+    // compositionイベントをキャンセル（IMEの変換候補を防ぐ）
+    this.inputTarget.addEventListener('compositionstart', (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+    })
+    this.inputTarget.addEventListener('compositionupdate', (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+    })
+    this.inputTarget.addEventListener('compositionend', (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+      // 入力フィールドをクリアして、IMEの変換結果を捨てる
+      this.inputTarget.value = ''
+    })
+
+    // beforeinputイベントでIME入力を阻止（最も早い段階でブロック）
+    this.inputTarget.addEventListener('beforeinput', (event) => {
+      // IME関連のinputTypeを全てブロック
+      if (event.inputType === 'insertCompositionText' ||
+          event.inputType === 'deleteByComposition' ||
+          event.inputType === 'deleteContentBackward' ||
+          event.inputType === 'deleteContentForward') {
+        // BackSpaceはkeydownで処理するのでここではブロック
+        if (event.inputType.startsWith('delete')) {
+          event.preventDefault()
+          return
+        }
+        // IME入力はブロック
+        event.preventDefault()
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+      }
+    }, true) // キャプチャフェーズで実行
+
+    // inputイベントもキャンセル（IMEの入力を完全に無視）
+    this.inputTarget.addEventListener('input', (event) => {
+      // IMEからの入力を即座にクリア
+      if (event.inputType && event.inputType.startsWith('insert')) {
+        const value = event.target.value
+        // ASCII以外の文字が含まれている場合はクリア
+        if (/[^\x00-\x7F]/.test(value)) {
+          event.preventDefault()
+          event.stopPropagation()
+          event.stopImmediatePropagation()
+          event.target.value = ''
+        }
+      }
+    }, true) // キャプチャフェーズで実行
+
+    // キーボード入力を直接拾う（IMEの影響を受けない）
+    this.inputTarget.addEventListener('keydown', (event) => {
+      this.handleKeydown(event)
+    })
 
     // 入力欄に自動フォーカス
     this.inputTarget.focus()
@@ -205,123 +270,269 @@ export default class extends Controller {
     console.log("Japanese words prepared:", this.japaneseWords)
   }
 
-  // 入力イベント
-  handleInput(event) {
-    // 日本語レッスンの場合は専用のハンドラーを使用
-    if (this.isJapaneseLesson) {
-      this.handleJapaneseInput(event)
+  // キーボード入力を直接処理（IMEの影響を受けない）
+  handleKeydown(event) {
+    // 修飾キー（Ctrl, Alt, Meta）が押されている場合はスキップ
+    if (event.ctrlKey || event.altKey || event.metaKey) {
       return
     }
 
-    // 英語レッスンの場合は既存のロジック
-    const input = event.target.value
+    const key = event.key
+
+    // BackSpaceキーの処理
+    if (key === 'Backspace') {
+      event.preventDefault()
+      this.handleBackspace()
+      return
+    }
+
+    // 英数字のみを受け付ける（a-z, A-Z, 0-9, スペースなど）
+    if (key.length === 1 && /^[a-zA-Z0-9 ]$/.test(key)) {
+      event.preventDefault() // IMEの動作を防ぐ
+      this.handleCharInput(key.toLowerCase())
+    }
+  }
+
+  // 文字入力の処理
+  handleCharInput(char) {
+    console.log(`[DEBUG] Key pressed: "${char}"`)
+
+    // 日本語レッスンの場合
+    if (this.isJapaneseLesson) {
+      this.handleJapaneseCharInput(char)
+      return
+    }
+
+    // 英語レッスンの場合
+    this.handleEnglishCharInput(char)
+  }
+
+  // BackSpaceの処理
+  handleBackspace() {
+    if (this.isJapaneseLesson) {
+      const currentWordData = this.japaneseWords[this.currentWordValue]
+      if (currentWordData.romajiPosition > 0) {
+        currentWordData.romajiPosition--
+        this.hasError = false
+        this.rebuildRomajiPattern(currentWordData, this.getCurrentInput())
+        this.updateDisplay()
+        this.highlightNextKey()
+      }
+    } else {
+      if (this.currentPosition > 0 || this.hasError) {
+        if (this.hasError) {
+          this.hasError = false
+        } else {
+          this.currentPosition--
+        }
+        this.updateDisplay()
+        this.highlightNextKey()
+      }
+    }
+  }
+
+  // 現在の入力文字列を取得
+  getCurrentInput() {
+    if (this.isJapaneseLesson) {
+      const currentWordData = this.japaneseWords[this.currentWordValue]
+      return currentWordData.currentRomaji.slice(0, currentWordData.romajiPosition)
+    } else {
+      return this.words[this.currentWordValue].slice(0, this.currentPosition)
+    }
+  }
+
+  // 入力イベント（既存の互換性のため残す）
+  handleInput(event) {
+    // keydownで処理するため、このハンドラーは使わない
+  }
+
+  // 英語レッスンの文字入力処理
+  handleEnglishCharInput(char) {
     const currentWord = this.words[this.currentWordValue]
-    const previousLength = this.currentPosition
 
     // 最初の入力時に計測開始
-    if (this.isFirstInput && input.length > 0) {
+    if (this.isFirstInput) {
       this.lessonStartTime = new Date()
       this.isFirstInput = false
       console.log("Timer started at first input")
     }
 
-    // エラー状態で、かつBackSpaceではない入力の場合は無視（入力ロック）
-    if (this.hasError && input.length >= previousLength + 1) {
-      // 入力を元に戻す（ミスした文字の次の文字が入力されないようにする）
-      event.target.value = input.slice(0, previousLength + 1)
+    // エラー状態の場合は何もしない
+    if (this.hasError) {
       return
     }
 
-    // BackSpaceが押された場合（入力が減った場合）
-    if (input.length < previousLength || (this.hasError && input.length < previousLength + 1)) {
-      this.currentPosition = input.length
-      this.hasError = false // エラー状態を解除
-      this.updateDisplay()
-      this.highlightNextKey()
-      return
-    }
-
-    // 新しい文字が入力された場合
+    // 期待される文字
     const expectedChar = currentWord[this.currentPosition]
-    const typedChar = input[input.length - 1]
 
-    // タイプ数をカウント（Backspaceを除く）
-    if (event.inputType !== 'deleteContentBackward') {
-      this.typedChars++
-    }
+    // タイプ数をカウント
+    this.typedChars++
 
-    if (typedChar === expectedChar) {
+    if (char === expectedChar) {
       // 正しい入力
-      this.currentPosition = input.length
-      this.hasError = false
+      this.currentPosition++
       this.updateDisplay()
       this.highlightNextKey()
 
       // 単語を完全に入力したら次の単語へ
-      if (input === currentWord) {
-        setTimeout(() => this.nextWord(), 300) // 少し間を置いてから次へ
+      if (this.currentPosition === currentWord.length) {
+        setTimeout(() => this.nextWord(), 300)
       }
     } else {
-      // 間違った入力（入力をロック）
+      // 間違った入力
       this.hasError = true
-      this.mistakeCount++ // ミスカウントを増やす
+      this.mistakeCount++
       this.updateDisplay()
     }
   }
 
-  // 日本語入力ハンドラー（ローマ字入力）
-  handleJapaneseInput(event) {
-    const input = event.target.value.toLowerCase()
+  // 日本語レッスンの文字入力処理
+  handleJapaneseCharInput(char) {
     const currentWordData = this.japaneseWords[this.currentWordValue]
-    const previousLength = currentWordData.romajiPosition
+
+    console.log(`[DEBUG] Input: "${char}", Expected: "${currentWordData.currentRomaji[currentWordData.romajiPosition]}", Position: ${currentWordData.romajiPosition}`)
 
     // 最初の入力時に計測開始
-    if (this.isFirstInput && input.length > 0) {
+    if (this.isFirstInput) {
       this.lessonStartTime = new Date()
       this.isFirstInput = false
       console.log("Timer started at first input")
     }
 
-    // エラー状態で、かつBackSpaceではない入力の場合は無視（入力ロック）
-    if (this.hasError && input.length >= previousLength + 1) {
-      event.target.value = input.slice(0, previousLength + 1)
+    // エラー状態の場合は何もしない
+    if (this.hasError) {
       return
     }
 
-    // BackSpaceが押された場合
-    if (input.length < previousLength || (this.hasError && input.length < previousLength + 1)) {
-      currentWordData.romajiPosition = input.length
-      this.hasError = false
-      this.updateDisplay()
-      this.highlightNextKey()
-      return
-    }
-
-    // 新しい文字が入力された場合
+    // 期待される文字
     const expectedChar = currentWordData.currentRomaji[currentWordData.romajiPosition]
-    const typedChar = input[input.length - 1]
+
+    console.log(`[DEBUG] Expected char: "${expectedChar}", Typed char: "${char}"`)
 
     // タイプ数をカウント
-    if (event.inputType !== 'deleteContentBackward') {
-      this.typedChars++
-    }
+    this.typedChars++
 
-    if (typedChar === expectedChar) {
+    // 現在までの入力を取得
+    const currentInput = this.getCurrentInput() + char
+
+    if (char === expectedChar) {
       // 正しい入力
-      currentWordData.romajiPosition = input.length
-      this.hasError = false
+      console.log("[DEBUG] Correct input!")
+      currentWordData.romajiPosition++
       this.updateDisplay()
       this.highlightNextKey()
 
       // 単語を完全に入力したら次の単語へ
-      if (input === currentWordData.currentRomaji.toLowerCase()) {
+      if (currentWordData.romajiPosition === currentWordData.currentRomaji.length) {
         setTimeout(() => this.nextWord(), 300)
       }
     } else {
-      // 間違った入力（入力をロック）
-      this.hasError = true
-      this.mistakeCount++
-      this.updateDisplay()
+      // 期待と異なる場合、別のパターンを試す
+      console.log("[DEBUG] Trying alternative pattern...")
+      const newPattern = this.tryAlternativePattern(currentWordData, currentInput)
+      if (newPattern) {
+        // 別のパターンが見つかった場合は切り替える
+        console.log(`[DEBUG] Pattern switched: ${currentWordData.currentRomaji} → ${newPattern}`)
+        currentWordData.currentRomaji = newPattern
+        currentWordData.romajiPosition++
+        this.updateDisplay()
+        this.highlightNextKey()
+      } else {
+        // どのパターンにも合わない場合はエラー
+        console.log("[DEBUG] No alternative pattern found, marking as error")
+        this.hasError = true
+        this.mistakeCount++
+        this.updateDisplay()
+      }
+    }
+  }
+
+  // 別のローマ字パターンを試す（複数パターン対応）
+  tryAlternativePattern(currentWordData, typedInput) {
+    const romajiData = currentWordData.romajiData
+    let position = 0
+
+    console.log(`[DEBUG tryAlt] Trying to match input "${typedInput}" against romajiData:`, romajiData)
+
+    // 各かな文字のパターンを試行し、typedInputにマッチするパターンを構築
+    for (let i = 0; i < romajiData.length; i++) {
+      const kanaItem = romajiData[i]
+      let matchedPattern = null
+
+      console.log(`[DEBUG tryAlt] Kana ${i}: "${kanaItem.kana}", patterns:`, kanaItem.roma, `remaining input: "${typedInput.slice(position)}"`)
+
+      // このかな文字の各ローマ字パターンを試す
+      for (const pattern of kanaItem.roma) {
+        const patternLower = pattern.toLowerCase()
+        const remainingInput = typedInput.slice(position)
+
+        console.log(`[DEBUG tryAlt]   Testing pattern "${patternLower}" against "${remainingInput}"`)
+
+        // このパターンが入力の残り部分の先頭にマッチするか確認
+        if (remainingInput.startsWith(patternLower)) {
+          console.log(`[DEBUG tryAlt]   ✓ Full match!`)
+          matchedPattern = pattern
+          position += patternLower.length
+          break
+        } else if (patternLower.startsWith(remainingInput) && remainingInput.length > 0) {
+          // 入力途中の場合（例: "c" が "co" の途中）
+          console.log(`[DEBUG tryAlt]   ✓ Partial match!`)
+          matchedPattern = pattern
+          position += remainingInput.length  // 部分マッチでもpositionを進める
+          break
+        } else if (remainingInput.length === 0) {
+          // まだ入力されていない部分（デフォルトパターンを使用）
+          console.log(`[DEBUG tryAlt]   ✓ Not yet typed (using default)`)
+          matchedPattern = pattern
+          break
+        }
+      }
+
+      if (!matchedPattern) {
+        // どのパターンにもマッチしない場合
+        console.log(`[DEBUG tryAlt] ✗ No pattern matched for kana "${kanaItem.kana}"`)
+        return null
+      }
+    }
+
+    // 全てのかな文字がマッチした場合、新しいローマ字文字列を生成
+    let newRomaji = ''
+    position = 0
+
+    for (let i = 0; i < romajiData.length; i++) {
+      const kanaItem = romajiData[i]
+      let selectedPattern = kanaItem.roma[0] // デフォルト
+
+      for (const pattern of kanaItem.roma) {
+        const patternLower = pattern.toLowerCase()
+        const remainingInput = typedInput.slice(position)
+
+        if (remainingInput.startsWith(patternLower) || patternLower.startsWith(remainingInput)) {
+          selectedPattern = pattern
+          position += Math.min(patternLower.length, remainingInput.length)
+          break
+        }
+      }
+
+      newRomaji += selectedPattern.toLowerCase()
+    }
+
+    return newRomaji
+  }
+
+  // BackSpace時にローマ字パターンを再構築
+  rebuildRomajiPattern(currentWordData, typedInput) {
+    if (typedInput.length === 0) {
+      // 完全にクリアされた場合はデフォルトパターンに戻す
+      const romajiData = currentWordData.romajiData
+      currentWordData.currentRomaji = romajiData.map(item => item.roma[0]).join('').toLowerCase()
+      return
+    }
+
+    // 入力途中の場合は現在の入力にマッチするパターンを再構築
+    const newPattern = this.tryAlternativePattern(currentWordData, typedInput)
+    if (newPattern) {
+      currentWordData.currentRomaji = newPattern
     }
   }
 
