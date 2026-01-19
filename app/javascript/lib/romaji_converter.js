@@ -248,6 +248,36 @@ export function convertToRomaji(hiragana) {
       continue
     }
 
+    // 撥音「ん」の特殊処理
+    if (oneChar === 'ん') {
+      // 次の文字が子音で始まる場合、単一の'n'も許容する
+      if (i + 1 < hiragana.length) {
+        const nextChar = hiragana[i + 1]
+        const nextRoma = ROMAJI_MAP[nextChar]
+        if (nextRoma && nextRoma[0]) {
+          // 次の文字の最初の音（子音または母音）をチェック
+          const firstSound = nextRoma[0][0]
+          // 子音（母音以外）で始まる場合、'n'を追加
+          const vowels = ['a', 'i', 'u', 'e', 'o']
+          if (!vowels.includes(firstSound)) {
+            result.push({
+              kana: 'ん',
+              roma: ['nn', 'n', 'xn'] // 子音の前では'n'も許容
+            })
+            i++
+            continue
+          }
+        }
+      }
+      // 次の文字が母音で始まる場合、または次の文字がない場合は通常の「ん」
+      result.push({
+        kana: 'ん',
+        roma: ['nn', 'xn']
+      })
+      i++
+      continue
+    }
+
     // 通常の1文字変換
     if (ROMAJI_MAP[oneChar]) {
       result.push({
