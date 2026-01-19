@@ -71,7 +71,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Typing controller connected")
     this.currentWordValue = 0
     this.currentPosition = 0
     this.hasError = false // ミスタイプのフラグ
@@ -201,8 +200,6 @@ export default class extends Controller {
 
   // キーマップから文字→キー位置の逆引きマップを生成（全レイヤー分）
   buildKeyMapping() {
-    console.log("Keymaps received:", this.keymapsValue)
-
     // 各レイヤーごとに文字 → {layer, position} のマッピングを作成
     // 例: 'a' => [{layer: 0, position: '2-0'}, {layer: 1, position: '1-3'}]
     this.keyMapping = {}
@@ -210,7 +207,6 @@ export default class extends Controller {
     // 全レイヤー（0-5）を走査
     for (let layer = 0; layer < 6; layer++) {
       const layerData = this.keymapsValue[layer] || this.keymapsValue[layer.toString()] || {}
-      console.log(`Layer ${layer} data:`, layerData)
 
       Object.entries(layerData).forEach(([position, char]) => {
         if (!char) return
@@ -246,14 +242,10 @@ export default class extends Controller {
         })
       })
     }
-
-    console.log("Key mapping built (all layers):", this.keyMapping)
   }
 
   // 日本語レッスンの準備（ローマ字変換データの生成）
   prepareJapaneseLesson() {
-    console.log("Preparing Japanese lesson...")
-
     // 各単語をローマ字に変換
     this.japaneseWords = this.words.map(word => {
       const romajiData = convertToRomaji(word)
@@ -266,8 +258,6 @@ export default class extends Controller {
         romajiPosition: 0      // 現在のローマ字入力位置
       }
     })
-
-    console.log("Japanese words prepared:", this.japaneseWords)
   }
 
   // キーボード入力を直接処理（IMEの影響を受けない）
@@ -295,8 +285,6 @@ export default class extends Controller {
 
   // 文字入力の処理
   handleCharInput(char) {
-    console.log(`[DEBUG] Key pressed: "${char}"`)
-
     // 日本語レッスンの場合
     if (this.isJapaneseLesson) {
       this.handleJapaneseCharInput(char)
@@ -354,7 +342,6 @@ export default class extends Controller {
     if (this.isFirstInput) {
       this.lessonStartTime = new Date()
       this.isFirstInput = false
-      console.log("Timer started at first input")
     }
 
     // エラー状態の場合は何もしない
@@ -390,13 +377,10 @@ export default class extends Controller {
   handleJapaneseCharInput(char) {
     const currentWordData = this.japaneseWords[this.currentWordValue]
 
-    console.log(`[DEBUG] Input: "${char}", Expected: "${currentWordData.currentRomaji[currentWordData.romajiPosition]}", Position: ${currentWordData.romajiPosition}`)
-
     // 最初の入力時に計測開始
     if (this.isFirstInput) {
       this.lessonStartTime = new Date()
       this.isFirstInput = false
-      console.log("Timer started at first input")
     }
 
     // エラー状態の場合は何もしない
@@ -407,8 +391,6 @@ export default class extends Controller {
     // 期待される文字
     const expectedChar = currentWordData.currentRomaji[currentWordData.romajiPosition]
 
-    console.log(`[DEBUG] Expected char: "${expectedChar}", Typed char: "${char}"`)
-
     // タイプ数をカウント
     this.typedChars++
 
@@ -417,7 +399,6 @@ export default class extends Controller {
 
     if (char === expectedChar) {
       // 正しい入力
-      console.log("[DEBUG] Correct input!")
       currentWordData.romajiPosition++
       this.updateDisplay()
       this.highlightNextKey()
@@ -428,18 +409,15 @@ export default class extends Controller {
       }
     } else {
       // 期待と異なる場合、別のパターンを試す
-      console.log("[DEBUG] Trying alternative pattern...")
       const newPattern = this.tryAlternativePattern(currentWordData, currentInput)
       if (newPattern) {
         // 別のパターンが見つかった場合は切り替える
-        console.log(`[DEBUG] Pattern switched: ${currentWordData.currentRomaji} → ${newPattern}`)
         currentWordData.currentRomaji = newPattern
         currentWordData.romajiPosition++
         this.updateDisplay()
         this.highlightNextKey()
       } else {
         // どのパターンにも合わない場合はエラー
-        console.log("[DEBUG] No alternative pattern found, marking as error")
         this.hasError = true
         this.mistakeCount++
         this.updateDisplay()
@@ -452,37 +430,28 @@ export default class extends Controller {
     const romajiData = currentWordData.romajiData
     let position = 0
 
-    console.log(`[DEBUG tryAlt] Trying to match input "${typedInput}" against romajiData:`, romajiData)
-
     // 各かな文字のパターンを試行し、typedInputにマッチするパターンを構築
     for (let i = 0; i < romajiData.length; i++) {
       const kanaItem = romajiData[i]
       let matchedPattern = null
-
-      console.log(`[DEBUG tryAlt] Kana ${i}: "${kanaItem.kana}", patterns:`, kanaItem.roma, `remaining input: "${typedInput.slice(position)}"`)
 
       // このかな文字の各ローマ字パターンを試す
       for (const pattern of kanaItem.roma) {
         const patternLower = pattern.toLowerCase()
         const remainingInput = typedInput.slice(position)
 
-        console.log(`[DEBUG tryAlt]   Testing pattern "${patternLower}" against "${remainingInput}"`)
-
         // このパターンが入力の残り部分の先頭にマッチするか確認
         if (remainingInput.startsWith(patternLower)) {
-          console.log(`[DEBUG tryAlt]   ✓ Full match!`)
           matchedPattern = pattern
           position += patternLower.length
           break
         } else if (patternLower.startsWith(remainingInput) && remainingInput.length > 0) {
           // 入力途中の場合（例: "c" が "co" の途中）
-          console.log(`[DEBUG tryAlt]   ✓ Partial match!`)
           matchedPattern = pattern
           position += remainingInput.length  // 部分マッチでもpositionを進める
           break
         } else if (remainingInput.length === 0) {
           // まだ入力されていない部分（デフォルトパターンを使用）
-          console.log(`[DEBUG tryAlt]   ✓ Not yet typed (using default)`)
           matchedPattern = pattern
           break
         }
@@ -490,7 +459,6 @@ export default class extends Controller {
 
       if (!matchedPattern) {
         // どのパターンにもマッチしない場合
-        console.log(`[DEBUG tryAlt] ✗ No pattern matched for kana "${kanaItem.kana}"`)
         return null
       }
     }
@@ -1003,8 +971,6 @@ export default class extends Controller {
     const targetLayer = targetMapping.layer
     const targetPosition = targetMapping.position
     const displayChar = targetMapping.displayChar
-
-    console.log(`Next char: "${nextChar}", found in Layer ${targetLayer} at ${targetPosition}, display: "${displayChar}"`)
 
     // レイヤー切り替えが必要な場合はキーボード表示を更新
     if (targetLayer !== this.currentLayer) {
