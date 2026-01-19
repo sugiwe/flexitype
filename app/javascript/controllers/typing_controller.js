@@ -276,8 +276,9 @@ export default class extends Controller {
       return
     }
 
-    // 英数字のみを受け付ける（a-z, A-Z, 0-9, スペースなど）
-    if (key.length === 1 && /^[a-zA-Z0-9 ]$/.test(key)) {
+    // 1文字の入力を受け付ける（英数字、記号、スペースなど）
+    // 特殊キー（Enter, Tab, Escapeなど）は除外
+    if (key.length === 1) {
       event.preventDefault() // IMEの動作を防ぐ
       this.handleCharInput(key.toLowerCase())
     }
@@ -299,10 +300,16 @@ export default class extends Controller {
   handleBackspace() {
     if (this.isJapaneseLesson) {
       const currentWordData = this.japaneseWords[this.currentWordValue]
-      if (currentWordData.romajiPosition > 0) {
-        currentWordData.romajiPosition--
-        this.hasError = false
-        this.rebuildRomajiPattern(currentWordData, this.getCurrentInput())
+      // エラー状態またはローマ字入力位置が0より大きい場合
+      if (currentWordData.romajiPosition > 0 || this.hasError) {
+        if (this.hasError) {
+          // エラー状態の場合はエラーフラグのみクリア（位置は戻さない）
+          this.hasError = false
+        } else {
+          // 正常状態の場合は位置を1つ戻す
+          currentWordData.romajiPosition--
+          this.rebuildRomajiPattern(currentWordData, this.getCurrentInput())
+        }
         this.updateDisplay()
         this.highlightNextKey()
       }
