@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { convertToRomaji, getDefaultRomajiString, isJapaneseText } from "../lib/romaji_converter"
 
 export default class extends Controller {
   static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "lessonScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay", "displayArea", "gradeImage", "gradeName", "gradeDescription", "wpmDisplay"]
@@ -82,6 +83,12 @@ export default class extends Controller {
     this.typedChars = 0 // タイプした文字数（成績評価用）
     this.lessonStartTime = null // レッスン開始時刻（最初の入力時に設定）
     this.isFirstInput = true // 最初の入力かどうか
+
+    // 日本語レッスンの判定とローマ字変換
+    this.isJapaneseLesson = this.words.some(word => isJapaneseText(word))
+    if (this.isJapaneseLesson) {
+      this.prepareJapaneseLesson()
+    }
 
     // キーマップから逆引きマップを生成（全レイヤー分）
     this.buildKeyMapping()
@@ -178,8 +185,35 @@ export default class extends Controller {
     console.log("Key mapping built (all layers):", this.keyMapping)
   }
 
+  // 日本語レッスンの準備（ローマ字変換データの生成）
+  prepareJapaneseLesson() {
+    console.log("Preparing Japanese lesson...")
+
+    // 各単語をローマ字に変換
+    this.japaneseWords = this.words.map(word => {
+      const romajiData = convertToRomaji(word)
+      const defaultRomaji = getDefaultRomajiString(romajiData)
+
+      return {
+        original: word,        // 元のひらがな文字列（例: "しょうりした"）
+        romajiData: romajiData, // ローマ字変換データ配列
+        currentRomaji: defaultRomaji, // 現在のローマ字文字列（動的に変わる）
+        romajiPosition: 0      // 現在のローマ字入力位置
+      }
+    })
+
+    console.log("Japanese words prepared:", this.japaneseWords)
+  }
+
   // 入力イベント
   handleInput(event) {
+    // 日本語レッスンの場合は専用のハンドラーを使用
+    if (this.isJapaneseLesson) {
+      this.handleJapaneseInput(event)
+      return
+    }
+
+    // 英語レッスンの場合は既存のロジック
     const input = event.target.value
     const currentWord = this.words[this.currentWordValue]
     const previousLength = this.currentPosition
@@ -235,12 +269,73 @@ export default class extends Controller {
     }
   }
 
+  // 日本語入力ハンドラー（ローマ字入力）
+  handleJapaneseInput(event) {
+    const input = event.target.value.toLowerCase()
+    const currentWordData = this.japaneseWords[this.currentWordValue]
+    const previousLength = currentWordData.romajiPosition
+
+    // 最初の入力時に計測開始
+    if (this.isFirstInput && input.length > 0) {
+      this.lessonStartTime = new Date()
+      this.isFirstInput = false
+      console.log("Timer started at first input")
+    }
+
+    // エラー状態で、かつBackSpaceではない入力の場合は無視（入力ロック）
+    if (this.hasError && input.length >= previousLength + 1) {
+      event.target.value = input.slice(0, previousLength + 1)
+      return
+    }
+
+    // BackSpaceが押された場合
+    if (input.length < previousLength || (this.hasError && input.length < previousLength + 1)) {
+      currentWordData.romajiPosition = input.length
+      this.hasError = false
+      this.updateDisplay()
+      this.highlightNextKey()
+      return
+    }
+
+    // 新しい文字が入力された場合
+    const expectedChar = currentWordData.currentRomaji[currentWordData.romajiPosition]
+    const typedChar = input[input.length - 1]
+
+    // タイプ数をカウント
+    if (event.inputType !== 'deleteContentBackward') {
+      this.typedChars++
+    }
+
+    if (typedChar === expectedChar) {
+      // 正しい入力
+      currentWordData.romajiPosition = input.length
+      this.hasError = false
+      this.updateDisplay()
+      this.highlightNextKey()
+
+      // 単語を完全に入力したら次の単語へ
+      if (input === currentWordData.currentRomaji.toLowerCase()) {
+        setTimeout(() => this.nextWord(), 300)
+      }
+    } else {
+      // 間違った入力（入力をロック）
+      this.hasError = true
+      this.mistakeCount++
+      this.updateDisplay()
+    }
+  }
+
   // 次の単語へ進む
   nextWord() {
     this.currentWordValue += 1
     this.currentPosition = 0
     this.inputTarget.value = ""
     this.hasError = false
+
+    // 日本語レッスンの場合はromajiPositionもリセット
+    if (this.isJapaneseLesson && this.japaneseWords[this.currentWordValue]) {
+      this.japaneseWords[this.currentWordValue].romajiPosition = 0
+    }
 
     if (this.currentWordValue >= this.words.length) {
       // 全単語完了 - セッション完了画面を表示
@@ -399,6 +494,13 @@ export default class extends Controller {
     this.lessonStartTime = null // 次の入力時に再設定
     this.isFirstInput = true // 最初の入力フラグをリセット
 
+    // 日本語レッスンの場合はromajiPositionもリセット
+    if (this.isJapaneseLesson) {
+      this.japaneseWords.forEach(wordData => {
+        wordData.romajiPosition = 0
+      })
+    }
+
     // 入力欄をクリア
     this.inputTarget.value = ""
 
@@ -419,6 +521,13 @@ export default class extends Controller {
 
   // 表示を更新
   updateDisplay() {
+    // 日本語レッスンの場合は専用の表示を使用
+    if (this.isJapaneseLesson) {
+      this.updateJapaneseDisplay()
+      return
+    }
+
+    // 英語レッスンの場合は既存の表示
     const currentWord = this.words[this.currentWordValue]
     const completed = currentWord.slice(0, this.currentPosition)
     const current = currentWord[this.currentPosition] || ""
@@ -451,6 +560,55 @@ export default class extends Controller {
         ${completedChars}<span class="inline-block text-center px-2 py-1 mb-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold rounded relative"><span class="border-b-4 border-blue-600 dark:border-blue-400 animate-blink-underline">${displayChar(current)}</span></span>${remainingChars}
       `
     }
+
+    // 進捗表示を更新
+    this.progressTarget.textContent = `問題 ${this.currentWordValue + 1} / ${this.words.length}`
+  }
+
+  // 日本語表示を更新（3段表示: ひらがな・本文・ローマ字）
+  updateJapaneseDisplay() {
+    const currentWordData = this.japaneseWords[this.currentWordValue]
+    const romajiPos = currentWordData.romajiPosition
+    const currentRomaji = currentWordData.currentRomaji
+
+    // ローマ字の表示（下段、既存のロジックを流用）
+    const romajiCompleted = currentRomaji.slice(0, romajiPos)
+    const romajiCurrent = currentRomaji[romajiPos] || ""
+    const romajiRemaining = currentRomaji.slice(romajiPos + 1)
+
+    const displayChar = (char) => char === ' ' ? '␣' : this.escapeHtml(char)
+
+    const romajiCompletedChars = romajiCompleted.split('').map(char =>
+      `<span class="inline-block text-center px-1 font-semibold text-green-600 dark:text-green-400">${displayChar(char)}</span>`
+    ).join('')
+
+    const romajiRemainingChars = romajiRemaining.split('').map(char =>
+      `<span class="inline-block text-center px-1 text-gray-400 dark:text-gray-500">${displayChar(char)}</span>`
+    ).join('')
+
+    let romajiHTML = ''
+    if (!romajiCurrent) {
+      romajiHTML = romajiCompletedChars
+    } else if (this.hasError) {
+      romajiHTML = `
+        ${romajiCompletedChars}<span class="inline-block text-center px-1 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 border-b-2 border-red-600 dark:border-red-400 font-bold rounded animate-shake">${displayChar(romajiCurrent)}</span>${romajiRemainingChars}
+      `
+    } else {
+      romajiHTML = `
+        ${romajiCompletedChars}<span class="inline-block text-center px-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold rounded relative"><span class="border-b-2 border-blue-600 dark:border-blue-400 animate-blink-underline">${displayChar(romajiCurrent)}</span></span>${romajiRemainingChars}
+      `
+    }
+
+    // 最上段: ひらがな読み（小さく）
+    // 中段: 本来のテキスト（大きく、メイン表示）
+    // 下段: ローマ字ガイド（小さく）
+    this.displayTarget.innerHTML = `
+      <div class="flex flex-col items-center gap-2">
+        <div class="text-sm text-gray-500 dark:text-gray-400">${this.escapeHtml(currentWordData.original)}</div>
+        <div class="text-5xl font-mono tracking-wider">${this.escapeHtml(currentWordData.original)}</div>
+        <div class="text-base font-mono tracking-wide text-gray-600 dark:text-gray-300">${romajiHTML}</div>
+      </div>
+    `
 
     // 進捗表示を更新
     this.progressTarget.textContent = `問題 ${this.currentWordValue + 1} / ${this.words.length}`
@@ -608,8 +766,16 @@ export default class extends Controller {
     })
 
     // 次に打つべき文字を取得
-    const currentWord = this.words[this.currentWordValue]
-    const nextChar = currentWord[this.currentPosition]
+    let nextChar
+    if (this.isJapaneseLesson) {
+      // 日本語の場合はローマ字の次の文字
+      const currentWordData = this.japaneseWords[this.currentWordValue]
+      nextChar = currentWordData.currentRomaji[currentWordData.romajiPosition]
+    } else {
+      // 英語の場合は通常の文字
+      const currentWord = this.words[this.currentWordValue]
+      nextChar = currentWord[this.currentPosition]
+    }
 
     if (!nextChar) return // 単語の終わりに達した場合
 
