@@ -297,7 +297,7 @@ en:
     og_title: "I earned %{grade}!"
     og_description: "Accuracy %{accuracy}%, WPM %{wpm}"
     page_title: "I earned %{grade}! - Typnix"
-    twitter_text: "I earned \"%{grade}\" on Typnix! Accuracy %{accuracy}%, WPM %{wpm} 🦦 #typnix #typing"
+    twitter_text: "I earned \"%{grade}\" on Typnix's \"%{lesson}\" lesson! Accuracy %{accuracy}%, WPM %{wpm} 🦦 #typnix #typing"
     stats:
       accuracy: "Accuracy"
       wpm: "WPM"

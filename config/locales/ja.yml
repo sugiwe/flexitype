@@ -273,7 +273,7 @@ ja:
     og_title: "%{grade}を獲得しました！"
     og_description: "正答率%{accuracy}%、WPM %{wpm}"
     page_title: "%{grade}を獲得しました！ - Typnix"
-    twitter_text: "Typnixで「%{grade}」を獲得しました！正答率%{accuracy}%、WPM %{wpm} 🦦 #typnix #タイピング"
+    twitter_text: "Typnixの「%{lesson}」レッスンで「%{grade}」を獲得しました！正答率%{accuracy}%、WPM %{wpm} 🦦 #typnix #タイピング"
     stats:
       accuracy: "正答率"
       wpm: "WPM"

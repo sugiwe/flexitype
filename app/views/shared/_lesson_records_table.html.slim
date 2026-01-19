@@ -17,6 +17,8 @@
           th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider = t('history.table.grade')
           th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider = t('history.table.duration')
           th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider = t('history.table.mistakes')
+          - if local_assigns[:show_share_button]
+            th.px-3.py-3.text-center.text-xs.font-medium.text-gray-500.dark:text-gray-400.uppercase.tracking-wider シェア
       tbody.divide-y.divide-gray-200.dark:divide-gray-700
         - lesson_records.each do |record|
           tr.hover:bg-gray-50.dark:hover:bg-gray-700.transition-colors
@@ -74,6 +76,12 @@
                 | -
             td.px-3.py-4.whitespace-nowrap.text-center.text-sm.text-gray-900.dark:text-gray-100
               = record.mistake_count
+            - if local_assigns[:show_share_button]
+              td.px-3.py-4.whitespace-nowrap.text-center
+                = button_to shares_path(lesson_record_id: record.id), method: :post, class: "inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-md transition-colors", data: { turbo: false }, form: { target: "_blank" } do
+                  svg.w-4.h-4.mr-1 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                  | シェア
 
   / カード（モバイル）
   .md:hidden.divide-y.divide-gray-200.dark:divide-gray-700
@@ -139,6 +147,13 @@
           div
             span.text-xs = t('history.table.mistakes')
             .font-medium.text-gray-900.dark:text-gray-100.mt-1 = record.mistake_count
+        / シェアボタン（モバイル）
+        - if local_assigns[:show_share_button]
+          .mt-3
+            = button_to shares_path(lesson_record_id: record.id), method: :post, class: "w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-md transition-colors", data: { turbo: false }, form: { target: "_blank" } do
+              svg.w-4.h-4.mr-2 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+              | X (Twitter) でシェア
 
   / ページネーション（オプション）
   - if local_assigns[:show_pagination]
