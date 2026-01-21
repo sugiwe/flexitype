@@ -25,6 +25,11 @@ servers:
 proxy:
   ssl: true
   host: typnix.com
+  app_port: 80
+  healthcheck:
+    path: /up
+    interval: 10
+    timeout: 120
 
 # Where you keep your container images.
 # ローカルでビルドしてVPSに直接送信する場合はlocalhostのまま
