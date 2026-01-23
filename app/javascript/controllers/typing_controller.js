@@ -288,7 +288,9 @@ export default class extends Controller {
     // 特殊キー（Enter, Tab, Escapeなど）は除外
     if (key.length === 1) {
       event.preventDefault() // IMEの動作を防ぐ
-      this.handleCharInput(key.toLowerCase())
+      // 日本語レッスンの場合のみ小文字に変換（ローマ字入力のため）
+      const inputChar = this.isJapaneseLesson ? key.toLowerCase() : key
+      this.handleCharInput(inputChar)
     }
   }
 
