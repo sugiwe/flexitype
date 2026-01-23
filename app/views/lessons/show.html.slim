@@ -75,7 +75,7 @@
           span.text-gray-400.dark:text-gray-500 o
 
     / 非表示の入力フィールド（実際の入力を受け取る）
-    input.absolute.opacity-0.pointer-events-none type="text" autocomplete="off" data-typing-target="input" data-action="input->typing#handleInput"
+    input.absolute.opacity-0.pointer-events-none type="text" autocomplete="off" inputmode="latin" style="ime-mode: disabled;" data-typing-target="input" data-action="input->typing#handleInput"
 
     / 操作説明
     .mb-4.text-center

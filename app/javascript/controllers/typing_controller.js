@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { convertToRomaji, getDefaultRomajiString, isJapaneseText } from "lib/romaji_converter"
 
 export default class extends Controller {
   static targets = ["input", "display", "progress", "currentIndex", "completionScreen", "lessonScreen", "accuracyDisplay", "timeDisplay", "mistakesDisplay", "displayArea", "gradeImage", "gradeName", "gradeDescription", "wpmDisplay"]
@@ -70,7 +71,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Typing controller connected")
     this.currentWordValue = 0
     this.currentPosition = 0
     this.hasError = false // ミスタイプのフラグ
@@ -83,12 +83,86 @@ export default class extends Controller {
     this.lessonStartTime = null // レッスン開始時刻（最初の入力時に設定）
     this.isFirstInput = true // 最初の入力かどうか
 
+    // 日本語レッスンの判定とローマ字変換
+    this.isJapaneseLesson = this.words.some(wordItem => {
+      const text = typeof wordItem === 'string' ? wordItem : wordItem.text
+      return isJapaneseText(text)
+    })
+    if (this.isJapaneseLesson) {
+      this.prepareJapaneseLesson()
+    }
+
     // キーマップから逆引きマップを生成（全レイヤー分）
     this.buildKeyMapping()
 
     this.applyFingerColors() // 指ごとの色を適用
     this.updateDisplay()
     this.highlightNextKey()
+
+    // IMEを完全に無効化する設定
+    this.inputTarget.style.imeMode = 'disabled' // 古いブラウザ用
+    this.inputTarget.style.webkitImeMode = 'disabled' // Safari用
+    this.inputTarget.setAttribute('autocorrect', 'off') // iOS用
+    this.inputTarget.setAttribute('autocapitalize', 'off') // iOS用
+    this.inputTarget.setAttribute('spellcheck', 'false') // スペルチェック無効
+
+    // compositionイベントをキャンセル（IMEの変換候補を防ぐ）
+    this.inputTarget.addEventListener('compositionstart', (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+    })
+    this.inputTarget.addEventListener('compositionupdate', (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+    })
+    this.inputTarget.addEventListener('compositionend', (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+      // 入力フィールドをクリアして、IMEの変換結果を捨てる
+      this.inputTarget.value = ''
+    })
+
+    // beforeinputイベントでIME入力を阻止（最も早い段階でブロック）
+    this.inputTarget.addEventListener('beforeinput', (event) => {
+      // IME関連のinputTypeを全てブロック
+      if (event.inputType === 'insertCompositionText' ||
+          event.inputType === 'deleteByComposition' ||
+          event.inputType === 'deleteContentBackward' ||
+          event.inputType === 'deleteContentForward') {
+        // BackSpaceはkeydownで処理するのでここではブロック
+        if (event.inputType.startsWith('delete')) {
+          event.preventDefault()
+          return
+        }
+        // IME入力はブロック
+        event.preventDefault()
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+      }
+    }, true) // キャプチャフェーズで実行
+
+    // inputイベントもキャンセル（IMEの入力を完全に無視）
+    this.inputTarget.addEventListener('input', (event) => {
+      // IMEからの入力を即座にクリア
+      if (event.inputType && event.inputType.startsWith('insert')) {
+        const value = event.target.value
+        // ASCII以外の文字が含まれている場合はクリア
+        if (/[^\x00-\x7F]/.test(value)) {
+          event.preventDefault()
+          event.stopPropagation()
+          event.stopImmediatePropagation()
+          event.target.value = ''
+        }
+      }
+    }, true) // キャプチャフェーズで実行
+
+    // キーボード入力を直接拾う（IMEの影響を受けない）
+    this.inputTarget.addEventListener('keydown', (event) => {
+      this.handleKeydown(event)
+    })
 
     // 入力欄に自動フォーカス
     this.inputTarget.focus()
@@ -129,8 +203,6 @@ export default class extends Controller {
 
   // キーマップから文字→キー位置の逆引きマップを生成（全レイヤー分）
   buildKeyMapping() {
-    console.log("Keymaps received:", this.keymapsValue)
-
     // 各レイヤーごとに文字 → {layer, position} のマッピングを作成
     // 例: 'a' => [{layer: 0, position: '2-0'}, {layer: 1, position: '1-3'}]
     this.keyMapping = {}
@@ -138,7 +210,6 @@ export default class extends Controller {
     // 全レイヤー（0-5）を走査
     for (let layer = 0; layer < 6; layer++) {
       const layerData = this.keymapsValue[layer] || this.keymapsValue[layer.toString()] || {}
-      console.log(`Layer ${layer} data:`, layerData)
 
       Object.entries(layerData).forEach(([position, char]) => {
         if (!char) return
@@ -174,64 +245,280 @@ export default class extends Controller {
         })
       })
     }
-
-    console.log("Key mapping built (all layers):", this.keyMapping)
   }
 
-  // 入力イベント
+  // 日本語レッスンの準備（ローマ字変換データの生成）
+  prepareJapaneseLesson() {
+    // 各単語をローマ字に変換
+    this.japaneseWords = this.words.map(wordItem => {
+      // wordsが文字列配列かハッシュ配列かを判定
+      const word = typeof wordItem === 'string' ? wordItem : wordItem.text
+      const display = typeof wordItem === 'string' ? null : wordItem.display
+
+      const romajiData = convertToRomaji(word)
+      const defaultRomaji = getDefaultRomajiString(romajiData)
+
+      return {
+        original: word,        // 元のひらがな文字列（例: "しょうりした"）
+        display: display,      // 表示用テキスト（例: "勝利した"）、nullの場合はoriginalを使用
+        romajiData: romajiData, // ローマ字変換データ配列
+        currentRomaji: defaultRomaji, // 現在のローマ字文字列（動的に変わる）
+        romajiPosition: 0      // 現在のローマ字入力位置
+      }
+    })
+  }
+
+  // キーボード入力を直接処理（IMEの影響を受けない）
+  handleKeydown(event) {
+    // 修飾キー（Ctrl, Alt, Meta）が押されている場合はスキップ
+    if (event.ctrlKey || event.altKey || event.metaKey) {
+      return
+    }
+
+    const key = event.key
+
+    // BackSpaceキーの処理
+    if (key === 'Backspace') {
+      event.preventDefault()
+      this.handleBackspace()
+      return
+    }
+
+    // 1文字の入力を受け付ける（英数字、記号、スペースなど）
+    // 特殊キー（Enter, Tab, Escapeなど）は除外
+    if (key.length === 1) {
+      event.preventDefault() // IMEの動作を防ぐ
+      this.handleCharInput(key.toLowerCase())
+    }
+  }
+
+  // 文字入力の処理
+  handleCharInput(char) {
+    // 日本語レッスンの場合
+    if (this.isJapaneseLesson) {
+      this.handleJapaneseCharInput(char)
+      return
+    }
+
+    // 英語レッスンの場合
+    this.handleEnglishCharInput(char)
+  }
+
+  // BackSpaceの処理
+  handleBackspace() {
+    if (this.isJapaneseLesson) {
+      const currentWordData = this.japaneseWords[this.currentWordValue]
+      // エラー状態またはローマ字入力位置が0より大きい場合
+      if (currentWordData.romajiPosition > 0 || this.hasError) {
+        if (this.hasError) {
+          // エラー状態の場合はエラーフラグのみクリア（位置は戻さない）
+          this.hasError = false
+        } else {
+          // 正常状態の場合は位置を1つ戻す
+          currentWordData.romajiPosition--
+          this.rebuildRomajiPattern(currentWordData, this.getCurrentInput())
+        }
+        this.updateDisplay()
+        this.highlightNextKey()
+      }
+    } else {
+      if (this.currentPosition > 0 || this.hasError) {
+        if (this.hasError) {
+          this.hasError = false
+        } else {
+          this.currentPosition--
+        }
+        this.updateDisplay()
+        this.highlightNextKey()
+      }
+    }
+  }
+
+  // 現在の入力文字列を取得
+  getCurrentInput() {
+    if (this.isJapaneseLesson) {
+      const currentWordData = this.japaneseWords[this.currentWordValue]
+      return currentWordData.currentRomaji.slice(0, currentWordData.romajiPosition)
+    } else {
+      const wordItem = this.words[this.currentWordValue]
+      const currentWord = typeof wordItem === 'string' ? wordItem : wordItem.text
+      return currentWord.slice(0, this.currentPosition)
+    }
+  }
+
+  // 入力イベント（既存の互換性のため残す）
   handleInput(event) {
-    const input = event.target.value
-    const currentWord = this.words[this.currentWordValue]
-    const previousLength = this.currentPosition
+    // keydownで処理するため、このハンドラーは使わない
+  }
+
+  // 英語レッスンの文字入力処理
+  handleEnglishCharInput(char) {
+    const wordItem = this.words[this.currentWordValue]
+    const currentWord = typeof wordItem === 'string' ? wordItem : wordItem.text
 
     // 最初の入力時に計測開始
-    if (this.isFirstInput && input.length > 0) {
+    if (this.isFirstInput) {
       this.lessonStartTime = new Date()
       this.isFirstInput = false
-      console.log("Timer started at first input")
     }
 
-    // エラー状態で、かつBackSpaceではない入力の場合は無視（入力ロック）
-    if (this.hasError && input.length >= previousLength + 1) {
-      // 入力を元に戻す（ミスした文字の次の文字が入力されないようにする）
-      event.target.value = input.slice(0, previousLength + 1)
+    // エラー状態の場合は何もしない
+    if (this.hasError) {
       return
     }
 
-    // BackSpaceが押された場合（入力が減った場合）
-    if (input.length < previousLength || (this.hasError && input.length < previousLength + 1)) {
-      this.currentPosition = input.length
-      this.hasError = false // エラー状態を解除
-      this.updateDisplay()
-      this.highlightNextKey()
-      return
-    }
-
-    // 新しい文字が入力された場合
+    // 期待される文字
     const expectedChar = currentWord[this.currentPosition]
-    const typedChar = input[input.length - 1]
 
-    // タイプ数をカウント（Backspaceを除く）
-    if (event.inputType !== 'deleteContentBackward') {
-      this.typedChars++
-    }
+    // タイプ数をカウント
+    this.typedChars++
 
-    if (typedChar === expectedChar) {
+    if (char === expectedChar) {
       // 正しい入力
-      this.currentPosition = input.length
-      this.hasError = false
+      this.currentPosition++
       this.updateDisplay()
       this.highlightNextKey()
 
       // 単語を完全に入力したら次の単語へ
-      if (input === currentWord) {
-        setTimeout(() => this.nextWord(), 300) // 少し間を置いてから次へ
+      if (this.currentPosition === currentWord.length) {
+        setTimeout(() => this.nextWord(), 300)
       }
     } else {
-      // 間違った入力（入力をロック）
+      // 間違った入力
       this.hasError = true
-      this.mistakeCount++ // ミスカウントを増やす
+      this.mistakeCount++
       this.updateDisplay()
+    }
+  }
+
+  // 日本語レッスンの文字入力処理
+  handleJapaneseCharInput(char) {
+    const currentWordData = this.japaneseWords[this.currentWordValue]
+
+    // 最初の入力時に計測開始
+    if (this.isFirstInput) {
+      this.lessonStartTime = new Date()
+      this.isFirstInput = false
+    }
+
+    // エラー状態の場合は何もしない
+    if (this.hasError) {
+      return
+    }
+
+    // 期待される文字
+    const expectedChar = currentWordData.currentRomaji[currentWordData.romajiPosition]
+
+    // タイプ数をカウント
+    this.typedChars++
+
+    // 現在までの入力を取得
+    const currentInput = this.getCurrentInput() + char
+
+    if (char === expectedChar) {
+      // 正しい入力
+      currentWordData.romajiPosition++
+      this.updateDisplay()
+      this.highlightNextKey()
+
+      // 単語を完全に入力したら次の単語へ
+      if (currentWordData.romajiPosition === currentWordData.currentRomaji.length) {
+        setTimeout(() => this.nextWord(), 300)
+      }
+    } else {
+      // 期待と異なる場合、別のパターンを試す
+      const newPattern = this.tryAlternativePattern(currentWordData, currentInput)
+      if (newPattern) {
+        // 別のパターンが見つかった場合は切り替える
+        currentWordData.currentRomaji = newPattern
+        currentWordData.romajiPosition++
+        this.updateDisplay()
+        this.highlightNextKey()
+      } else {
+        // どのパターンにも合わない場合はエラー
+        this.hasError = true
+        this.mistakeCount++
+        this.updateDisplay()
+      }
+    }
+  }
+
+  // 別のローマ字パターンを試す（複数パターン対応）
+  tryAlternativePattern(currentWordData, typedInput) {
+    const romajiData = currentWordData.romajiData
+    let position = 0
+
+    // 各かな文字のパターンを試行し、typedInputにマッチするパターンを構築
+    for (let i = 0; i < romajiData.length; i++) {
+      const kanaItem = romajiData[i]
+      let matchedPattern = null
+
+      // このかな文字の各ローマ字パターンを試す
+      for (const pattern of kanaItem.roma) {
+        const patternLower = pattern.toLowerCase()
+        const remainingInput = typedInput.slice(position)
+
+        // このパターンが入力の残り部分の先頭にマッチするか確認
+        if (remainingInput.startsWith(patternLower)) {
+          matchedPattern = pattern
+          position += patternLower.length
+          break
+        } else if (patternLower.startsWith(remainingInput) && remainingInput.length > 0) {
+          // 入力途中の場合（例: "c" が "co" の途中）
+          matchedPattern = pattern
+          position += remainingInput.length  // 部分マッチでもpositionを進める
+          break
+        } else if (remainingInput.length === 0) {
+          // まだ入力されていない部分（デフォルトパターンを使用）
+          matchedPattern = pattern
+          break
+        }
+      }
+
+      if (!matchedPattern) {
+        // どのパターンにもマッチしない場合
+        return null
+      }
+    }
+
+    // 全てのかな文字がマッチした場合、新しいローマ字文字列を生成
+    let newRomaji = ''
+    position = 0
+
+    for (let i = 0; i < romajiData.length; i++) {
+      const kanaItem = romajiData[i]
+      let selectedPattern = kanaItem.roma[0] // デフォルト
+
+      for (const pattern of kanaItem.roma) {
+        const patternLower = pattern.toLowerCase()
+        const remainingInput = typedInput.slice(position)
+
+        if (remainingInput.startsWith(patternLower) || patternLower.startsWith(remainingInput)) {
+          selectedPattern = pattern
+          position += Math.min(patternLower.length, remainingInput.length)
+          break
+        }
+      }
+
+      newRomaji += selectedPattern.toLowerCase()
+    }
+
+    return newRomaji
+  }
+
+  // BackSpace時にローマ字パターンを再構築
+  rebuildRomajiPattern(currentWordData, typedInput) {
+    if (typedInput.length === 0) {
+      // 完全にクリアされた場合はデフォルトパターンに戻す
+      const romajiData = currentWordData.romajiData
+      currentWordData.currentRomaji = romajiData.map(item => item.roma[0]).join('').toLowerCase()
+      return
+    }
+
+    // 入力途中の場合は現在の入力にマッチするパターンを再構築
+    const newPattern = this.tryAlternativePattern(currentWordData, typedInput)
+    if (newPattern) {
+      currentWordData.currentRomaji = newPattern
     }
   }
 
@@ -241,6 +528,11 @@ export default class extends Controller {
     this.currentPosition = 0
     this.inputTarget.value = ""
     this.hasError = false
+
+    // 日本語レッスンの場合はromajiPositionもリセット
+    if (this.isJapaneseLesson && this.japaneseWords[this.currentWordValue]) {
+      this.japaneseWords[this.currentWordValue].romajiPosition = 0
+    }
 
     if (this.currentWordValue >= this.words.length) {
       // 全単語完了 - セッション完了画面を表示
@@ -262,11 +554,10 @@ export default class extends Controller {
     const seconds = elapsedSeconds % 60
     const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`
 
-    // 総文字数を計算
-    const totalChars = this.words.reduce((sum, word) => sum + word.length, 0)
-
-    // 正答率を計算（総文字数に対するミス数の割合）
-    const accuracy = Math.round(((totalChars - this.mistakeCount) / totalChars) * 100)
+    // 正答率を計算（タイプした文字数に対するミス数の割合）
+    const accuracy = this.typedChars > 0
+      ? Math.round(((this.typedChars - this.mistakeCount) / this.typedChars) * 100)
+      : 100
 
     // WPMを計算（CPM = タイプ数 / 秒数 × 60、WPM = CPM / 5）
     const cpm = elapsedSeconds > 0 ? (this.typedChars / elapsedSeconds) * 60 : 0
@@ -333,7 +624,7 @@ export default class extends Controller {
             lesson_id: this.lessonInfoValue.lesson_id,
             lesson_name: this.lessonInfoValue.lesson_name,
             word_count: this.words.length,
-            correct_count: this.words.length * this.words.reduce((sum, word) => sum + word.length, 0) - this.mistakeCount,
+            correct_count: this.typedChars - this.mistakeCount,
             mistake_count: this.mistakeCount,
             accuracy: accuracy,
             duration_seconds: durationSeconds,
@@ -399,6 +690,13 @@ export default class extends Controller {
     this.lessonStartTime = null // 次の入力時に再設定
     this.isFirstInput = true // 最初の入力フラグをリセット
 
+    // 日本語レッスンの場合はromajiPositionもリセット
+    if (this.isJapaneseLesson) {
+      this.japaneseWords.forEach(wordData => {
+        wordData.romajiPosition = 0
+      })
+    }
+
     // 入力欄をクリア
     this.inputTarget.value = ""
 
@@ -419,7 +717,15 @@ export default class extends Controller {
 
   // 表示を更新
   updateDisplay() {
-    const currentWord = this.words[this.currentWordValue]
+    // 日本語レッスンの場合は専用の表示を使用
+    if (this.isJapaneseLesson) {
+      this.updateJapaneseDisplay()
+      return
+    }
+
+    // 英語レッスンの場合は既存の表示
+    const wordItem = this.words[this.currentWordValue]
+    const currentWord = typeof wordItem === 'string' ? wordItem : wordItem.text
     const completed = currentWord.slice(0, this.currentPosition)
     const current = currentWord[this.currentPosition] || ""
     const remaining = currentWord.slice(this.currentPosition + 1)
@@ -451,6 +757,58 @@ export default class extends Controller {
         ${completedChars}<span class="inline-block text-center px-2 py-1 mb-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold rounded relative"><span class="border-b-4 border-blue-600 dark:border-blue-400 animate-blink-underline">${displayChar(current)}</span></span>${remainingChars}
       `
     }
+
+    // 進捗表示を更新
+    this.progressTarget.textContent = `問題 ${this.currentWordValue + 1} / ${this.words.length}`
+  }
+
+  // 日本語表示を更新（3段表示: ひらがな・本文・ローマ字）
+  updateJapaneseDisplay() {
+    const currentWordData = this.japaneseWords[this.currentWordValue]
+    const romajiPos = currentWordData.romajiPosition
+    const currentRomaji = currentWordData.currentRomaji
+
+    // ローマ字の表示（下段、既存のロジックを流用）
+    const romajiCompleted = currentRomaji.slice(0, romajiPos)
+    const romajiCurrent = currentRomaji[romajiPos] || ""
+    const romajiRemaining = currentRomaji.slice(romajiPos + 1)
+
+    const displayChar = (char) => char === ' ' ? '␣' : this.escapeHtml(char)
+
+    const romajiCompletedChars = romajiCompleted.split('').map(char =>
+      `<span class="inline-block text-center px-1 font-semibold text-green-600 dark:text-green-400">${displayChar(char)}</span>`
+    ).join('')
+
+    const romajiRemainingChars = romajiRemaining.split('').map(char =>
+      `<span class="inline-block text-center px-1 text-gray-400 dark:text-gray-500">${displayChar(char)}</span>`
+    ).join('')
+
+    let romajiHTML = ''
+    if (!romajiCurrent) {
+      romajiHTML = romajiCompletedChars
+    } else if (this.hasError) {
+      romajiHTML = `
+        ${romajiCompletedChars}<span class="inline-block text-center px-1 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 border-b-2 border-red-600 dark:border-red-400 font-bold rounded animate-shake">${displayChar(romajiCurrent)}</span>${romajiRemainingChars}
+      `
+    } else {
+      romajiHTML = `
+        ${romajiCompletedChars}<span class="inline-block text-center px-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold rounded relative"><span class="border-b-2 border-blue-600 dark:border-blue-400 animate-blink-underline">${displayChar(romajiCurrent)}</span></span>${romajiRemainingChars}
+      `
+    }
+
+    // displayフィールドがある場合はそれを使用、なければoriginalを使用
+    const displayText = currentWordData.display || currentWordData.original
+
+    // 最上段: ひらがな読み（小さく）
+    // 中段: 表示用テキスト（大きく、メイン表示）- displayフィールドがあれば漢字・カタカナ混じり
+    // 下段: ローマ字ガイド（小さく）
+    this.displayTarget.innerHTML = `
+      <div class="flex flex-col items-center gap-2">
+        <div class="text-sm text-gray-500 dark:text-gray-400">${this.escapeHtml(currentWordData.original)}</div>
+        <div class="text-5xl font-mono tracking-wider">${this.escapeHtml(displayText)}</div>
+        <div class="text-base font-mono tracking-wide text-gray-600 dark:text-gray-300">${romajiHTML}</div>
+      </div>
+    `
 
     // 進捗表示を更新
     this.progressTarget.textContent = `問題 ${this.currentWordValue + 1} / ${this.words.length}`
@@ -608,8 +966,17 @@ export default class extends Controller {
     })
 
     // 次に打つべき文字を取得
-    const currentWord = this.words[this.currentWordValue]
-    const nextChar = currentWord[this.currentPosition]
+    let nextChar
+    if (this.isJapaneseLesson) {
+      // 日本語の場合はローマ字の次の文字
+      const currentWordData = this.japaneseWords[this.currentWordValue]
+      nextChar = currentWordData.currentRomaji[currentWordData.romajiPosition]
+    } else {
+      // 英語の場合は通常の文字
+      const wordItem = this.words[this.currentWordValue]
+      const currentWord = typeof wordItem === 'string' ? wordItem : wordItem.text
+      nextChar = currentWord[this.currentPosition]
+    }
 
     if (!nextChar) return // 単語の終わりに達した場合
 
@@ -626,8 +993,6 @@ export default class extends Controller {
     const targetLayer = targetMapping.layer
     const targetPosition = targetMapping.position
     const displayChar = targetMapping.displayChar
-
-    console.log(`Next char: "${nextChar}", found in Layer ${targetLayer} at ${targetPosition}, display: "${displayChar}"`)
 
     // レイヤー切り替えが必要な場合はキーボード表示を更新
     if (targetLayer !== this.currentLayer) {
