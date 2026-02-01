@@ -104,7 +104,7 @@
       .bg-gray-50.dark:bg-gray-700.rounded-lg.p-4
         p.text-sm.text-gray-600.dark:text-gray-400 = category.translated_name
         p.text-2xl.font-bold.text-gray-800.dark:text-white.mt-1
-          = category.lessons.count
+          = category.lessons_count
           span.text-sm.font-normal.text-gray-500.dark:text-gray-400.ml-1 レッスン
 
 / 人気レッスンランキング（TOP 10）
@@ -197,7 +197,7 @@
                       span.text-sm.font-medium.text-gray-600.dark:text-gray-300 = user.name[0].upcase
                   span.text-sm.font-medium.text-gray-700.dark:text-gray-200 = user.name
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.email
-              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.lesson_records.count
+              td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300 = user.records_count
               td.px-4.py-3.text-sm.text-gray-700.dark:text-gray-300
                 - if user.current_sign_in_at.present?
                   = time_ago_in_words(user.current_sign_in_at)
@@ -227,7 +227,7 @@
               span.text-gray-800.dark:text-gray-200.truncate.ml-2 = user.email
             .flex.justify-between
               span.text-gray-600.dark:text-gray-400 練習回数
-              span.text-gray-800.dark:text-gray-200 = user.lesson_records.count
+              span.text-gray-800.dark:text-gray-200 = user.records_count
             .flex.justify-between
               span.text-gray-600.dark:text-gray-400 最終ログイン
               span.text-gray-800.dark:text-gray-200

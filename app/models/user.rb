@@ -7,6 +7,11 @@ class User < ApplicationRecord
 
   after_create :create_default_keymap_set
 
+  # N+1クエリ対策: 練習回数を事前計算するスコープ
+  scope :with_records_count, -> {
+    select("users.*, (SELECT COUNT(*) FROM lesson_records WHERE lesson_records.user_id = users.id) as records_count")
+  }
+
   validates :google_uid, presence: true, uniqueness: true
   validates :email, presence: true, uniqueness: true, length: { maximum: 254 }
   validates :name, presence: true, length: { maximum: 30 }
