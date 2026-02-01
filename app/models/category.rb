@@ -24,6 +24,10 @@ class Category < ApplicationRecord
   scope :free, -> { where(premium: false) }
   scope :available_for_guest, -> { where(requires_login: false) }
   scope :by_tab, ->(tab_key) { where(tab: tab_key.to_s) }
+  # N+1クエリ対策: レッスン数を事前計算するスコープ
+  scope :with_lessons_count, -> {
+    select("categories.*, (SELECT COUNT(*) FROM lessons WHERE lessons.category_id = categories.id) as lessons_count")
+  }
 
   # クラスメソッド
   def self.available_tabs
