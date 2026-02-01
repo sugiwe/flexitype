@@ -18,13 +18,20 @@ class Admin::DashboardController < Admin::ApplicationController
     @records_this_week = LessonRecord.where("completed_at >= ?", 1.week.ago).count
 
     # 最新10名のユーザー（登録日時の降順、ID降順）
-    @recent_users = User.order(id: :desc).limit(10)
+    # N+1クエリ対策: サブクエリでrecords_countを事前計算
+    @recent_users = User
+      .select("users.*, (SELECT COUNT(*) FROM lesson_records WHERE lesson_records.user_id = users.id) as records_count")
+      .order(id: :desc)
+      .limit(10)
 
     # 最新10件の練習履歴（完了日時の降順）
     @recent_records = LessonRecord.includes(:user).order(completed_at: :desc).limit(10)
 
     # レッスンカテゴリー統計
-    @lesson_categories = Category.includes(:lessons).order(:display_order)
+    # N+1クエリ対策: サブクエリでlessons_countを事前計算
+    @lesson_categories = Category
+      .select("categories.*, (SELECT COUNT(*) FROM lessons WHERE lessons.category_id = categories.id) as lessons_count")
+      .order(:display_order)
 
     # 人気レッスンランキング（TOP 10）
     @popular_lessons = LessonRecord
