@@ -1,52 +1,101 @@
 - content_for :head do
-  meta property="og:title" content=t('share.og_title', grade: @share.grade_name)
-  meta property="og:description" content=t('share.og_description', accuracy: @share.accuracy, wpm: @share.wpm)
-  meta property="og:image" content=image_url("share_template.png")
-  meta property="og:type" content="website"
-  meta property="og:url" content=share_url(@share.token)
-  meta name="twitter:card" content="summary_large_image"
-  meta name="twitter:title" content=t('share.og_title', grade: @share.grade_name)
-  meta name="twitter:description" content=t('share.og_description', accuracy: @share.accuracy, wpm: @share.wpm)
-  meta name="twitter:image" content=image_url("share_template.png")
-  title = t('share.page_title', grade: @share.grade_name)
+  - if @share.period_summary?
+    meta property="og:title" content="【#{@share.period_display}の練習記録】#{@share.user.display_name}さんの成績"
+    meta property="og:description" content="練習回数: #{@period_data[:count]}回、平均正答率: #{@period_data[:avg_accuracy]}%、平均WPM: #{@period_data[:avg_wpm]}"
+    meta property="og:image" content=image_url("share_template.png")
+    meta property="og:type" content="website"
+    meta property="og:url" content=share_url(@share.token)
+    meta name="twitter:card" content="summary_large_image"
+    meta name="twitter:title" content="【#{@share.period_display}の練習記録】#{@share.user.display_name}さんの成績"
+    meta name="twitter:description" content="練習回数: #{@period_data[:count]}回、平均正答率: #{@period_data[:avg_accuracy]}%、平均WPM: #{@period_data[:avg_wpm]}"
+    meta name="twitter:image" content=image_url("share_template.png")
+    title = "#{@share.period_display}の練習記録 - Typnix"
+  - else
+    meta property="og:title" content=t('share.og_title', grade: @share.grade_name)
+    meta property="og:description" content=t('share.og_description', accuracy: @share.accuracy, wpm: @share.wpm)
+    meta property="og:image" content=image_url("share_template.png")
+    meta property="og:type" content="website"
+    meta property="og:url" content=share_url(@share.token)
+    meta name="twitter:card" content="summary_large_image"
+    meta name="twitter:title" content=t('share.og_title', grade: @share.grade_name)
+    meta name="twitter:description" content=t('share.og_description', accuracy: @share.accuracy, wpm: @share.wpm)
+    meta name="twitter:image" content=image_url("share_template.png")
+    title = t('share.page_title', grade: @share.grade_name)
 
 .container.max-w-4xl.mx-auto.pb-12.px-4
-  / グレードバッジと成績カード
-  .bg-white.dark:bg-gray-800.rounded-lg.shadow-lg.p-8.mb-8.transition-colors
-    .text-center
-      / グレード画像
-      .mb-4.flex.justify-center
-        = image_tag @share.grade_image, alt: @share.grade_name, class: "w-40 h-40"
+  - if @share.period_summary?
+    / 期間サマリーシェア
+    .bg-white.dark:bg-gray-800.rounded-lg.shadow-lg.p-8.mb-8.transition-colors
+      .text-center
+        / 期間タイトル
+        h1.text-4xl.font-bold.text-gray-800.dark:text-white.mb-4
+          = @share.period_display
+          | の練習記録
 
-      / グレード名
-      h1.text-4xl.font-bold.text-gray-800.dark:text-white.mb-2 = @share.grade_name
+        / 期間範囲
+        p.text-lg.text-gray-600.dark:text-gray-300.mb-8
+          = @share.period_date_range
 
-      / グレード説明
-      p.text-lg.text-gray-600.dark:text-gray-300.mb-8 = @share.grade_description
+        / 統計情報（3列グリッド）
+        .grid.grid-cols-1.md:grid-cols-3.gap-4.max-w-3xl.mx-auto.mb-10
+          .bg-blue-50.dark:bg-blue-900.rounded-lg.p-6.transition-colors
+            .text-4xl.font-bold.text-blue-700.dark:text-blue-300 = "#{@period_data[:count]}回"
+            .text-sm.text-gray-600.dark:text-gray-300.mt-2 練習回数
+          .bg-green-50.dark:bg-green-900.rounded-lg.p-6.transition-colors
+            .text-4xl.font-bold.text-green-700.dark:text-green-300 = "#{@period_data[:avg_accuracy]}%"
+            .text-sm.text-gray-600.dark:text-gray-300.mt-2 平均正答率
+          .bg-purple-50.dark:bg-purple-900.rounded-lg.p-6.transition-colors
+            .text-4xl.font-bold.text-purple-700.dark:text-purple-300 = @period_data[:avg_wpm]
+            .text-sm.text-gray-600.dark:text-gray-300.mt-2 平均WPM
 
-      / 統計情報（4列グリッド）
-      .grid.grid-cols-2.md:grid-cols-4.gap-4.max-w-3xl.mx-auto.mb-10
-        .bg-green-50.dark:bg-green-900.rounded-lg.p-6.transition-colors
-          .text-3xl.font-bold.text-green-700.dark:text-green-300 = "#{@share.accuracy}%"
-          .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.accuracy')
-        .bg-purple-50.dark:bg-purple-900.rounded-lg.p-6.transition-colors
-          .text-3xl.font-bold.text-purple-700.dark:text-purple-300 = @share.wpm
-          .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.wpm')
-        .bg-blue-50.dark:bg-blue-900.rounded-lg.p-6.transition-colors
-          .text-3xl.font-bold.text-blue-700.dark:text-blue-300
-            - minutes = @share.duration_seconds / 60
-            - seconds = @share.duration_seconds % 60
-            = "#{minutes}:#{seconds.to_s.rjust(2, '0')}"
-          .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.duration')
-        .bg-amber-50.dark:bg-amber-900.rounded-lg.p-6.transition-colors
-          .text-3xl.font-bold.text-amber-700.dark:text-amber-300 = @share.mistake_count
-          .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.mistakes')
+        / グレード表示（平均から計算）
+        - avg_grade = LessonRecord.calculate_grade_from_stats(@period_data[:avg_accuracy], @period_data[:avg_wpm])
+        - grade_info = LessonGrades::DEFINITIONS[avg_grade]
+        .bg-gray-50.dark:bg-gray-700.rounded-lg.p-6.transition-colors
+          .text-2xl.font-bold style="color: #{grade_info[:color]}"
+            = grade_info[:emoji]
+            |
+            = I18n.t("grades.#{avg_grade}.name")
+          .text-sm.text-gray-600.dark:text-gray-300.mt-2
+            = I18n.t("grades.#{avg_grade}.description")
 
-      / レッスン情報
-      .text-sm.text-gray-500.dark:text-gray-400.mb-2
-        = @share.category_name
-        |  •
-        = @share.lesson_name
+  - else
+    / 単一レッスン記録シェア
+    .bg-white.dark:bg-gray-800.rounded-lg.shadow-lg.p-8.mb-8.transition-colors
+      .text-center
+        / グレード画像
+        .mb-4.flex.justify-center
+          = image_tag @share.grade_image, alt: @share.grade_name, class: "w-40 h-40"
+
+        / グレード名
+        h1.text-4xl.font-bold.text-gray-800.dark:text-white.mb-2 = @share.grade_name
+
+        / グレード説明
+        p.text-lg.text-gray-600.dark:text-gray-300.mb-8 = @share.grade_description
+
+        / 統計情報（4列グリッド）
+        .grid.grid-cols-2.md:grid-cols-4.gap-4.max-w-3xl.mx-auto.mb-10
+          .bg-green-50.dark:bg-green-900.rounded-lg.p-6.transition-colors
+            .text-3xl.font-bold.text-green-700.dark:text-green-300 = "#{@share.accuracy}%"
+            .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.accuracy')
+          .bg-purple-50.dark:bg-purple-900.rounded-lg.p-6.transition-colors
+            .text-3xl.font-bold.text-purple-700.dark:text-purple-300 = @share.wpm
+            .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.wpm')
+          .bg-blue-50.dark:bg-blue-900.rounded-lg.p-6.transition-colors
+            .text-3xl.font-bold.text-blue-700.dark:text-blue-300
+              - minutes = @share.duration_seconds / 60
+              - seconds = @share.duration_seconds % 60
+              = "#{minutes}:#{seconds.to_s.rjust(2, '0')}"
+            .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.duration')
+          .bg-amber-50.dark:bg-amber-900.rounded-lg.p-6.transition-colors
+            .text-3xl.font-bold.text-amber-700.dark:text-amber-300 = @share.mistake_count
+            .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.mistakes')
+
+        / レッスン情報
+        .text-sm.text-gray-500.dark:text-gray-400.mb-2
+          = @share.category_name
+          |  •
+          = @share.lesson_name
 
   / CTA（行動喚起）
   .text-center.bg-gradient-to-r.from-blue-600.to-purple-600.dark:from-blue-700.dark:to-purple-700.rounded-lg.shadow-lg.p-12.transition-colors

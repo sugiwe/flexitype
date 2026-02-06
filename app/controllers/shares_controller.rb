@@ -1,4 +1,6 @@
 class SharesController < ApplicationController
+  include TwitterShareable
+
   layout "share", only: [ :show ]
 
   def create
@@ -47,24 +49,20 @@ class SharesController < ApplicationController
   def show
     @share = Share.find_by!(token: params[:token])
 
+    # period_summaryの場合、統計データを取得
+    if @share.period_summary?
+      @period_data = @share.period_summary_data
+      unless @period_data
+        flash[:alert] = "この期間のデータが見つかりません"
+        redirect_to root_path and return
+      end
+    end
+
     # PNG形式のリクエストは廃止（静的画像を使用）
     respond_to do |format|
       format.html # ランディングページを表示（OGPメタタグはビューで設定）
       format.png { head :not_found }  # PNGリクエストは404を返す
     end
-  end
-
-  private
-
-  # X（旧Twitter）へのシェアURL
-  def twitter_share_url(share)
-    text = I18n.t("share.twitter_text",
-      lesson: share.lesson_name,
-      grade: share.grade_name,
-      accuracy: share.accuracy,
-      wpm: share.wpm)
-    url = share_url(share.token)
-    "https://x.com/intent/post?text=#{CGI.escape(text)}&url=#{CGI.escape(url)}"
   end
 
   # TODO: 将来実装 - 動的OGP画像生成

@@ -48,6 +48,7 @@ Rails.application.routes.draw do
     resources :lessons, only: [ :index, :new, :create, :edit, :update, :destroy ]  # /my/lessons (公式レッスン + 自作レッスン + 公開レッスン管理)
     resources :history, only: [ :index, :create ], controller: "lesson_records"  # /my/history (URL), My::LessonRecordsController (コントローラー)
     resource :account, only: [ :edit, :update ]  # /my/account/edit, PATCH /my/account
+    resources :period_shares, only: [ :create ]  # POST /my/period_shares (期間サマリーシェア作成)
   end
 
   # Admin pages (authentication + admin permission required, /admin namespace)
