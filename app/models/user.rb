@@ -3,6 +3,7 @@ class User < ApplicationRecord
   has_many :keymaps, dependent: :destroy
   has_many :lessons, dependent: :destroy
   has_many :lesson_records, dependent: :destroy
+  has_many :shares, dependent: :destroy
   belongs_to :active_keymap_set, class_name: "KeymapSet", optional: true
 
   after_create :create_default_keymap_set
@@ -20,9 +21,25 @@ class User < ApplicationRecord
                        format: { with: /\A[a-z0-9]+(?:[._-][a-z0-9]+)*\z/,
                                 message: "は半角英数字、ハイフン、アンダースコア、ドットのみ使用できます（記号は連続不可、先頭・末尾不可）" },
                        length: { minimum: 3, maximum: 30 }
+  validates :time_zone, inclusion: { in: ActiveSupport::TimeZone.all.map(&:name) }
   validate :username_not_reserved
   validate :username_change_allowed, if: :username_changed?
   validate :must_have_active_keymap_set_after_creation
+
+  # タイムゾーン選択肢（UTCオフセット付き）
+  def self.time_zone_options
+    ActiveSupport::TimeZone.all.map do |tz|
+      [ "(UTC#{tz.formatted_offset}) #{tz.name}", tz.name ]
+    end.sort_by { |label, _| label }
+  end
+
+  # タイムゾーンの表示名
+  def time_zone_display
+    ActiveSupport::TimeZone.find_tzinfo(time_zone)
+    "(UTC#{ActiveSupport::TimeZone[time_zone].formatted_offset}) #{time_zone}"
+  rescue TZInfo::InvalidTimezoneIdentifier
+    time_zone
+  end
 
   # Google IDトークンのペイロードからユーザーを検索または作成
   def self.from_google(payload)
