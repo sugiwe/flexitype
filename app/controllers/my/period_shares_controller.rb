@@ -10,8 +10,8 @@ module My
     # POST /my/period_shares
     def create
       period = params[:period]
-      unless Share::PERIODS.key?(period.to_sym)
-        redirect_to my_history_index_path, alert: "無効な期間です" and return
+      unless Share::PERIODS.include?(period.to_sym)
+        redirect_to my_history_index_path, alert: t("share.errors.invalid_period") and return
       end
 
       # 期間の日付範囲を計算
@@ -20,8 +20,8 @@ module My
       # 期間内に練習記録があるかチェック
       records = current_user.lesson_records.where(completed_at: date_range)
       if records.empty?
-        period_display = Share::PERIODS[period.to_sym]
-        redirect_to my_history_index_path, alert: "#{period_display}の練習記録がありません。練習してからシェアしてください！" and return
+        period_display = t("history.share.periods.#{period}")
+        redirect_to my_history_index_path, alert: t("share.errors.no_records", period: period_display) and return
       end
 
       # Share作成（トークンは自動生成）
@@ -36,7 +36,7 @@ module My
         # 既存の単一レッスン記録シェアと同じ挙動: Twitter シェア画面に直接リダイレクト
         redirect_to twitter_share_url(@share), allow_other_host: true
       else
-        redirect_to my_history_index_path, alert: "シェアURLの作成に失敗しました"
+        redirect_to my_history_index_path, alert: t("share.errors.create_failed")
       end
     end
 

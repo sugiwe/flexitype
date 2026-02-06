@@ -4,19 +4,12 @@ class Share < ApplicationRecord
 
   # 定数定義
   SHARE_TYPES = %w[single period_summary].freeze
-  PERIODS = {
-    today: "今日",
-    yesterday: "昨日",
-    this_week: "今週",
-    last_week: "先週",
-    this_month: "今月",
-    last_month: "先月"
-  }.freeze
+  PERIODS = %i[today yesterday this_week last_week this_month last_month].freeze
 
   # バリデーション
   validates :token, presence: true, uniqueness: true
   validates :share_type, presence: true, inclusion: { in: SHARE_TYPES }
-  validates :period, inclusion: { in: PERIODS.keys.map(&:to_s) }, allow_nil: true, if: :period_summary?
+  validates :period, inclusion: { in: PERIODS.map(&:to_s) }, allow_nil: true, if: :period_summary?
   validates :lesson_record_id, presence: true, if: :single?
   validates :user_id, presence: true, if: :period_summary?
   validates :start_date, presence: true, if: :period_summary?
@@ -70,9 +63,9 @@ class Share < ApplicationRecord
     }
   end
 
-  # 期間の日本語表示
+  # 期間の表示（i18n対応）
   def period_display
-    PERIODS[period.to_sym] if period.present?
+    I18n.t("history.share.periods.#{period}") if period.present?
   end
 
   # 期間の詳細表示（日付範囲）

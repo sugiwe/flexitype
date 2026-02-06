@@ -168,6 +168,10 @@ en:
     email:
       label: "Email Address"
       readonly_note: "※Cannot be changed as it's linked to your Google account"
+    time_zone:
+      label: "Time Zone"
+      help: "Time zone used for period summaries (today, this week, this month, etc.) in practice history."
+      current: "Current time zone: %{time_zone}"
     cancel_button: "Cancel"
     save_button: "Save"
     profile_preview: "Your profile page:"
@@ -276,6 +280,16 @@ en:
       mistakes: "Mistakes"
     empty: "No practice history"
     start_link: "Complete a typing practice to see your history here"
+    share:
+      today_button: "Share Today's History"
+      other_periods_button: "Share Other Periods"
+      periods:
+        today: "Today"
+        yesterday: "Yesterday"
+        this_week: "This Week"
+        last_week: "Last Week"
+        this_month: "This Month"
+        last_month: "Last Month"
 
   # Lesson page (practice screen)
   lesson:
@@ -298,6 +312,7 @@ en:
     og_description: "Accuracy %{accuracy}%, WPM %{wpm}"
     page_title: "I earned %{grade}! - Typnix"
     twitter_text: "I earned \"%{grade}\" on Typnix's \"%{lesson}\" lesson! Accuracy %{accuracy}%, WPM %{wpm} 🦦 #typnix #typing"
+    twitter_period_text: "【Typnix: %{period} Practice Summary🦦】\nPractices: %{count}\nAvg. Accuracy: %{avg_accuracy}%%\nAvg. WPM: %{avg_wpm}\n#typnix #typing"
     stats:
       accuracy: "Accuracy"
       wpm: "WPM"
@@ -307,6 +322,10 @@ en:
       title: "Want to practice typing on Typnix too?"
       description: "Typing practice app specialized for vertical-layout keyboards"
       button: "Start Now"
+    errors:
+      invalid_period: "Invalid period"
+      no_records: "No practice records found for %{period}. Please practice first before sharing!"
+      create_failed: "Failed to create share URL"
 
   # Meta tags (SEO & OGP)
   meta:

@@ -9,11 +9,11 @@ module TwitterShareable
   def twitter_share_url(share)
     if share.period_summary?
       period_data = share.period_summary_data
-      text = "【Typnix：#{share.period_display}の練習記録🦦】\n" \
-             "練習回数: #{period_data[:count]}回\n" \
-             "平均正答率: #{period_data[:avg_accuracy]}%\n" \
-             "平均WPM: #{period_data[:avg_wpm]}\n" \
-             "#typnix #タイピング"
+      text = I18n.t("share.twitter_period_text",
+        period: share.period_display,
+        count: period_data[:count],
+        avg_accuracy: period_data[:avg_accuracy],
+        avg_wpm: period_data[:avg_wpm])
     else
       text = I18n.t("share.twitter_text",
         lesson: share.lesson_name,

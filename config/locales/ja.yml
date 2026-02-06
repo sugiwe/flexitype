@@ -139,6 +139,10 @@ ja:
     email:
       label: "メールアドレス"
       readonly_note: "※Googleアカウントに紐づいているため変更できません"
+    time_zone:
+      label: "タイムゾーン"
+      help: "練習履歴の期間集計（今日、今週、今月など）に使用されるタイムゾーンです。"
+      current: "現在のタイムゾーン: %{time_zone}"
     cancel_button: "キャンセル"
     save_button: "保存する"
     profile_preview: "あなたのプロフィールページ:"
@@ -247,6 +251,16 @@ ja:
       mistakes: "ミス数"
     empty: "練習履歴がありません"
     start_link: "タイピング練習を完了すると、ここに履歴が表示されます"
+    share:
+      today_button: "今日の履歴をシェア"
+      other_periods_button: "その他期間の履歴をシェア"
+      periods:
+        today: "今日"
+        yesterday: "昨日"
+        this_week: "今週"
+        last_week: "先週"
+        this_month: "今月"
+        last_month: "先月"
 
   # 練習画面（レッスンページ）
   lesson:
@@ -274,6 +288,7 @@ ja:
     og_description: "正答率%{accuracy}%、WPM %{wpm}"
     page_title: "%{grade}を獲得しました！ - Typnix"
     twitter_text: "Typnixの「%{lesson}」レッスンで「%{grade}」を獲得しました！正答率%{accuracy}%、WPM %{wpm} 🦦 #typnix #タイピング"
+    twitter_period_text: "【Typnix：%{period}の練習記録🦦】\n練習回数: %{count}回\n平均正答率: %{avg_accuracy}%\n平均WPM: %{avg_wpm}\n#typnix #タイピング"
     stats:
       accuracy: "正答率"
       wpm: "WPM"
@@ -283,6 +298,10 @@ ja:
       title: "あなたもTypnixでタイピング練習しませんか？"
       description: "垂直配列キーボードに特化したタイピング練習アプリ"
       button: "今すぐ始める"
+    errors:
+      invalid_period: "無効な期間です"
+      no_records: "%{period}の練習記録がありません。練習してからシェアしてください！"
+      create_failed: "シェアURLの作成に失敗しました"
 
   activerecord:
     errors:
