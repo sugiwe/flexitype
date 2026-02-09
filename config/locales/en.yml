@@ -326,6 +326,9 @@ en:
       invalid_period: "Invalid period"
       no_records: "No practice records found for %{period}. Please practice first before sharing!"
       create_failed: "Failed to create share URL"
+    period_date_range:
+      single_day: "%{date}"
+      date_range: "%{start_date} - %{end_date}"
 
   # Meta tags (SEO & OGP)
   meta:
@@ -365,3 +368,11 @@ en:
         name: "Keymap Name"
         description: "Description"
         slug: "Keymap URL"
+
+  # Date formats
+  date:
+    formats:
+      default: "%Y/%m/%d"
+      short: "%m/%d"
+      long: "%B %d, %Y"
+      month_day: "%B %d"

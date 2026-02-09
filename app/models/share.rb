@@ -68,14 +68,16 @@ class Share < ApplicationRecord
     I18n.t("history.share.periods.#{period}") if period.present?
   end
 
-  # 期間の詳細表示（日付範囲）
+  # 期間の詳細表示（日付範囲、i18n対応）
   def period_date_range
     return nil unless period_summary? && start_date && end_date
 
     if start_date == end_date
-      start_date.strftime("%Y年%-m月%-d日")
+      I18n.t("share.period_date_range.single_day", date: I18n.l(start_date, format: :long))
     else
-      "#{start_date.strftime('%Y年%-m月%-d日')}〜#{end_date.strftime('%-m月%-d日')}"
+      I18n.t("share.period_date_range.date_range",
+        start_date: I18n.l(start_date, format: :long),
+        end_date: I18n.l(end_date, format: :month_day))
     end
   end
 

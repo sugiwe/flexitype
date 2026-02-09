@@ -302,6 +302,9 @@ ja:
       invalid_period: "無効な期間です"
       no_records: "%{period}の練習記録がありません。練習してからシェアしてください！"
       create_failed: "シェアURLの作成に失敗しました"
+    period_date_range:
+      single_day: "%{date}"
+      date_range: "%{start_date}〜%{end_date}"
 
   activerecord:
     errors:
@@ -345,6 +348,7 @@ ja:
       default: "%Y/%m/%d"
       short: "%m/%d"
       long: "%Y年%m月%d日"
+      month_day: "%-m月%-d日"
   datetime:
     distance_in_words:
       half_a_minute: "30秒"
