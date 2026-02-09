@@ -1,15 +1,6 @@
 # frozen_string_literal: true
 
 module PeriodHelper
-  PERIODS = {
-    today: "今日",
-    yesterday: "昨日",
-    this_week: "今週",
-    last_week: "先週",
-    this_month: "今月",
-    last_month: "先月"
-  }.freeze
-
   # 期間に対応する日付範囲を計算
   # @param period [String, Symbol] 期間（today, yesterday, this_week, last_week, this_month, last_month）
   # @param timezone [String] タイムゾーン（ActiveSupport::TimeZone形式）
@@ -37,11 +28,11 @@ module PeriodHelper
     end
   end
 
-  # 期間の表示名を取得
+  # 期間の表示名を取得（i18n対応）
   # @param period [String, Symbol] 期間
   # @return [String] 表示名
   def period_display(period)
-    PERIODS[period.to_sym]
+    I18n.t("history.share.periods.#{period}")
   end
 
   # 期間の説明（日付付き）を取得
