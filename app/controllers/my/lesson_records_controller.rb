@@ -7,8 +7,8 @@ class My::LessonRecordsController < My::ApplicationController
     # 期間でフィルタリング（ユーザーのタイムゾーンを使用）
     @filtered_records = filter_by_period(current_user.lesson_records, @period, current_user.time_zone)
 
-    # ページネーション付きで履歴を取得
-    @lesson_records = @filtered_records.recent.page(params[:page]).per(20)
+    # ページネーション付きで履歴を取得（N+1問題を防ぐため includes(:user) を追加）
+    @lesson_records = @filtered_records.includes(:user).recent.page(params[:page]).per(20)
 
     # 統計情報を計算（フィルタリング後のレコードで計算）
     @total_count = @filtered_records.count
