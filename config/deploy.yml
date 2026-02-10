@@ -30,6 +30,7 @@ proxy:
     path: /up
     interval: 10
     timeout: 120
+  deploy_timeout: 90
 
 # Where you keep your container images.
 # ローカルでビルドしてVPSに直接送信する場合はlocalhostのまま
