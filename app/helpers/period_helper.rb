@@ -16,10 +16,10 @@ module PeriodHelper
       yesterday.beginning_of_day..yesterday.end_of_day
     when :this_week
       # ISO week: 月曜始まり、日曜終わり
-      now.beginning_of_week(:monday)..now.end_of_week(:sunday)
+      now.beginning_of_week(:monday)..now.end_of_week(:monday)
     when :last_week
       last_week = now - 1.week
-      last_week.beginning_of_week(:monday)..last_week.end_of_week(:sunday)
+      last_week.beginning_of_week(:monday)..last_week.end_of_week(:monday)
     when :this_month
       now.beginning_of_month..now.end_of_month
     when :last_month
