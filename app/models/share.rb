@@ -54,19 +54,21 @@ class Share < ApplicationRecord
     records = user.lesson_records.where(completed_at: start_date.beginning_of_day..end_date.end_of_day)
 
     # 1回のクエリで集計を取得（3回 → 1回に最適化）
-    stats = records.select(
-      "COUNT(*) AS count",
-      "AVG(accuracy) AS avg_accuracy",
-      "AVG(wpm) AS avg_wpm"
-    ).first
+    stats = records.pick(
+      Arel.sql("COUNT(*)"),
+      Arel.sql("AVG(accuracy)"),
+      Arel.sql("AVG(wpm)")
+    )
 
-    return nil if stats.count.zero?
+    return nil if stats.nil? || stats[0].zero?
+
+    count, avg_accuracy, avg_wpm = stats
 
     {
-      count: stats.count,
-      avg_accuracy: stats.avg_accuracy&.round(2),
-      avg_wpm: stats.avg_wpm&.round,
-      avg_grade: calculate_average_grade(stats.avg_accuracy, stats.avg_wpm)
+      count: count,
+      avg_accuracy: avg_accuracy&.round(2),
+      avg_wpm: avg_wpm&.round,
+      avg_grade: calculate_average_grade(avg_accuracy, avg_wpm)
     }
   end
 
