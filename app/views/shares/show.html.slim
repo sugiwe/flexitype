@@ -1,52 +1,35 @@
 - content_for :head do
-  meta property="og:title" content=t('share.og_title', grade: @share.grade_name)
-  meta property="og:description" content=t('share.og_description', accuracy: @share.accuracy, wpm: @share.wpm)
+  / OGP・Twitter Card用のメタ情報を設定（i18n対応）
+  - if @share.period_summary?
+    - title_text = t('share.og_period_title', period: @share.period_display, user_name: @share.user.display_name)
+    - description_text = t('share.og_period_description', count: @period_data[:count], avg_accuracy: @period_data[:avg_accuracy], avg_wpm: @period_data[:avg_wpm])
+    - page_title = t('share.period_page_title', period: @share.period_display)
+  - else
+    - title_text = t('share.og_title', grade: @share.grade_name)
+    - description_text = t('share.og_description', accuracy: @share.accuracy, wpm: @share.wpm)
+    - page_title = t('share.page_title', grade: @share.grade_name)
+
+  / Open Graph (OGP)
+  meta property="og:title" content=title_text
+  meta property="og:description" content=description_text
   meta property="og:image" content=image_url("share_template.png")
   meta property="og:type" content="website"
   meta property="og:url" content=share_url(@share.token)
+
+  / Twitter Card
   meta name="twitter:card" content="summary_large_image"
-  meta name="twitter:title" content=t('share.og_title', grade: @share.grade_name)
-  meta name="twitter:description" content=t('share.og_description', accuracy: @share.accuracy, wpm: @share.wpm)
+  meta name="twitter:title" content=title_text
+  meta name="twitter:description" content=description_text
   meta name="twitter:image" content=image_url("share_template.png")
-  title = t('share.page_title', grade: @share.grade_name)
+
+  / ページタイトル
+  title = page_title
 
 .container.max-w-4xl.mx-auto.pb-12.px-4
-  / グレードバッジと成績カード
-  .bg-white.dark:bg-gray-800.rounded-lg.shadow-lg.p-8.mb-8.transition-colors
-    .text-center
-      / グレード画像
-      .mb-4.flex.justify-center
-        = image_tag @share.grade_image, alt: @share.grade_name, class: "w-40 h-40"
-
-      / グレード名
-      h1.text-4xl.font-bold.text-gray-800.dark:text-white.mb-2 = @share.grade_name
-
-      / グレード説明
-      p.text-lg.text-gray-600.dark:text-gray-300.mb-8 = @share.grade_description
-
-      / 統計情報（4列グリッド）
-      .grid.grid-cols-2.md:grid-cols-4.gap-4.max-w-3xl.mx-auto.mb-10
-        .bg-green-50.dark:bg-green-900.rounded-lg.p-6.transition-colors
-          .text-3xl.font-bold.text-green-700.dark:text-green-300 = "#{@share.accuracy}%"
-          .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.accuracy')
-        .bg-purple-50.dark:bg-purple-900.rounded-lg.p-6.transition-colors
-          .text-3xl.font-bold.text-purple-700.dark:text-purple-300 = @share.wpm
-          .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.wpm')
-        .bg-blue-50.dark:bg-blue-900.rounded-lg.p-6.transition-colors
-          .text-3xl.font-bold.text-blue-700.dark:text-blue-300
-            - minutes = @share.duration_seconds / 60
-            - seconds = @share.duration_seconds % 60
-            = "#{minutes}:#{seconds.to_s.rjust(2, '0')}"
-          .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.duration')
-        .bg-amber-50.dark:bg-amber-900.rounded-lg.p-6.transition-colors
-          .text-3xl.font-bold.text-amber-700.dark:text-amber-300 = @share.mistake_count
-          .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.mistakes')
-
-      / レッスン情報
-      .text-sm.text-gray-500.dark:text-gray-400.mb-2
-        = @share.category_name
-        |  •
-        = @share.lesson_name
+  - if @share.period_summary?
+    = render "period_summary", share: @share, period_data: @period_data
+  - else
+    = render "single_lesson", share: @share
 
   / CTA（行動喚起）
   .text-center.bg-gradient-to-r.from-blue-600.to-purple-600.dark:from-blue-700.dark:to-purple-700.rounded-lg.shadow-lg.p-12.transition-colors

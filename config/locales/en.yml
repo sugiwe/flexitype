@@ -63,6 +63,7 @@ en:
     updated: "%{resource} has been updated"
     deleted: "%{resource} has been deleted"
     error: "An error occurred"
+    require_login: "Please log in to continue"
 
   # Others
   app:
@@ -168,6 +169,10 @@ en:
     email:
       label: "Email Address"
       readonly_note: "※Cannot be changed as it's linked to your Google account"
+    time_zone:
+      label: "Time Zone"
+      help: "Time zone used for period summaries (today, this week, this month, etc.) in practice history."
+      current: "Current time zone: %{time_zone}"
     cancel_button: "Cancel"
     save_button: "Save"
     profile_preview: "Your profile page:"
@@ -276,6 +281,16 @@ en:
       mistakes: "Mistakes"
     empty: "No practice history"
     start_link: "Complete a typing practice to see your history here"
+    share:
+      today_button: "Share Today's History"
+      other_periods_button: "Share Other Periods"
+      periods:
+        today: "Today"
+        yesterday: "Yesterday"
+        this_week: "This Week"
+        last_week: "Last Week"
+        this_month: "This Month"
+        last_month: "Last Month"
 
   # Lesson page (practice screen)
   lesson:
@@ -297,7 +312,11 @@ en:
     og_title: "I earned %{grade}!"
     og_description: "Accuracy %{accuracy}%, WPM %{wpm}"
     page_title: "I earned %{grade}! - Typnix"
+    og_period_title: "%{user_name}'s %{period} Practice Summary"
+    og_period_description: "%{count} practices, Avg. Accuracy: %{avg_accuracy}%, Avg. WPM: %{avg_wpm}"
+    period_page_title: "%{period} Practice Summary - Typnix"
     twitter_text: "I earned \"%{grade}\" on Typnix's \"%{lesson}\" lesson! Accuracy %{accuracy}%, WPM %{wpm} 🦦 #typnix #typing"
+    twitter_period_text: "【Typnix: %{period} Practice Summary🦦】\nPractices: %{count}\nAvg. Accuracy: %{avg_accuracy}%%\nAvg. WPM: %{avg_wpm}\n#typnix #typing"
     stats:
       accuracy: "Accuracy"
       wpm: "WPM"
@@ -307,6 +326,15 @@ en:
       title: "Want to practice typing on Typnix too?"
       description: "Typing practice app specialized for vertical-layout keyboards"
       button: "Start Now"
+    errors:
+      invalid_period: "Invalid period"
+      no_records: "No practice records found for %{period}. Please practice first before sharing!"
+      create_failed: "Failed to create share URL"
+      lesson_record_not_found: "Lesson record not found"
+      period_data_not_found: "No data found for this period"
+    period_date_range:
+      single_day: "%{date}"
+      date_range: "%{start_date} - %{end_date}"
 
   # Meta tags (SEO & OGP)
   meta:
@@ -328,6 +356,11 @@ en:
         invalid: "is invalid"
         required: "is required"
       models:
+        user:
+          attributes:
+            username:
+              reserved: "is reserved and cannot be used"
+              change_cooldown: "can only be changed once every 24 hours (next change available: %{next_change})"
         keymap_set:
           attributes:
             slug:
@@ -346,3 +379,16 @@ en:
         name: "Keymap Name"
         description: "Description"
         slug: "Keymap URL"
+
+  # Date formats
+  date:
+    formats:
+      default: "%Y/%m/%d"
+      short: "%m/%d"
+      long: "%B %d, %Y"
+      month_day: "%B %d"
+  time:
+    formats:
+      default: "%B %d, %Y at %I:%M %p"
+      long: "%B %d, %Y at %I:%M %p"
+      short: "%m/%d %H:%M"

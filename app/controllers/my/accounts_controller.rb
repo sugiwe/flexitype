@@ -19,6 +19,6 @@ class My::AccountsController < My::ApplicationController
   private
 
   def account_params
-    params.require(:user).permit(:name, :username)
+    params.require(:user).permit(:name, :username, :time_zone)
   end
 end

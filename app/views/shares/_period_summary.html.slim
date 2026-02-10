@@ -1,0 +1,34 @@
+/ 期間サマリーシェア
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-lg.p-8.mb-8.transition-colors
+  .text-center
+    / 期間タイトル
+    h1.text-4xl.font-bold.text-gray-800.dark:text-white.mb-4
+      = share.period_display
+      | の練習記録
+
+    / 期間範囲
+    p.text-lg.text-gray-600.dark:text-gray-300.mb-8
+      = share.period_date_range
+
+    / 統計情報（3列グリッド）
+    .grid.grid-cols-1.md:grid-cols-3.gap-4.max-w-3xl.mx-auto.mb-10
+      .bg-blue-50.dark:bg-blue-900.rounded-lg.p-6.transition-colors
+        .text-4xl.font-bold.text-blue-700.dark:text-blue-300 = "#{period_data[:count]}回"
+        .text-sm.text-gray-600.dark:text-gray-300.mt-2 練習回数
+      .bg-green-50.dark:bg-green-900.rounded-lg.p-6.transition-colors
+        .text-4xl.font-bold.text-green-700.dark:text-green-300 = "#{period_data[:avg_accuracy]}%"
+        .text-sm.text-gray-600.dark:text-gray-300.mt-2 平均正答率
+      .bg-purple-50.dark:bg-purple-900.rounded-lg.p-6.transition-colors
+        .text-4xl.font-bold.text-purple-700.dark:text-purple-300 = period_data[:avg_wpm]
+        .text-sm.text-gray-600.dark:text-gray-300.mt-2 平均WPM
+
+    / グレード表示（平均から計算）
+    - avg_grade = period_data[:avg_grade]
+    - grade_info = LessonGrades::DEFINITIONS[avg_grade]
+    .bg-gray-50.dark:bg-gray-700.rounded-lg.p-6.transition-colors
+      .text-2xl.font-bold style="color: #{grade_info[:color]}"
+        = grade_info[:emoji]
+        |
+        = I18n.t("grades.#{avg_grade}.name")
+      .text-sm.text-gray-600.dark:text-gray-300.mt-2
+        = I18n.t("grades.#{avg_grade}.description")

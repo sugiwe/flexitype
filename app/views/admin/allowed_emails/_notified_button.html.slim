@@ -3,7 +3,7 @@
   = button_to toggle_notified_admin_allowed_email_path(allowed_email), method: :patch, class: "inline-flex items-center px-3 py-1 text-xs font-medium rounded-md bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 hover:bg-green-200 dark:hover:bg-green-800 transition" do
     svg.w-4.h-4.mr-1 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
       path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"
-    | 連絡済 (#{allowed_email.notified_at.strftime('%m/%d')})
+    | 連絡済 (#{l(allowed_email.notified_at.to_date, format: :short)})
 - else
   = button_to toggle_notified_admin_allowed_email_path(allowed_email), method: :patch, class: "inline-flex items-center px-3 py-1 text-xs font-medium rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition" do
     svg.w-4.h-4.mr-1 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"

@@ -5,7 +5,7 @@ class My::ApplicationController < ApplicationController
 
   def require_login
     unless logged_in?
-      redirect_to root_path, alert: "ログインが必要です"
+      redirect_to root_path, alert: t("flash.require_login")
     end
   end
 end

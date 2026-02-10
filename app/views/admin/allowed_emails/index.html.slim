@@ -35,7 +35,7 @@
                   div id="notified_status_#{allowed_email.id}"
                     = render partial: "notified_button", locals: { allowed_email: allowed_email }
                 td.px-6.py-4.whitespace-nowrap
-                  .text-sm.text-gray-500.dark:text-gray-400 = allowed_email.created_at.strftime("%Y-%m-%d %H:%M")
+                  .text-sm.text-gray-500.dark:text-gray-400 = l(allowed_email.created_at, format: :short)
                 td.px-6.py-4.whitespace-nowrap.text-right.text-sm.font-medium
                   = link_to "削除", admin_allowed_email_path(allowed_email), data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" }, class: "text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
 

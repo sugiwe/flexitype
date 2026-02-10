@@ -4,11 +4,11 @@ class My::LessonRecordsController < My::ApplicationController
   def index
     @period = params[:period] || "all"
 
-    # 期間でフィルタリング
-    @filtered_records = filter_by_period(current_user.lesson_records, @period)
+    # 期間でフィルタリング（ユーザーのタイムゾーンを使用）
+    @filtered_records = filter_by_period(current_user.lesson_records, @period, current_user.time_zone)
 
-    # ページネーション付きで履歴を取得
-    @lesson_records = @filtered_records.recent.page(params[:page]).per(20)
+    # ページネーション付きで履歴を取得（N+1問題を防ぐため includes(:user) を追加）
+    @lesson_records = @filtered_records.includes(:user).recent.page(params[:page]).per(20)
 
     # 統計情報を計算（フィルタリング後のレコードで計算）
     @total_count = @filtered_records.count
@@ -23,12 +23,19 @@ class My::LessonRecordsController < My::ApplicationController
 
   private
 
-  def filter_by_period(records, period)
+  def filter_by_period(records, period, timezone)
+    # ユーザーのタイムゾーンで現在時刻を取得
+    now = Time.current.in_time_zone(timezone)
+
     case period
     when "week"
-      records.where("completed_at >= ?", 1.week.ago)
+      # 1週間前のユーザータイムゾーンでの日付
+      one_week_ago = now - 1.week
+      records.where("completed_at >= ?", one_week_ago)
     when "month"
-      records.where("completed_at >= ?", 1.month.ago)
+      # 1ヶ月前のユーザータイムゾーンでの日付
+      one_month_ago = now - 1.month
+      records.where("completed_at >= ?", one_month_ago)
     else
       records # 全期間
     end

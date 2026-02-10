@@ -3,7 +3,8 @@ require "rails_helper"
 RSpec.describe Share, type: :model do
   describe "バリデーション" do
     it "有効なファクトリを持つこと" do
-      share = build(:share)
+      lesson_record = build(:lesson_record, id: 1)
+      share = build(:share, lesson_record: lesson_record)
       expect(share).to be_valid
     end
 

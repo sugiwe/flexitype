@@ -41,7 +41,7 @@
             div
               = t('account.username.change_cooldown')
               br
-              strong = t('account.username.next_change', time: @user.next_username_change_at.strftime('%Y年%m月%d日 %H時%M分'))
+              strong = t('account.username.next_change', time: l(@user.next_username_change_at, format: :long))
 
         - if @user.errors[:username].any?
           .text-sm.text-red-600.dark:text-red-400.mt-1
@@ -60,6 +60,20 @@
         p.text-gray-600.dark:text-gray-400 = @user.email
         p.text-xs.text-gray-500.dark:text-gray-400.mt-1
           = t('account.email.readonly_note')
+
+      / タイムゾーン設定
+      .space-y-2
+        = f.label :time_zone, t('account.time_zone.label'), class: "block text-sm font-semibold text-gray-700 dark:text-gray-300"
+        p.text-xs.text-gray-500.dark:text-gray-400.mb-2
+          = t('account.time_zone.help')
+        = f.select :time_zone, User.time_zone_options, {}, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+
+        - if @user.errors[:time_zone].any?
+          .text-sm.text-red-600.dark:text-red-400.mt-1
+            = @user.errors[:time_zone].join(", ")
+
+        p.text-xs.text-gray-500.dark:text-gray-400.mt-1
+          = t('account.time_zone.current', time_zone: @user.time_zone_display)
 
       / 保存ボタン
       .flex.justify-end.gap-3.pt-4.border-t.border-gray-200.dark:border-gray-700

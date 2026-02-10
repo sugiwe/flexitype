@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   stale_when_importmap_changes
 
   around_action :switch_locale
+  around_action :set_time_zone, if: :current_user
 
   helper_method :current_user, :logged_in?
 
@@ -17,6 +18,10 @@ class ApplicationController < ActionController::Base
              I18n.default_locale
     cookies[:locale] = locale
     I18n.with_locale(locale, &)
+  end
+
+  def set_time_zone(&)
+    Time.use_zone(current_user.time_zone, &)
   end
 
   def default_url_options

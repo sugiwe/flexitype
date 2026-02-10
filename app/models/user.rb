@@ -1,8 +1,15 @@
 class User < ApplicationRecord
+  # タイムゾーンのリストをキャッシュ（パフォーマンス最適化）
+  TIME_ZONE_NAMES = ActiveSupport::TimeZone.all.map(&:name).freeze
+  TIME_ZONE_OPTIONS = ActiveSupport::TimeZone.all.map do |tz|
+    [ "(UTC#{tz.formatted_offset}) #{tz.name}", tz.name ]
+  end.sort_by { |label, _| label }.freeze
+
   has_many :keymap_sets, dependent: :destroy
   has_many :keymaps, dependent: :destroy
   has_many :lessons, dependent: :destroy
   has_many :lesson_records, dependent: :destroy
+  has_many :shares, dependent: :destroy
   belongs_to :active_keymap_set, class_name: "KeymapSet", optional: true
 
   after_create :create_default_keymap_set
@@ -20,9 +27,23 @@ class User < ApplicationRecord
                        format: { with: /\A[a-z0-9]+(?:[._-][a-z0-9]+)*\z/,
                                 message: "は半角英数字、ハイフン、アンダースコア、ドットのみ使用できます（記号は連続不可、先頭・末尾不可）" },
                        length: { minimum: 3, maximum: 30 }
+  validates :time_zone, inclusion: { in: TIME_ZONE_NAMES }
   validate :username_not_reserved
   validate :username_change_allowed, if: :username_changed?
   validate :must_have_active_keymap_set_after_creation
+
+  # タイムゾーン選択肢（UTCオフセット付き）
+  def self.time_zone_options
+    TIME_ZONE_OPTIONS
+  end
+
+  # タイムゾーンの表示名
+  def time_zone_display
+    tz = ActiveSupport::TimeZone[time_zone]
+    return time_zone unless tz
+
+    "(UTC#{tz.formatted_offset}) #{time_zone}"
+  end
 
   # Google IDトークンのペイロードからユーザーを検索または作成
   def self.from_google(payload)
@@ -97,7 +118,7 @@ class User < ApplicationRecord
     return if username.blank?
 
     if ReservedUsernames::LIST.include?(username.downcase)
-      errors.add(:username, "は予約されているため使用できません")
+      errors.add(:username, :reserved)
     end
   end
 
@@ -106,8 +127,8 @@ class User < ApplicationRecord
     return if new_record? # 新規作成時はチェックしない
     return if can_change_username?
 
-    next_change = next_username_change_at.strftime("%Y年%m月%d日 %H時%M分")
-    errors.add(:username, "は24時間に1回しか変更できません（次回変更可能: #{next_change}）")
+    next_change = I18n.l(next_username_change_at, format: :long)
+    errors.add(:username, :change_cooldown, next_change: next_change)
   end
 
   # アクティブキーマップセットが必須であることをチェック

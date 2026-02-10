@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_19_062725) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_06_061249) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -112,11 +112,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_062725) do
 
   create_table "shares", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.bigint "lesson_record_id", null: false
+    t.date "end_date"
+    t.bigint "lesson_record_id"
+    t.string "period"
+    t.string "share_type", default: "single", null: false
+    t.date "start_date"
     t.string "token", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
     t.index ["lesson_record_id"], name: "index_shares_on_lesson_record_id"
+    t.index ["share_type"], name: "index_shares_on_share_type"
     t.index ["token"], name: "index_shares_on_token", unique: true
+    t.index ["user_id"], name: "index_shares_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -129,6 +136,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_062725) do
     t.datetime "last_sign_in_at"
     t.string "name", limit: 30, null: false
     t.integer "sign_in_count", default: 0, null: false
+    t.string "time_zone", default: "Tokyo", null: false
     t.datetime "updated_at", null: false
     t.string "username", null: false
     t.datetime "username_changed_at"
@@ -147,5 +155,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_062725) do
   add_foreign_key "lessons", "categories"
   add_foreign_key "lessons", "users"
   add_foreign_key "shares", "lesson_records"
+  add_foreign_key "shares", "users"
   add_foreign_key "users", "keymap_sets", column: "active_keymap_set_id"
 end

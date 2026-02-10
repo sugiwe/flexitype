@@ -2,9 +2,7 @@ module ApplicationHelper
   # 管理者かどうかを判定する
   # @return [Boolean] 管理者の場合true
   def admin?
-    return false unless logged_in?
-    admin_emails = ENV["ADMIN_EMAILS"]&.split(",")&.map(&:strip) || []
-    admin_emails.include?(current_user.email)
+    current_user&.admin?
   end
 
   # キーマップの文字を表示用に整形する（2段表示対応）
