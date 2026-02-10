@@ -29,16 +29,9 @@
               path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"
           .absolute.right-0.mt-2.w-48.bg-white.dark:bg-gray-700.rounded-md.shadow-lg.z-10.hidden data-dropdown-target="menu"
             .py-1
-              = button_to my_period_shares_path(period: 'yesterday'), method: :post, data: { turbo: false }, form: { target: "_blank" }, class: "block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600" do
-                = t('history.share.periods.yesterday')
-              = button_to my_period_shares_path(period: 'this_week'), method: :post, data: { turbo: false }, form: { target: "_blank" }, class: "block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600" do
-                = t('history.share.periods.this_week')
-              = button_to my_period_shares_path(period: 'last_week'), method: :post, data: { turbo: false }, form: { target: "_blank" }, class: "block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600" do
-                = t('history.share.periods.last_week')
-              = button_to my_period_shares_path(period: 'this_month'), method: :post, data: { turbo: false }, form: { target: "_blank" }, class: "block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600" do
-                = t('history.share.periods.this_month')
-              = button_to my_period_shares_path(period: 'last_month'), method: :post, data: { turbo: false }, form: { target: "_blank" }, class: "block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600" do
-                = t('history.share.periods.last_month')
+              - %i[yesterday this_week last_week this_month last_month].each do |period|
+                = button_to my_period_shares_path(period: period), method: :post, data: { turbo: false }, form: { target: "_blank" }, class: "block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600" do
+                  = t("history.share.periods.#{period}")
   / 統計情報（ミニ版）
   .grid.grid-cols-1.md:grid-cols-3.gap-4.mb-6
     / 総練習回数
