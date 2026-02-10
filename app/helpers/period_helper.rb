@@ -12,7 +12,7 @@ module PeriodHelper
     when :today
       now.beginning_of_day..now.end_of_day
     when :yesterday
-      yesterday = 1.day.ago.in_time_zone(timezone)
+      yesterday = now - 1.day
       yesterday.beginning_of_day..yesterday.end_of_day
     when :this_week
       # ISO week: 月曜始まり、日曜終わり
