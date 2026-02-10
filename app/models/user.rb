@@ -1,6 +1,9 @@
 class User < ApplicationRecord
   # タイムゾーンのリストをキャッシュ（パフォーマンス最適化）
   TIME_ZONE_NAMES = ActiveSupport::TimeZone.all.map(&:name).freeze
+  TIME_ZONE_OPTIONS = ActiveSupport::TimeZone.all.map do |tz|
+    [ "(UTC#{tz.formatted_offset}) #{tz.name}", tz.name ]
+  end.sort_by { |label, _| label }.freeze
 
   has_many :keymap_sets, dependent: :destroy
   has_many :keymaps, dependent: :destroy
@@ -31,9 +34,7 @@ class User < ApplicationRecord
 
   # タイムゾーン選択肢（UTCオフセット付き）
   def self.time_zone_options
-    ActiveSupport::TimeZone.all.map do |tz|
-      [ "(UTC#{tz.formatted_offset}) #{tz.name}", tz.name ]
-    end.sort_by { |label, _| label }
+    TIME_ZONE_OPTIONS
   end
 
   # タイムゾーンの表示名
