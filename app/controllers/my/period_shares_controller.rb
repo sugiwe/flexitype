@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 module My
-  class PeriodSharesController < ApplicationController
+  class PeriodSharesController < My::ApplicationController
     include PeriodHelper
     include TwitterShareable
-
-    before_action :require_login
 
     # POST /my/period_shares
     def create
@@ -38,12 +36,6 @@ module My
       else
         redirect_to my_history_index_path, alert: t("share.errors.create_failed")
       end
-    end
-
-    private
-
-    def require_login
-      redirect_to root_path, alert: t("flash.require_login") unless logged_in?
     end
   end
 end
