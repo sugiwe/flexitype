@@ -46,6 +46,6 @@ module PeriodHelper
     start_date = range.begin.to_date
     end_date = range.end.to_date
 
-    "#{period_display(period)} (#{start_date.strftime('%Y-%m-%d')} 〜 #{end_date.strftime('%Y-%m-%d')})"
+    "#{period_display(period)} (#{I18n.l(start_date, format: :default)} 〜 #{I18n.l(end_date, format: :default)})"
   end
 end

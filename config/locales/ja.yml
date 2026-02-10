@@ -355,6 +355,11 @@ ja:
       short: "%m/%d"
       long: "%Y年%m月%d日"
       month_day: "%-m月%-d日"
+  time:
+    formats:
+      default: "%Y年%m月%d日 %H時%M分"
+      long: "%Y年%m月%d日 %H時%M分"
+      short: "%m/%d %H:%M"
   datetime:
     distance_in_words:
       half_a_minute: "30秒"

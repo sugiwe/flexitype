@@ -382,3 +382,8 @@ en:
       short: "%m/%d"
       long: "%B %d, %Y"
       month_day: "%B %d"
+  time:
+    formats:
+      default: "%B %d, %Y at %I:%M %p"
+      long: "%B %d, %Y at %I:%M %p"
+      short: "%m/%d %H:%M"

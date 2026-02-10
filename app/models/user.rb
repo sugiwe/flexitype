@@ -127,7 +127,7 @@ class User < ApplicationRecord
     return if new_record? # 新規作成時はチェックしない
     return if can_change_username?
 
-    next_change = next_username_change_at.strftime("%Y年%m月%d日 %H時%M分")
+    next_change = I18n.l(next_username_change_at, format: :long)
     errors.add(:username, "は24時間に1回しか変更できません（次回変更可能: #{next_change}）")
   end
 

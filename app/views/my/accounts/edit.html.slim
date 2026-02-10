@@ -41,7 +41,7 @@
             div
               = t('account.username.change_cooldown')
               br
-              strong = t('account.username.next_change', time: @user.next_username_change_at.strftime('%Y年%m月%d日 %H時%M分'))
+              strong = t('account.username.next_change', time: l(@user.next_username_change_at, format: :long))
 
         - if @user.errors[:username].any?
           .text-sm.text-red-600.dark:text-red-400.mt-1
