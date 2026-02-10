@@ -356,6 +356,11 @@ en:
         invalid: "is invalid"
         required: "is required"
       models:
+        user:
+          attributes:
+            username:
+              reserved: "is reserved and cannot be used"
+              change_cooldown: "can only be changed once every 24 hours (next change available: %{next_change})"
         keymap_set:
           attributes:
             slug:

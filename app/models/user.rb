@@ -118,7 +118,7 @@ class User < ApplicationRecord
     return if username.blank?
 
     if ReservedUsernames::LIST.include?(username.downcase)
-      errors.add(:username, "は予約されているため使用できません")
+      errors.add(:username, :reserved)
     end
   end
 
@@ -128,7 +128,7 @@ class User < ApplicationRecord
     return if can_change_username?
 
     next_change = I18n.l(next_username_change_at, format: :long)
-    errors.add(:username, "は24時間に1回しか変更できません（次回変更可能: #{next_change}）")
+    errors.add(:username, :change_cooldown, next_change: next_change)
   end
 
   # アクティブキーマップセットが必須であることをチェック

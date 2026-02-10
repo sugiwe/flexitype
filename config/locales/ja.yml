@@ -326,6 +326,11 @@ ja:
         invalid: "は不正な値です"
         required: "を入力してください"
       models:
+        user:
+          attributes:
+            username:
+              reserved: "は予約されているため使用できません"
+              change_cooldown: "は24時間に1回しか変更できません（次回変更可能: %{next_change}）"
         keymap_set:
           attributes:
             slug:
