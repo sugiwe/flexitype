@@ -60,9 +60,10 @@ class Share < ApplicationRecord
       Arel.sql("AVG(wpm)")
     )
 
-    return nil if stats.nil? || stats[0].zero?
+    return nil if stats.nil?
 
     count, avg_accuracy, avg_wpm = stats
+    return nil if count.zero?
 
     {
       count: count,
