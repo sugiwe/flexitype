@@ -1,4 +1,7 @@
 class User < ApplicationRecord
+  # タイムゾーンのリストをキャッシュ（パフォーマンス最適化）
+  TIME_ZONE_NAMES = ActiveSupport::TimeZone.all.map(&:name).freeze
+
   has_many :keymap_sets, dependent: :destroy
   has_many :keymaps, dependent: :destroy
   has_many :lessons, dependent: :destroy
@@ -21,7 +24,7 @@ class User < ApplicationRecord
                        format: { with: /\A[a-z0-9]+(?:[._-][a-z0-9]+)*\z/,
                                 message: "は半角英数字、ハイフン、アンダースコア、ドットのみ使用できます（記号は連続不可、先頭・末尾不可）" },
                        length: { minimum: 3, maximum: 30 }
-  validates :time_zone, inclusion: { in: ActiveSupport::TimeZone.all.map(&:name) }
+  validates :time_zone, inclusion: { in: TIME_ZONE_NAMES }
   validate :username_not_reserved
   validate :username_change_allowed, if: :username_changed?
   validate :must_have_active_keymap_set_after_creation
