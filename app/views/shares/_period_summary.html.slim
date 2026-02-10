@@ -23,7 +23,7 @@
         .text-sm.text-gray-600.dark:text-gray-300.mt-2 平均WPM
 
     / グレード表示（平均から計算）
-    - avg_grade = LessonRecord.calculate_grade_from_stats(period_data[:avg_accuracy], period_data[:avg_wpm])
+    - avg_grade = period_data[:avg_grade]
     - grade_info = LessonGrades::DEFINITIONS[avg_grade]
     .bg-gray-50.dark:bg-gray-700.rounded-lg.p-6.transition-colors
       .text-2xl.font-bold style="color: #{grade_info[:color]}"
