@@ -8,10 +8,10 @@ class SharesController < ApplicationController
     unless logged_in?
       respond_to do |format|
         format.html do
-          flash[:alert] = "ログインが必要です"
+          flash[:alert] = t("flash.require_login")
           redirect_to root_path
         end
-        format.json { render json: { success: false, error: "ログインが必要です" }, status: :unauthorized }
+        format.json { render json: { success: false, error: t("flash.require_login") }, status: :unauthorized }
       end
       return
     end
@@ -39,10 +39,10 @@ class SharesController < ApplicationController
   rescue ActiveRecord::RecordNotFound
     respond_to do |format|
       format.html do
-        flash[:alert] = "レッスン記録が見つかりません"
+        flash[:alert] = t("share.errors.lesson_record_not_found")
         redirect_to my_history_index_path
       end
-      format.json { render json: { success: false, error: "レッスン記録が見つかりません" }, status: :not_found }
+      format.json { render json: { success: false, error: t("share.errors.lesson_record_not_found") }, status: :not_found }
     end
   end
 
@@ -53,7 +53,7 @@ class SharesController < ApplicationController
     if @share.period_summary?
       @period_data = @share.period_summary_data
       unless @period_data
-        flash[:alert] = "この期間のデータが見つかりません"
+        flash[:alert] = t("share.errors.period_data_not_found")
         redirect_to root_path and return
       end
     end
