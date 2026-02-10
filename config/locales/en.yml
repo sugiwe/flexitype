@@ -63,6 +63,7 @@ en:
     updated: "%{resource} has been updated"
     deleted: "%{resource} has been deleted"
     error: "An error occurred"
+    require_login: "Please log in to continue"
 
   # Others
   app:
@@ -311,6 +312,9 @@ en:
     og_title: "I earned %{grade}!"
     og_description: "Accuracy %{accuracy}%, WPM %{wpm}"
     page_title: "I earned %{grade}! - Typnix"
+    og_period_title: "%{user_name}'s %{period} Practice Summary"
+    og_period_description: "%{count} practices, Avg. Accuracy: %{avg_accuracy}%, Avg. WPM: %{avg_wpm}"
+    period_page_title: "%{period} Practice Summary - Typnix"
     twitter_text: "I earned \"%{grade}\" on Typnix's \"%{lesson}\" lesson! Accuracy %{accuracy}%, WPM %{wpm} 🦦 #typnix #typing"
     twitter_period_text: "【Typnix: %{period} Practice Summary🦦】\nPractices: %{count}\nAvg. Accuracy: %{avg_accuracy}%%\nAvg. WPM: %{avg_wpm}\n#typnix #typing"
     stats:
@@ -326,6 +330,8 @@ en:
       invalid_period: "Invalid period"
       no_records: "No practice records found for %{period}. Please practice first before sharing!"
       create_failed: "Failed to create share URL"
+      lesson_record_not_found: "Lesson record not found"
+      period_data_not_found: "No data found for this period"
     period_date_range:
       single_day: "%{date}"
       date_range: "%{start_date} - %{end_date}"

@@ -1,26 +1,29 @@
 - content_for :head do
+  / OGP・Twitter Card用のメタ情報を設定（i18n対応）
   - if @share.period_summary?
-    meta property="og:title" content="【#{@share.period_display}の練習記録】#{@share.user.display_name}さんの成績"
-    meta property="og:description" content="練習回数: #{@period_data[:count]}回、平均正答率: #{@period_data[:avg_accuracy]}%、平均WPM: #{@period_data[:avg_wpm]}"
-    meta property="og:image" content=image_url("share_template.png")
-    meta property="og:type" content="website"
-    meta property="og:url" content=share_url(@share.token)
-    meta name="twitter:card" content="summary_large_image"
-    meta name="twitter:title" content="【#{@share.period_display}の練習記録】#{@share.user.display_name}さんの成績"
-    meta name="twitter:description" content="練習回数: #{@period_data[:count]}回、平均正答率: #{@period_data[:avg_accuracy]}%、平均WPM: #{@period_data[:avg_wpm]}"
-    meta name="twitter:image" content=image_url("share_template.png")
-    title = "#{@share.period_display}の練習記録 - Typnix"
+    - title_text = t('share.og_period_title', period: @share.period_display, user_name: @share.user.display_name)
+    - description_text = t('share.og_period_description', count: @period_data[:count], avg_accuracy: @period_data[:avg_accuracy], avg_wpm: @period_data[:avg_wpm])
+    - page_title = t('share.period_page_title', period: @share.period_display)
   - else
-    meta property="og:title" content=t('share.og_title', grade: @share.grade_name)
-    meta property="og:description" content=t('share.og_description', accuracy: @share.accuracy, wpm: @share.wpm)
-    meta property="og:image" content=image_url("share_template.png")
-    meta property="og:type" content="website"
-    meta property="og:url" content=share_url(@share.token)
-    meta name="twitter:card" content="summary_large_image"
-    meta name="twitter:title" content=t('share.og_title', grade: @share.grade_name)
-    meta name="twitter:description" content=t('share.og_description', accuracy: @share.accuracy, wpm: @share.wpm)
-    meta name="twitter:image" content=image_url("share_template.png")
-    title = t('share.page_title', grade: @share.grade_name)
+    - title_text = t('share.og_title', grade: @share.grade_name)
+    - description_text = t('share.og_description', accuracy: @share.accuracy, wpm: @share.wpm)
+    - page_title = t('share.page_title', grade: @share.grade_name)
+
+  / Open Graph (OGP)
+  meta property="og:title" content=title_text
+  meta property="og:description" content=description_text
+  meta property="og:image" content=image_url("share_template.png")
+  meta property="og:type" content="website"
+  meta property="og:url" content=share_url(@share.token)
+
+  / Twitter Card
+  meta name="twitter:card" content="summary_large_image"
+  meta name="twitter:title" content=title_text
+  meta name="twitter:description" content=description_text
+  meta name="twitter:image" content=image_url("share_template.png")
+
+  / ページタイトル
+  title = page_title
 
 .container.max-w-4xl.mx-auto.pb-12.px-4
   - if @share.period_summary?

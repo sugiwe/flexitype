@@ -34,6 +34,7 @@ ja:
     updated: "%{resource}を更新しました"
     deleted: "%{resource}を削除しました"
     error: "エラーが発生しました"
+    require_login: "ログインが必要です"
 
   # その他
   app:
@@ -287,6 +288,9 @@ ja:
     og_title: "%{grade}を獲得しました！"
     og_description: "正答率%{accuracy}%、WPM %{wpm}"
     page_title: "%{grade}を獲得しました！ - Typnix"
+    og_period_title: "【%{period}の練習記録】%{user_name}さんの成績"
+    og_period_description: "練習回数: %{count}回、平均正答率: %{avg_accuracy}%、平均WPM: %{avg_wpm}"
+    period_page_title: "%{period}の練習記録 - Typnix"
     twitter_text: "Typnixの「%{lesson}」レッスンで「%{grade}」を獲得しました！正答率%{accuracy}%、WPM %{wpm} 🦦 #typnix #タイピング"
     twitter_period_text: "【Typnix：%{period}の練習記録🦦】\n練習回数: %{count}回\n平均正答率: %{avg_accuracy}%\n平均WPM: %{avg_wpm}\n#typnix #タイピング"
     stats:
@@ -302,6 +306,8 @@ ja:
       invalid_period: "無効な期間です"
       no_records: "%{period}の練習記録がありません。練習してからシェアしてください！"
       create_failed: "シェアURLの作成に失敗しました"
+      lesson_record_not_found: "レッスン記録が見つかりません"
+      period_data_not_found: "この期間のデータが見つかりません"
     period_date_range:
       single_day: "%{date}"
       date_range: "%{start_date}〜%{end_date}"
