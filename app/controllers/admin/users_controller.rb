@@ -2,7 +2,7 @@ class Admin::UsersController < Admin::ApplicationController
   include UserStatistics
 
   def index
-    @users = User.order(id: :desc).page(params[:page]).per(20)
+    @users = User.with_records_count.order(id: :desc).page(params[:page]).per(20)
   end
 
   def show
