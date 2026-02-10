@@ -39,10 +39,10 @@ class User < ApplicationRecord
 
   # タイムゾーンの表示名
   def time_zone_display
-    ActiveSupport::TimeZone.find_tzinfo(time_zone)
-    "(UTC#{ActiveSupport::TimeZone[time_zone].formatted_offset}) #{time_zone}"
-  rescue TZInfo::InvalidTimezoneIdentifier
-    time_zone
+    tz = ActiveSupport::TimeZone[time_zone]
+    return time_zone unless tz
+
+    "(UTC#{tz.formatted_offset}) #{time_zone}"
   end
 
   # Google IDトークンのペイロードからユーザーを検索または作成
