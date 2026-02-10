@@ -55,11 +55,14 @@ class Share < ApplicationRecord
 
     return nil if records.empty?
 
+    avg_accuracy = records.average(:accuracy)
+    avg_wpm = records.average(:wpm)
+
     {
       count: records.count,
-      avg_accuracy: records.average(:accuracy)&.round(2),
-      avg_wpm: records.average(:wpm)&.round,
-      avg_grade: calculate_average_grade(records)
+      avg_accuracy: avg_accuracy&.round(2),
+      avg_wpm: avg_wpm&.round,
+      avg_grade: calculate_average_grade(avg_accuracy, avg_wpm)
     }
   end
 
@@ -87,13 +90,10 @@ class Share < ApplicationRecord
     self.token ||= SecureRandom.urlsafe_base64(16)
   end
 
-  def calculate_average_grade(records)
-    return nil if records.empty?
-
-    avg_accuracy = records.average(:accuracy).to_f
-    avg_wpm = records.average(:wpm).to_f
+  def calculate_average_grade(avg_accuracy, avg_wpm)
+    return nil if avg_accuracy.nil? || avg_wpm.nil?
 
     # LessonRecordのグレード判定ロジックを再利用
-    LessonRecord.calculate_grade_from_stats(avg_accuracy, avg_wpm)
+    LessonRecord.calculate_grade_from_stats(avg_accuracy.to_f, avg_wpm.to_f)
   end
 end
