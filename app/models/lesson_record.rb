@@ -91,7 +91,7 @@ class LessonRecord < ApplicationRecord
     self.grade = self.class.determine_grade(accuracy, wpm)
   end
 
-  # プライベートクラスメソッド: グレード判定ロジックの共通実装
+  # クラスメソッド: グレード判定ロジックの共通実装
   def self.determine_grade(accuracy, wpm)
     if accuracy >= 98 && wpm >= 80
       "legendary"
@@ -105,5 +105,4 @@ class LessonRecord < ApplicationRecord
       "baby"
     end
   end
-  private_class_method :determine_grade
 end
