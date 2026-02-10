@@ -57,19 +57,9 @@ class LessonRecord < ApplicationRecord
     grade_info[:color]
   end
 
-  # クラスメソッド: 統計値からグレードを計算
+  # クラスメソッド: 統計値からグレードを計算（外部から呼び出し可能）
   def self.calculate_grade_from_stats(accuracy, wpm)
-    if accuracy >= 98 && wpm >= 80
-      "legendary"
-    elsif accuracy >= 90 && wpm >= 50
-      "adult"
-    elsif accuracy >= 80 && wpm >= 30
-      "young"
-    elsif accuracy >= 70 && wpm >= 15
-      "child"
-    else
-      "baby"
-    end
+    determine_grade(accuracy, wpm)
   end
 
   # レッスン名を取得（i18n対応）
@@ -98,7 +88,12 @@ class LessonRecord < ApplicationRecord
   def calculate_grade
     return if accuracy.nil? || wpm.nil?
 
-    self.grade = if accuracy >= 98 && wpm >= 80
+    self.grade = self.class.determine_grade(accuracy, wpm)
+  end
+
+  # プライベートクラスメソッド: グレード判定ロジックの共通実装
+  def self.determine_grade(accuracy, wpm)
+    if accuracy >= 98 && wpm >= 80
       "legendary"
     elsif accuracy >= 90 && wpm >= 50
       "adult"
@@ -110,4 +105,5 @@ class LessonRecord < ApplicationRecord
       "baby"
     end
   end
+  private_class_method :determine_grade
 end
