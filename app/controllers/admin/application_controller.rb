@@ -4,8 +4,7 @@ class Admin::ApplicationController < ApplicationController
   private
 
   def require_admin!
-    admin_emails = ENV["ADMIN_EMAILS"]&.split(",")&.map(&:strip) || []
-    unless logged_in? && admin_emails.include?(current_user.email)
+    unless current_user&.admin?
       redirect_to root_path, alert: "管理者権限が必要です"
     end
   end
