@@ -1,0 +1,36 @@
+/ 単一レッスン記録シェア
+.bg-white.dark:bg-gray-800.rounded-lg.shadow-lg.p-8.mb-8.transition-colors
+  .text-center
+    / グレード画像
+    .mb-4.flex.justify-center
+      = image_tag share.grade_image, alt: share.grade_name, class: "w-40 h-40"
+
+    / グレード名
+    h1.text-4xl.font-bold.text-gray-800.dark:text-white.mb-2 = share.grade_name
+
+    / グレード説明
+    p.text-lg.text-gray-600.dark:text-gray-300.mb-8 = share.grade_description
+
+    / 統計情報（4列グリッド）
+    .grid.grid-cols-2.md:grid-cols-4.gap-4.max-w-3xl.mx-auto.mb-10
+      .bg-green-50.dark:bg-green-900.rounded-lg.p-6.transition-colors
+        .text-3xl.font-bold.text-green-700.dark:text-green-300 = "#{share.accuracy}%"
+        .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.accuracy')
+      .bg-purple-50.dark:bg-purple-900.rounded-lg.p-6.transition-colors
+        .text-3xl.font-bold.text-purple-700.dark:text-purple-300 = share.wpm
+        .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.wpm')
+      .bg-blue-50.dark:bg-blue-900.rounded-lg.p-6.transition-colors
+        .text-3xl.font-bold.text-blue-700.dark:text-blue-300
+          - minutes = share.duration_seconds / 60
+          - seconds = share.duration_seconds % 60
+          = "#{minutes}:#{seconds.to_s.rjust(2, '0')}"
+        .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.duration')
+      .bg-amber-50.dark:bg-amber-900.rounded-lg.p-6.transition-colors
+        .text-3xl.font-bold.text-amber-700.dark:text-amber-300 = share.mistake_count
+        .text-sm.text-gray-600.dark:text-gray-300.mt-2 = t('share.stats.mistakes')
+
+    / レッスン情報
+    .text-sm.text-gray-500.dark:text-gray-400.mb-2
+      = share.category_name
+      |  •
+      = share.lesson_name
