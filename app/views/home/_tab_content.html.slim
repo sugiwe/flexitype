@@ -22,7 +22,7 @@
                 / 作成者情報
                 .flex.items-center.gap-2.pt-3.border-t.border-blue-200.dark:border-blue-700
                   - if lesson.user.icon_url.present?
-                    img.w-5.h-5.rounded-full src=lesson.user.icon_url alt=lesson.user.display_name
+                    img.w-5.h-5.rounded-full src=lesson.user.icon_url alt=lesson.user.author_name
                   - if lesson.official?
                     .flex.items-center.gap-1
                       svg.w-4.h-4.text-blue-600.dark:text-blue-400 fill="currentColor" viewBox="0 0 20 20"
