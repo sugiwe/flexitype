@@ -1,7 +1,7 @@
 - content_for :head do
   / OGP・Twitter Card用のメタ情報を設定（i18n対応）
   - if @share.period_summary?
-    - title_text = t('share.og_period_title', period: @share.period_display, user_name: @share.user.display_name)
+    - title_text = t('share.og_period_title', period: @share.period_display, user_name: @share.user.name)
     - description_text = t('share.og_period_description', count: @period_data[:count], avg_accuracy: @period_data[:avg_accuracy], avg_wpm: @period_data[:avg_wpm])
     - page_title = t('share.period_page_title', period: @share.period_display)
   - else

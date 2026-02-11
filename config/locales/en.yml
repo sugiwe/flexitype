@@ -383,10 +383,10 @@ en:
   # Date formats
   date:
     formats:
-      default: "%Y/%m/%d"
-      short: "%m/%d"
-      long: "%B %d, %Y"
-      month_day: "%B %d"
+      default: "%Y/%-m/%-d"
+      short: "%-m/%-d"
+      long: "%B %-d, %Y"
+      month_day: "%B %-d"
   time:
     formats:
       default: "%B %d, %Y at %I:%M %p"

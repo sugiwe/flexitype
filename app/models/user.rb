@@ -89,8 +89,8 @@ class User < ApplicationRecord
     premium? || admin?
   end
 
-  # 表示用の名前（公式アカウントは「Typnix Official」）
-  def display_name
+  # レッスン作者名（管理者の場合は「Typnix Official」）
+  def author_name
     admin? ? "Typnix Official" : name
   end
 
