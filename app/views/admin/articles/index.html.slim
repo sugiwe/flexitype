@@ -67,8 +67,9 @@
               - else
                 | -
             td.px-6.py-4.whitespace-nowrap.text-right.text-sm.font-medium
-              = link_to "編集", edit_admin_article_path(article), class: "text-blue-600 dark:text-blue-400 hover:underline mr-3"
-              = button_to "削除", admin_article_path(article), method: :delete, data: { turbo_confirm: "記事「#{article.title}」を削除してもよろしいですか？" }, class: "text-red-600 dark:text-red-400 hover:underline"
+              .flex.items-center.justify-end.gap-3
+                = link_to "編集", edit_admin_article_path(article), class: "text-blue-600 dark:text-blue-400 hover:underline"
+                = button_to "削除", admin_article_path(article), method: :delete, data: { turbo_confirm: "記事「#{article.title}」を削除してもよろしいですか？" }, class: "text-red-600 dark:text-red-400 hover:underline"
 
   / ページネーション
   .mt-6
