@@ -30,6 +30,35 @@
     = f.label :excerpt, "概要（任意）", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
     = f.text_area :excerpt, rows: 3, class: "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white", placeholder: "記事の概要を入力してください（一覧ページで表示されます）"
 
+  / サムネイル画像
+  .form-group
+    = f.label :thumbnail, "サムネイル画像（2:1推奨）", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+    = f.file_field :thumbnail, accept: "image/*", class: "block w-full text-sm text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 focus:outline-none"
+    p.text-xs.text-gray-500.dark:text-gray-400.mt-1 JPEG、PNG、GIF、WebP形式、5MB以内。一覧ページで2:1の比率で表示されます
+    - if article.thumbnail.attached?
+      .mt-3.w-64.overflow-hidden.rounded-lg.border.border-gray-300.dark:border-gray-600 class="aspect-[2/1]"
+        = image_tag article.thumbnail.variant(resize_to_fill: [600, 300]), class: "w-full h-full object-cover"
+
+  / 本文用画像（複数アップロード可能）
+  .form-group
+    = f.label :images, "本文用画像", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+    = f.file_field :images, multiple: true, accept: "image/*", class: "block w-full text-sm text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 focus:outline-none"
+    p.text-xs.text-gray-500.dark:text-gray-400.mt-1 複数枚の画像を選択できます。選択後、「更新」または「下書き保存」ボタンを押すと、下に画像とパスが表示されます
+    - if article.images.attached?
+      .mt-4
+        p.text-sm.text-gray-700.dark:text-gray-300.mb-2.font-medium アップロード済み画像（パスをクリックしてコピー）
+        .grid.grid-cols-2.gap-4
+          - article.images.each do |image|
+            .border.border-gray-300.dark:border-gray-600.rounded-lg.p-2.bg-white.dark:bg-gray-800
+              .relative
+                = image_tag image.variant(resize_to_limit: [200, 200]), class: "w-full rounded"
+                / 削除ボタン（link_toに変更してフォームネストを回避）
+                = link_to admin_article_image_path(article.slug, image.signed_id), method: :delete, data: { turbo_method: :delete, turbo_confirm: "この画像を削除してもよろしいですか？" }, class: "absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 hover:bg-red-700 transition inline-flex items-center justify-center" do
+                  svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"
+              .mt-2.text-xs.text-gray-600.dark:text-gray-400.font-mono.p-2.bg-gray-100.dark:bg-gray-700.rounded.cursor-pointer.hover:bg-gray-200.dark:hover:bg-gray-600.transition title="クリックしてコピー" onclick="navigator.clipboard.writeText('![画像](#{url_for(image)})')"
+                = "![画像](#{url_for(image)})"
+
   / 本文（Markdown）
   .form-group
     = f.label :content, "本文（Markdown形式）", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
