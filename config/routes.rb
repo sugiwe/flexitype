@@ -62,5 +62,6 @@ Rails.application.routes.draw do
       end
     end
     resources :lesson_records, only: [ :index ]  # /admin/lesson_records (練習履歴一覧)
+    resources :articles, param: :slug  # /admin/articles (記事管理、slug-based routing)
   end
 end
