@@ -63,6 +63,8 @@ Rails.application.routes.draw do
       end
     end
     resources :lesson_records, only: [ :index ]  # /admin/lesson_records (練習履歴一覧)
-    resources :articles, param: :slug  # /admin/articles (記事管理、slug-based routing)
+    resources :articles, param: :slug do  # /admin/articles (記事管理、slug-based routing)
+      delete "images/:signed_id", to: "articles#purge_image", as: :image  # /admin/articles/:slug/images/:signed_id (画像削除)
+    end
   end
 end

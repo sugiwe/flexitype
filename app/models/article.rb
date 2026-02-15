@@ -1,6 +1,10 @@
 class Article < ApplicationRecord
   belongs_to :author, class_name: "User", optional: true
 
+  # ActiveStorage画像添付
+  has_one_attached :thumbnail  # サムネイル（1枚）
+  has_many_attached :images    # 本文用画像（複数枚）
+
   enum :category, {
     typing_tips: 0,
     keyboard_basics: 1,
@@ -16,6 +20,7 @@ class Article < ApplicationRecord
   validates :content, presence: true
   validates :category, presence: true
   validate :slug_must_exist_after_generation
+  validate :thumbnail_validation
 
   scope :published, -> { where.not(published_at: nil).where("published_at <= ?", Time.current) }
   scope :recent, -> { order(published_at: :desc, created_at: :desc) }
@@ -72,5 +77,19 @@ class Article < ApplicationRecord
     end
 
     self.slug = candidate
+  end
+
+  def thumbnail_validation
+    return unless thumbnail.attached?
+
+    # ファイルサイズ制限（5MB以内）
+    if thumbnail.blob.byte_size > 5.megabytes
+      errors.add(:thumbnail, "のサイズは5MB以下にしてください")
+    end
+
+    # 画像形式チェック
+    unless thumbnail.content_type.in?(%w[image/jpeg image/png image/gif image/webp])
+      errors.add(:thumbnail, "はJPEG、PNG、GIF、WebP形式のみ対応しています")
+    end
   end
 end

@@ -1,6 +1,6 @@
 module Admin
   class ArticlesController < Admin::ApplicationController
-    before_action :set_article, only: [ :edit, :update, :destroy ]
+    before_action :set_article, only: [ :edit, :update, :destroy, :purge_image ]
 
     def index
       @filter = params[:filter] || "all"
@@ -50,6 +50,16 @@ module Admin
       redirect_to admin_articles_path, notice: "記事「#{title}」を削除しました"
     end
 
+    def purge_image
+      image = @article.images.find_by(signed_id: params[:signed_id])
+      if image
+        image.purge
+        redirect_to edit_admin_article_path(@article), notice: "画像を削除しました"
+      else
+        redirect_to edit_admin_article_path(@article), alert: "画像が見つかりませんでした"
+      end
+    end
+
     private
 
     def set_article
@@ -57,9 +67,17 @@ module Admin
     end
 
     def article_params
-      params.require(:article).permit(
-        :title, :slug, :content, :excerpt, :category, :published_at
+      permitted = params.require(:article).permit(
+        :title, :slug, :content, :excerpt, :category, :published_at,
+        :thumbnail,  # サムネイル画像
+        images: []   # 本文用画像（配列）
       )
+
+      # 画像が選択されていない場合（空の配列）は、imagesパラメータを削除
+      # これにより、既存の画像が保持される
+      permitted.delete(:images) if permitted[:images]&.all?(&:blank?)
+
+      permitted
     end
   end
 end
