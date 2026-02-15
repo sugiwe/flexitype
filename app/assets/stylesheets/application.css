@@ -34,7 +34,11 @@
 /* Markdown記事用スタイル（prose class） */
 .prose {
   color: #374151;
-  max-width: 65ch;
+}
+
+/* 幅制限なし（記事詳細ページなど） */
+.prose.max-w-none {
+  max-width: none;
 }
 
 .prose h1 {
