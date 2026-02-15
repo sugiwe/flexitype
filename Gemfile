@@ -20,6 +20,7 @@ gem "thruster", require: false
 gem "turbo-rails"
 gem "sentry-ruby"
 gem "sentry-rails"
+gem "redcarpet"  # Markdown rendering
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
 group :production do

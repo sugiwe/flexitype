@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   # Public pages
   root "home#index"
   resources :lessons, only: [ :show ]
+  resources :articles, only: [ :index, :show ], param: :slug  # /articles, /articles/:slug
 
   # 旧URLからのリダイレクト（301 Moved Permanently）
   get "/practices/:id", to: redirect("/lessons/%{id}", status: 301)

@@ -41,6 +41,10 @@ class Article < ApplicationRecord
     author&.username || "Typnix"
   end
 
+  def meta_description
+    excerpt.presence || content.truncate(160, separator: " ", omission: "...")
+  end
+
   private
 
   def normalize_slug

@@ -1,0 +1,54 @@
+/ ページヘッダー
+.mb-8
+  h1.text-4xl.font-bold.text-gray-900.dark:text-white.mb-4 記事一覧
+  p.text-lg.text-gray-600.dark:text-gray-400 分割キーボード・タイピングに関する記事をお届けします
+
+/ カテゴリーフィルター
+.mb-8
+  .flex.flex-wrap.gap-2
+    = link_to articles_path, class: "px-4 py-2 rounded-lg transition #{ @category.nil? ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600' }" do
+      | 全て表示
+    - Article.categories.keys.each do |category_key|
+      = link_to articles_path(category: category_key), class: "px-4 py-2 rounded-lg transition #{ @category == category_key ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600' }" do
+        = Article.human_attribute_name("category.#{category_key}")
+
+/ 記事一覧（カードグリッド）
+- if @articles.any?
+  .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-6.mb-8
+    - @articles.each do |article|
+      = link_to article_path(article), class: "group bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-shadow border border-gray-200 dark:border-gray-700 overflow-hidden" do
+        .p-6
+          / カテゴリーバッジ
+          .mb-3
+            span.inline-block.px-3.py-1.text-xs.font-medium.rounded-full.bg-blue-100.text-blue-800.dark:bg-blue-900.dark:text-blue-300
+              = Article.human_attribute_name("category.#{article.category}")
+
+          / タイトル
+          h2.text-xl.font-bold.text-gray-900.dark:text-white.mb-2.group-hover:text-blue-600.dark:group-hover:text-blue-400.transition
+            = article.title
+
+          / 概要
+          - if article.excerpt.present?
+            p.text-sm.text-gray-600.dark:text-gray-400.mb-4.line-clamp-3
+              = article.excerpt
+
+          / メタ情報
+          .flex.items-center.justify-between.text-xs.text-gray-500.dark:text-gray-400
+            .flex.items-center.gap-4
+              / 著者
+              span = article.author_name
+              / 公開日
+              span = l(article.published_at, format: :short)
+            / 閲覧数
+            .flex.items-center.gap-1
+              svg.w-4.h-4 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              span = article.view_count.to_s(:delimited)
+
+  / ページネーション
+  .mt-8
+    = paginate @articles
+- else
+  .bg-white.dark:bg-gray-800.rounded-lg.shadow.p-12.text-center
+    p.text-gray-500.dark:text-gray-400.text-lg まだ記事がありません
