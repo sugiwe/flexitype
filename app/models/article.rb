@@ -15,14 +15,15 @@ class Article < ApplicationRecord
   }
 
   validates :title, presence: true, length: { maximum: 100 }
-  validates :slug, uniqueness: true,
-            format: { with: /\A[a-z0-9-]+\z/ }, length: { maximum: 100 }, allow_blank: true
+  validates :slug, presence: true, uniqueness: true,
+            format: { with: /\A[a-z0-9-]+\z/ }, length: { maximum: 100 }
   validates :content, presence: true
   validates :category, presence: true
-  validate :slug_must_exist_after_generation
   validate :thumbnail_validation
 
   scope :published, -> { where.not(published_at: nil).where("published_at <= ?", Time.current) }
+  scope :draft, -> { where(published_at: nil) }
+  scope :scheduled, -> { where("published_at > ?", Time.current) }
   scope :recent, -> { order(published_at: :desc, created_at: :desc) }
   scope :by_category, ->(category) { where(category: category) }
   scope :popular, -> { order(view_count: :desc) }
@@ -58,12 +59,6 @@ class Article < ApplicationRecord
 
   def should_generate_slug?
     slug.blank? && title.present?
-  end
-
-  def slug_must_exist_after_generation
-    if slug.blank?
-      errors.add(:slug, :blank)
-    end
   end
 
   def generate_slug

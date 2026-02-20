@@ -4,18 +4,21 @@ module Admin
 
     def index
       @filter = params[:filter] || "all"
-      @articles = case @filter
+
+      # スコープを決定（DRY原則）
+      scope = case @filter
       when "published"
-        Article.published.recent
+        Article.published
       when "draft"
-        Article.where(published_at: nil).recent
+        Article.draft
       when "scheduled"
-        Article.where("published_at > ?", Time.current).recent
+        Article.scheduled
       else
-        Article.recent
+        Article.all
       end
 
-      @articles = @articles.page(params[:page]).per(20)
+      # 共通の処理をまとめて適用
+      @articles = scope.recent.page(params[:page]).per(20)
     end
 
     def new

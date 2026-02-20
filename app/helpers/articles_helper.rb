@@ -3,7 +3,8 @@ module ArticlesHelper
     return "" if text.blank?
 
     renderer = Redcarpet::Render::HTML.new(
-      filter_html: false,
+      filter_html: true,        # HTMLタグをエスケープ（XSS対策）
+      safe_links_only: true,    # 安全なプロトコル（http/https）のみ許可
       hard_wrap: true,
       link_attributes: { target: "_blank", rel: "noopener noreferrer" }
     )
