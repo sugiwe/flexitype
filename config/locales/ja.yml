@@ -358,12 +358,15 @@ ja:
         published_at: "公開日時"
         author: "著者"
         view_count: "閲覧数"
-        "category/typing_tips": "タイピングのコツ"
-        "category/keyboard_basics": "キーボード基礎知識"
-        "category/keyboard_reviews": "キーボードレビュー"
-        "category/customization": "カスタマイズガイド"
-        "category/typnix_guides": "Typnix使い方"
-        "category/community": "コミュニティ"
+    enums:
+      article:
+        category:
+          typing_tips: "タイピングのコツ"
+          keyboard_basics: "キーボード基礎知識"
+          keyboard_reviews: "キーボードレビュー"
+          customization: "カスタマイズガイド"
+          typnix_guides: "Typnix使い方"
+          community: "コミュニティ"
   time:
     formats:
       default: "%Y/%m/%d %H:%M:%S"

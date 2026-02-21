@@ -54,8 +54,9 @@ module Admin
     end
 
     def purge_image
-      image = @article.images.find_by(signed_id: params[:signed_id])
-      if image
+      # signed_idから画像を取得し、所有権を確認（セキュリティ対策）
+      image = ActiveStorage::Attachment.find_signed(params[:signed_id])
+      if image && image.record == @article
         image.purge
         redirect_to edit_admin_article_path(@article), notice: "画像を削除しました"
       else

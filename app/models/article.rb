@@ -62,7 +62,8 @@ class Article < ApplicationRecord
   end
 
   def generate_slug
-    base_slug = title.parameterize
+    # 日本語タイトルの場合、parameterizeは空文字列を返すため、ランダム文字列をフォールバック
+    base_slug = title.parameterize.presence || SecureRandom.hex(8)
     candidate = base_slug
     counter = 1
 

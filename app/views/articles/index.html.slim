@@ -10,7 +10,7 @@
       | 全て表示
     - Article.categories.keys.each do |category_key|
       = link_to articles_path(category: category_key), class: "px-4 py-2 rounded-lg transition #{ @category == category_key ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600' }" do
-        = Article.human_attribute_name("category.#{category_key}")
+        = I18n.t("activerecord.enums.article.category.#{category_key}")
 
 / 記事一覧（カードグリッド）
 - if @articles.any?
@@ -29,7 +29,7 @@
           / カテゴリーバッジ
           .mb-3
             span.inline-block.px-3.py-1.text-xs.font-medium.rounded-full.bg-blue-100.text-blue-800.dark:bg-blue-900.dark:text-blue-300
-              = Article.human_attribute_name("category.#{article.category}")
+              = I18n.t("activerecord.enums.article.category.#{article.category}")
 
           / タイトル
           h2.text-xl.font-bold.text-gray-900.dark:text-white.mb-2.group-hover:text-blue-600.dark:group-hover:text-blue-400.transition
