@@ -349,6 +349,24 @@ ja:
         name: "キーマップ名"
         description: "説明"
         slug: "キーマップURL"
+      article:
+        title: "タイトル"
+        slug: "スラッグ"
+        content: "本文"
+        excerpt: "概要"
+        category: "カテゴリー"
+        published_at: "公開日時"
+        author: "著者"
+        view_count: "閲覧数"
+    enums:
+      article:
+        category:
+          typing_tips: "タイピングのコツ"
+          keyboard_basics: "キーボード基礎知識"
+          keyboard_reviews: "キーボードレビュー"
+          customization: "カスタマイズガイド"
+          typnix_guides: "Typnix使い方"
+          community: "コミュニティ"
   time:
     formats:
       default: "%Y/%m/%d %H:%M:%S"

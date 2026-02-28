@@ -1,22 +1,28 @@
 doctype html
 html
   head
-    title = content_for(:title) || t('meta.title')
+    title = content_for(:page_title).presence || content_for(:title).presence || t('meta.title')
     = render "layouts/head"
 
-    / OGP設定（トップページ用）
-    meta property="og:title" content=t('meta.title')
-    meta property="og:description" content=t('meta.description')
-    meta property="og:type" content="website"
-    meta property="og:url" content="https://typnix.com"
+    / OGP設定
+    meta property="og:title" content=(content_for(:og_title).presence || t('meta.title'))
+    meta property="og:description" content=(content_for(:og_description).presence || t('meta.description'))
+    meta property="og:type" content=(content_for(:og_type).presence || "website")
+    meta property="og:url" content=(content_for(:og_url).presence || "https://typnix.com")
     meta property="og:image" content=image_url("ogp.png")
     meta property="og:site_name" content="Typnix"
     meta property="og:locale" content="ja_JP"
 
-    / Twitter Card設定（トップページ用）
+    / 記事固有のOGPタグ
+    - if content_for(:article_published_time).present?
+      meta property="article:published_time" content=content_for(:article_published_time)
+    - if content_for(:article_author).present?
+      meta property="article:author" content=content_for(:article_author)
+
+    / Twitter Card設定
     meta name="twitter:card" content="summary_large_image"
-    meta name="twitter:title" content=t('meta.title')
-    meta name="twitter:description" content=t('meta.description')
+    meta name="twitter:title" content=(content_for(:og_title).presence || t('meta.title'))
+    meta name="twitter:description" content=(content_for(:og_description).presence || t('meta.description'))
     meta name="twitter:image" content=image_url("ogp.png")
 
     = yield :head

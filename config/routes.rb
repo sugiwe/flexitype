@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   # Public pages
   root "home#index"
   resources :lessons, only: [ :show ]
+  resources :articles, only: [ :index, :show ], param: :slug  # /articles, /articles/:slug
 
   # 旧URLからのリダイレクト（301 Moved Permanently）
   get "/practices/:id", to: redirect("/lessons/%{id}", status: 301)
@@ -62,5 +63,8 @@ Rails.application.routes.draw do
       end
     end
     resources :lesson_records, only: [ :index ]  # /admin/lesson_records (練習履歴一覧)
+    resources :articles, param: :slug do  # /admin/articles (記事管理、slug-based routing)
+      delete "images/:signed_id", to: "articles#purge_image", as: :image  # /admin/articles/:slug/images/:signed_id (画像削除)
+    end
   end
 end
